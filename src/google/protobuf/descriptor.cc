@@ -6073,6 +6073,18 @@ void DescriptorBuilder::AddImportError(const FileDescriptorProto& proto,
            make_error);
 }
 
+static std::string SerializeToDeterministicString(const Message& message) {
+  std::string out;
+  {
+    // Extra block to ensure coded_stream gets closed before we return.
+    google::protobuf::io::StringOutputStream string_stream(&out);
+    google::protobuf::io::CodedOutputStream coded_stream(&string_stream);
+    coded_stream.SetSerializationDeterministic(true);
+    CHECK(message.SerializeToCodedStream(&coded_stream));
+  }
+  return out;
+}
+
 PROTOBUF_NOINLINE static bool ExistingFileMatchesProto(
     Edition edition, const FileDescriptor* existing_file,
     const FileDescriptorProto& proto) {
@@ -6082,7 +6094,8 @@ PROTOBUF_NOINLINE static bool ExistingFileMatchesProto(
     existing_proto.set_syntax("proto2");
   }
 
-  return existing_proto.SerializeAsString() == proto.SerializeAsString();
+  return SerializeToDeterministicString(existing_proto) ==
+         SerializeToDeterministicString(proto);
 }
 
 // These PlanAllocationSize functions will gather into the FlatAllocator all the
