@@ -2131,6 +2131,30 @@ TEST(HELPERS_TEST_NAME, TestSCCAnalysis) {
 }  // namespace cpp_unittest
 }  // namespace cpp
 }  // namespace compiler
+}  // namespace protobuf
+}  // namespace google
+
+#ifndef PROTOBUF_TEST_NO_DESCRIPTORS
+// We use a separate namespace to test the ADL hooks.
+// Doing the calls from `proto2` might hide lexical scope lookups.
+namespace proto2_other_ns {
+namespace {
+TEST(GENERATED_ENUM_TEST_NAME, GetEnumDescriptorViaADL) {
+  EXPECT_EQ(
+      UNITTEST::TestAllTypes::NestedEnum_descriptor(),
+      ProtobufInternalGetEnumDescriptor(UNITTEST::TestAllTypes::NestedEnum{}));
+  EXPECT_EQ(UNITTEST::ForeignEnum_descriptor(),
+            ProtobufInternalGetEnumDescriptor(UNITTEST::ForeignEnum{}));
+  EXPECT_EQ(
+      UNITTEST::TestEnumWithDupValue_descriptor(),
+      ProtobufInternalGetEnumDescriptor(UNITTEST::TestEnumWithDupValue{}));
+  EXPECT_EQ(UNITTEST::TestSparseEnum_descriptor(),
+            ProtobufInternalGetEnumDescriptor(UNITTEST::TestSparseEnum{}));
+}
+}  // namespace
+}  // namespace protobuf
+}  // namespace google_other_ns
+#endif  // PROTOBUF_TEST_NO_DESCRIPTORS
 
 namespace no_generic_services_test {
   // Verify that no class called "TestService" was defined in
@@ -2141,6 +2165,8 @@ namespace no_generic_services_test {
   };
 }
 
+namespace google {
+namespace protobuf {
 namespace compiler {
 namespace cpp {
 namespace cpp_unittest {
