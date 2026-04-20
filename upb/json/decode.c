@@ -1010,7 +1010,9 @@ static void jsondec_field(jsondec* d, upb_Message* msg,
   } else {
     upb_JsonMessageValue val = jsondec_value(d, f);
     if (!val.ignore) {
-      upb_Message_SetFieldByDef(msg, f, val.value, d->arena);
+      if (!upb_Message_SetFieldByDef(msg, f, val.value, d->arena)) {
+        jsondec_err(d, "Out of memory");
+      }
     }
   }
 
@@ -1174,10 +1176,12 @@ static void jsondec_timestamp(jsondec* d, upb_Message* msg,
     jsondec_err(d, "Timestamp out of range");
   }
 
-  upb_Message_SetFieldByDef(msg, upb_MessageDef_FindFieldByNumber(m, 1),
-                            seconds, d->arena);
-  upb_Message_SetFieldByDef(msg, upb_MessageDef_FindFieldByNumber(m, 2), nanos,
-                            d->arena);
+  if (!upb_Message_SetFieldByDef(msg, upb_MessageDef_FindFieldByNumber(m, 1),
+                                 seconds, d->arena) ||
+      !upb_Message_SetFieldByDef(msg, upb_MessageDef_FindFieldByNumber(m, 2),
+                                 nanos, d->arena)) {
+    jsondec_err(d, "Out of memory");
+  }
   return;
 
 malformed:
@@ -1211,10 +1215,12 @@ static void jsondec_duration(jsondec* d, upb_Message* msg,
     nanos.int32_val = -nanos.int32_val;
   }
 
-  upb_Message_SetFieldByDef(msg, upb_MessageDef_FindFieldByNumber(m, 1),
-                            seconds, d->arena);
-  upb_Message_SetFieldByDef(msg, upb_MessageDef_FindFieldByNumber(m, 2), nanos,
-                            d->arena);
+  if (!upb_Message_SetFieldByDef(msg, upb_MessageDef_FindFieldByNumber(m, 1),
+                                 seconds, d->arena) ||
+      !upb_Message_SetFieldByDef(msg, upb_MessageDef_FindFieldByNumber(m, 2),
+                                 nanos, d->arena)) {
+    jsondec_err(d, "Out of memory");
+  }
 }
 
 static void jsondec_listvalue(jsondec* d, upb_Message* msg,
@@ -1318,7 +1324,9 @@ static void jsondec_wellknownvalue(jsondec* d, upb_Message* msg,
       UPB_UNREACHABLE();
   }
 
-  upb_Message_SetFieldByDef(msg, f, val, d->arena);
+  if (!upb_Message_SetFieldByDef(msg, f, val, d->arena)) {
+    jsondec_err(d, "Out of memory");
+  }
 }
 
 static upb_StringView jsondec_mask(jsondec* d, const char* buf,
@@ -1410,7 +1418,9 @@ static const upb_MessageDef* jsondec_typeurl(jsondec* d, upb_Message* msg,
   upb_MessageValue val;
 
   val.str_val = type_url;
-  upb_Message_SetFieldByDef(msg, type_url_f, val, d->arena);
+  if (!upb_Message_SetFieldByDef(msg, type_url_f, val, d->arena)) {
+    jsondec_err(d, "Out of memory");
+  }
 
   /* Find message name after the last '/' */
   while (ptr > type_url.data && *--ptr != '/') {
@@ -1507,7 +1517,9 @@ static void jsondec_wrapper(jsondec* d, upb_Message* msg,
   const upb_FieldDef* value_f = upb_MessageDef_FindFieldByNumber(m, 1);
   upb_JsonMessageValue val = jsondec_value(d, value_f);
   UPB_ASSUME(val.ignore == false);  // Wrapper cannot be an enum.
-  upb_Message_SetFieldByDef(msg, value_f, val.value, d->arena);
+  if (!upb_Message_SetFieldByDef(msg, value_f, val.value, d->arena)) {
+    jsondec_err(d, "Out of memory");
+  }
 }
 
 static void jsondec_wellknown(jsondec* d, upb_Message* msg,
