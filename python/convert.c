@@ -303,13 +303,11 @@ bool PyUpb_PyToUpb(PyObject* obj, const upb_FieldDef* f, upb_MessageValue* val,
         }
         *val = PyUpb_MaybeCopyString(ptr, size, arena);
         return true;
-      } else {
-        const char* ptr;
-        ptr = PyUnicode_AsUTF8AndSize(obj, &size);
-        if (PyErr_Occurred()) return false;
-        *val = PyUpb_MaybeCopyString(ptr, size, arena);
-        return true;
       }
+      const char* ptr = PyUnicode_AsUTF8AndSize(obj, &size);
+      if (PyErr_Occurred()) return false;
+      *val = PyUpb_MaybeCopyString(ptr, size, arena);
+      return true;
     }
     case kUpb_CType_Message:
       PyErr_Format(PyExc_ValueError, "Message objects may not be assigned");
