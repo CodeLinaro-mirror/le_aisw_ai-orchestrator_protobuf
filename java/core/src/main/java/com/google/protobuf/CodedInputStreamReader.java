@@ -20,10 +20,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-/** An adapter between the {@link Reader} interface and {@link CodedInputStream}. */
+/** A reader of fields from a serialized protobuf message. */
 @CheckReturnValue
 @ExperimentalApi
-final class CodedInputStreamReader implements Reader {
+final class CodedInputStreamReader {
+  public static final int READ_DONE = Integer.MAX_VALUE;
   private static final int FIXED32_MULTIPLE_MASK = FIXED32_SIZE - 1;
   private static final int FIXED64_MULTIPLE_MASK = FIXED64_SIZE - 1;
   private static final int NEXT_TAG_UNSET = 0;
@@ -44,13 +45,9 @@ final class CodedInputStreamReader implements Reader {
     this.input = Internal.checkNotNull(input, "input");
     this.input.wrapper = this;
   }
-
-  @Override
   public boolean shouldDiscardUnknownFields() {
     return input.shouldDiscardUnknownFields();
   }
-
-  @Override
   public int getFieldNumber() throws IOException {
     if (nextTag != NEXT_TAG_UNSET) {
       tag = nextTag;
@@ -59,17 +56,13 @@ final class CodedInputStreamReader implements Reader {
       tag = input.readTag();
     }
     if (tag == 0 || tag == endGroupTag) {
-      return Reader.READ_DONE;
+      return READ_DONE;
     }
     return WireFormat.getTagFieldNumber(tag);
   }
-
-  @Override
   public int getTag() {
     return tag;
   }
-
-  @Override
   public boolean skipField() throws IOException {
     if (input.isAtEnd() || tag == endGroupTag) {
       return false;
@@ -82,69 +75,48 @@ final class CodedInputStreamReader implements Reader {
       throw InvalidProtocolBufferException.invalidWireType();
     }
   }
-
-  @Override
   public double readDouble() throws IOException {
     requireWireType(WIRETYPE_FIXED64);
     return input.readDouble();
   }
-
-  @Override
   public float readFloat() throws IOException {
     requireWireType(WIRETYPE_FIXED32);
     return input.readFloat();
   }
-
-  @Override
   public long readUInt64() throws IOException {
     requireWireType(WIRETYPE_VARINT);
     return input.readUInt64();
   }
-
-  @Override
   public long readInt64() throws IOException {
     requireWireType(WIRETYPE_VARINT);
     return input.readInt64();
   }
-
-  @Override
   public int readInt32() throws IOException {
     requireWireType(WIRETYPE_VARINT);
     return input.readInt32();
   }
-
-  @Override
   public long readFixed64() throws IOException {
     requireWireType(WIRETYPE_FIXED64);
     return input.readFixed64();
   }
-
-  @Override
   public int readFixed32() throws IOException {
     requireWireType(WIRETYPE_FIXED32);
     return input.readFixed32();
   }
-
-  @Override
   public boolean readBool() throws IOException {
     requireWireType(WIRETYPE_VARINT);
     return input.readBool();
   }
-
-  @Override
   public String readString() throws IOException {
     requireWireType(WIRETYPE_LENGTH_DELIMITED);
     return input.readString();
   }
-
-  @Override
   public String readStringRequireUtf8() throws IOException {
     requireWireType(WIRETYPE_LENGTH_DELIMITED);
     return input.readStringRequireUtf8();
   }
 
   @SuppressWarnings("unchecked")
-  @Override
   public <T> T readMessage(Class<T> clazz, ExtensionRegistryLite extensionRegistry)
       throws IOException {
     requireWireType(WIRETYPE_LENGTH_DELIMITED);
@@ -153,7 +125,6 @@ final class CodedInputStreamReader implements Reader {
   }
 
   @SuppressWarnings("unchecked")
-  @Override
   public <T> T readMessageBySchemaWithCheck(
       Schema<T> schema, ExtensionRegistryLite extensionRegistry) throws IOException {
     requireWireType(WIRETYPE_LENGTH_DELIMITED);
@@ -162,7 +133,6 @@ final class CodedInputStreamReader implements Reader {
 
   @SuppressWarnings("unchecked")
   @Deprecated
-  @Override
   public <T> T readGroup(Class<T> clazz, ExtensionRegistryLite extensionRegistry)
       throws IOException {
     requireWireType(WIRETYPE_START_GROUP);
@@ -171,14 +141,11 @@ final class CodedInputStreamReader implements Reader {
   }
 
   @Deprecated
-  @Override
   public <T> T readGroupBySchemaWithCheck(Schema<T> schema, ExtensionRegistryLite extensionRegistry)
       throws IOException {
     requireWireType(WIRETYPE_START_GROUP);
     return readGroup(schema, extensionRegistry);
   }
-
-  @Override
   public <T> void mergeMessageField(
       T target, Schema<T> schema, ExtensionRegistryLite extensionRegistry) throws IOException {
     requireWireType(WIRETYPE_LENGTH_DELIMITED);
@@ -208,8 +175,6 @@ final class CodedInputStreamReader implements Reader {
     schema.makeImmutable(newInstance);
     return newInstance;
   }
-
-  @Override
   public <T> void mergeGroupField(
       T target, Schema<T> schema, ExtensionRegistryLite extensionRegistry) throws IOException {
     requireWireType(WIRETYPE_START_GROUP);
@@ -239,50 +204,34 @@ final class CodedInputStreamReader implements Reader {
     schema.makeImmutable(newInstance);
     return newInstance;
   }
-
-  @Override
   public ByteString readBytes() throws IOException {
     requireWireType(WIRETYPE_LENGTH_DELIMITED);
     return input.readBytes();
   }
-
-  @Override
   public int readUInt32() throws IOException {
     requireWireType(WIRETYPE_VARINT);
     return input.readUInt32();
   }
-
-  @Override
   public int readEnum() throws IOException {
     requireWireType(WIRETYPE_VARINT);
     return input.readEnum();
   }
-
-  @Override
   public int readSFixed32() throws IOException {
     requireWireType(WIRETYPE_FIXED32);
     return input.readSFixed32();
   }
-
-  @Override
   public long readSFixed64() throws IOException {
     requireWireType(WIRETYPE_FIXED64);
     return input.readSFixed64();
   }
-
-  @Override
   public int readSInt32() throws IOException {
     requireWireType(WIRETYPE_VARINT);
     return input.readSInt32();
   }
-
-  @Override
   public long readSInt64() throws IOException {
     requireWireType(WIRETYPE_VARINT);
     return input.readSInt64();
   }
-
-  @Override
   public void readDoubleList(List<Double> target) throws IOException {
     if (target instanceof DoubleArrayList) {
       DoubleArrayList plist = (DoubleArrayList) target;
@@ -339,8 +288,6 @@ final class CodedInputStreamReader implements Reader {
       }
     }
   }
-
-  @Override
   public void readFloatList(List<Float> target) throws IOException {
     if (target instanceof FloatArrayList) {
       FloatArrayList plist = (FloatArrayList) target;
@@ -397,8 +344,6 @@ final class CodedInputStreamReader implements Reader {
       }
     }
   }
-
-  @Override
   public void readUInt64List(List<Long> target) throws IOException {
     if (target instanceof LongArrayList) {
       LongArrayList plist = (LongArrayList) target;
@@ -455,8 +400,6 @@ final class CodedInputStreamReader implements Reader {
       }
     }
   }
-
-  @Override
   public void readInt64List(List<Long> target) throws IOException {
     if (target instanceof LongArrayList) {
       LongArrayList plist = (LongArrayList) target;
@@ -513,8 +456,6 @@ final class CodedInputStreamReader implements Reader {
       }
     }
   }
-
-  @Override
   public void readInt32List(List<Integer> target) throws IOException {
     if (target instanceof IntArrayList) {
       IntArrayList plist = (IntArrayList) target;
@@ -571,8 +512,6 @@ final class CodedInputStreamReader implements Reader {
       }
     }
   }
-
-  @Override
   public void readFixed64List(List<Long> target) throws IOException {
     if (target instanceof LongArrayList) {
       LongArrayList plist = (LongArrayList) target;
@@ -629,8 +568,6 @@ final class CodedInputStreamReader implements Reader {
       }
     }
   }
-
-  @Override
   public void readFixed32List(List<Integer> target) throws IOException {
     if (target instanceof IntArrayList) {
       IntArrayList plist = (IntArrayList) target;
@@ -687,8 +624,6 @@ final class CodedInputStreamReader implements Reader {
       }
     }
   }
-
-  @Override
   public void readBoolList(List<Boolean> target) throws IOException {
     if (target instanceof BooleanArrayList) {
       BooleanArrayList plist = (BooleanArrayList) target;
@@ -745,13 +680,9 @@ final class CodedInputStreamReader implements Reader {
       }
     }
   }
-
-  @Override
   public void readStringList(List<String> target) throws IOException {
     readStringListInternal(target, false);
   }
-
-  @Override
   public void readStringListRequireUtf8(List<String> target) throws IOException {
     readStringListInternal(target, true);
   }
@@ -792,15 +723,12 @@ final class CodedInputStreamReader implements Reader {
   }
 
   @SuppressWarnings("unchecked")
-  @Override
   public <T> void readMessageList(
       List<T> target, Class<T> targetType, ExtensionRegistryLite extensionRegistry)
       throws IOException {
     final Schema<T> schema = (Schema<T>) Protobuf.getInstance().schemaFor((Class) targetType);
     readMessageList(target, schema, extensionRegistry);
   }
-
-  @Override
   public <T> void readMessageList(
       List<T> target, Schema<T> schema, ExtensionRegistryLite extensionRegistry)
       throws IOException {
@@ -824,7 +752,6 @@ final class CodedInputStreamReader implements Reader {
 
   @SuppressWarnings("unchecked")
   @Deprecated
-  @Override
   public <T> void readGroupList(
       List<T> target, Class<T> targetType, ExtensionRegistryLite extensionRegistry)
       throws IOException {
@@ -833,7 +760,6 @@ final class CodedInputStreamReader implements Reader {
   }
 
   @Deprecated
-  @Override
   public <T> void readGroupList(
       List<T> target, Schema<T> schema, ExtensionRegistryLite extensionRegistry)
       throws IOException {
@@ -854,8 +780,6 @@ final class CodedInputStreamReader implements Reader {
       }
     }
   }
-
-  @Override
   public void readBytesList(List<ByteString> target) throws IOException {
     if (WireFormat.getTagWireType(tag) != WIRETYPE_LENGTH_DELIMITED) {
       throw InvalidProtocolBufferException.invalidWireType();
@@ -874,8 +798,6 @@ final class CodedInputStreamReader implements Reader {
       }
     }
   }
-
-  @Override
   public void readUInt32List(List<Integer> target) throws IOException {
     if (target instanceof IntArrayList) {
       IntArrayList plist = (IntArrayList) target;
@@ -932,8 +854,6 @@ final class CodedInputStreamReader implements Reader {
       }
     }
   }
-
-  @Override
   public void readEnumList(List<Integer> target) throws IOException {
     if (target instanceof IntArrayList) {
       IntArrayList plist = (IntArrayList) target;
@@ -990,8 +910,6 @@ final class CodedInputStreamReader implements Reader {
       }
     }
   }
-
-  @Override
   public void readSFixed32List(List<Integer> target) throws IOException {
     if (target instanceof IntArrayList) {
       IntArrayList plist = (IntArrayList) target;
@@ -1048,8 +966,6 @@ final class CodedInputStreamReader implements Reader {
       }
     }
   }
-
-  @Override
   public void readSFixed64List(List<Long> target) throws IOException {
     if (target instanceof LongArrayList) {
       LongArrayList plist = (LongArrayList) target;
@@ -1106,8 +1022,6 @@ final class CodedInputStreamReader implements Reader {
       }
     }
   }
-
-  @Override
   public void readSInt32List(List<Integer> target) throws IOException {
     if (target instanceof IntArrayList) {
       IntArrayList plist = (IntArrayList) target;
@@ -1164,8 +1078,6 @@ final class CodedInputStreamReader implements Reader {
       }
     }
   }
-
-  @Override
   public void readSInt64List(List<Long> target) throws IOException {
     if (target instanceof LongArrayList) {
       LongArrayList plist = (LongArrayList) target;
@@ -1231,7 +1143,6 @@ final class CodedInputStreamReader implements Reader {
   }
 
   @SuppressWarnings("unchecked")
-  @Override
   public <K, V> void readMap(
       Map<K, V> target,
       MapEntryLite.Metadata<K, V> metadata,
