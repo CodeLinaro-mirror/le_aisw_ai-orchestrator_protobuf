@@ -831,6 +831,13 @@ class alignas(8) GlobalEmptyStringConstexpr {
     using value_type = T;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
+
+    constexpr NonConstexprAllocator() = default;
+
+    // Conversion constructor.
+    template <typename U>
+    constexpr NonConstexprAllocator(NonConstexprAllocator<U>) {}
+
     T* allocate(size_t);
     void deallocate(void*, size_t);
   };
