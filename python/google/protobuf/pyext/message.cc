@@ -482,7 +482,13 @@ int InternalReleaseFieldByDescriptor(CMessage* self,
 
 PyObject* EncodeError_class;
 PyObject* DecodeError_class;
+PyObject* FrozenInstanceError_class;
 PyObject* PickleError_class;
+
+PyObject* SetFrozenError(const char* msg) {
+  PyErr_SetString(FrozenInstanceError_class, msg);
+  return nullptr;
+}
 
 // Format an error message for unexpected types.
 // Always return with an exception set.
@@ -824,7 +830,7 @@ Message* AssureWritable(CMessage* self) {
     case MESSAGE_MUTABLE:
       return const_cast<Message*>(self->message);
     case MESSAGE_FROZEN:
-      PyErr_SetString(PyExc_TypeError, "Message is immutable.");
+      SetFrozenError();
       return nullptr;
     case MESSAGE_MUTABLE_DEFAULT:
       break;
@@ -1016,7 +1022,7 @@ int CheckRepeatedFieldDeletion(CMessage* parent,
                                const FieldDescriptor* field_descriptor,
                                PyObject* slice) {
   if (parent->state == python::MESSAGE_FROZEN) {
-    PyErr_SetString(PyExc_TypeError, "Message is immutable.");
+    SetFrozenError();
     return -1;
   }
 
@@ -3239,6 +3245,8 @@ bool InitProto2MessageModule(PyObject* m) {
   }
   EncodeError_class = PyObject_GetAttrString(message_module, "EncodeError");
   DecodeError_class = PyObject_GetAttrString(message_module, "DecodeError");
+  FrozenInstanceError_class =
+      PyObject_GetAttrString(message_module, "FrozenInstanceError");
   PythonMessage_class = PyObject_GetAttrString(message_module, "Message");
   Py_DECREF(message_module);
 

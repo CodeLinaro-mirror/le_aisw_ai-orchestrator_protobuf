@@ -282,8 +282,7 @@ static PyObject* Remove(PyObject* pself, PyObject* value) {
       reinterpret_cast<RepeatedCompositeContainer*>(pself);
 
   if (self->parent->state == python::MESSAGE_FROZEN) {
-    PyErr_SetString(PyExc_TypeError, "Message is immutable.");
-    return nullptr;
+    return SetFrozenError("Container is immutable");
   }
 
   Py_ssize_t len = Length(reinterpret_cast<PyObject*>(self));
@@ -404,8 +403,7 @@ static PyObject* Sort(PyObject* pself, PyObject* args, PyObject* kwds) {
       reinterpret_cast<RepeatedCompositeContainer*>(pself);
 
   if (self->parent->state == python::MESSAGE_FROZEN) {
-    PyErr_SetString(PyExc_TypeError, "Message is immutable.");
-    return nullptr;
+    return SetFrozenError("Container is immutable");
   }
 
   // Support the old sort_function argument for backwards
@@ -454,8 +452,7 @@ static PyObject* Reverse(PyObject* pself) {
       reinterpret_cast<RepeatedCompositeContainer*>(pself);
 
   if (self->parent->state == python::MESSAGE_FROZEN) {
-    PyErr_SetString(PyExc_TypeError, "Message is immutable.");
-    return nullptr;
+    return SetFrozenError("Container is immutable");
   }
 
   // TODO: b/517235198 - Reify even for empty sequences.
@@ -499,8 +496,7 @@ static PyObject* Pop(PyObject* pself, PyObject* args) {
       reinterpret_cast<RepeatedCompositeContainer*>(pself);
 
   if (self->parent->state == python::MESSAGE_FROZEN) {
-    PyErr_SetString(PyExc_TypeError, "Message is immutable.");
-    return nullptr;
+    return SetFrozenError("Container is immutable");
   }
 
   Py_ssize_t index = -1;
