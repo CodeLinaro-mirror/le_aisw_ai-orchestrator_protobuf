@@ -94,7 +94,7 @@ class DynamicMapField final : public MapFieldBase {
   // building we need to use a different one.
   DynamicMapField(const Message* default_entry,
                   const Message* mapped_default_entry_if_message,
-                  InternalMetadataOffset offset);
+                  InternalMetadataOffset offset, Arena* arena);
   DynamicMapField(const DynamicMapField&) = delete;
   DynamicMapField& operator=(const DynamicMapField&) = delete;
   ~DynamicMapField();
@@ -147,9 +147,9 @@ static auto DefaultEntryToTypeInfo(
 
 DynamicMapField::DynamicMapField(const Message* default_entry,
                                  const Message* mapped_default_entry_if_message,
-                                 InternalMetadataOffset offset)
+                                 InternalMetadataOffset offset, Arena* arena)
     : MapFieldBase(default_entry),
-      map_(offset.TranslateForMember<offsetof(DynamicMapField, map_)>(),
+      map_(offset.TranslateForMember<offsetof(DynamicMapField, map_)>(), arena,
            DefaultEntryToTypeInfo(default_entry,
                                   mapped_default_entry_if_message)) {
   // This invariant is required by `GetMapRaw` to easily access the map
@@ -664,7 +664,7 @@ void DynamicMessage::SharedCtor(bool lock_factory) {
                           ? type_info_->factory->GetPrototype(sub)
                           : type_info_->factory->GetPrototypeNoLock(sub)
                     : nullptr,
-                FieldInternalMetadataOffset(i));
+                FieldInternalMetadataOffset(i), arena);
           } else {
             new (field_ptr)
                 RepeatedPtrField<Message>(FieldInternalMetadataOffset(i));

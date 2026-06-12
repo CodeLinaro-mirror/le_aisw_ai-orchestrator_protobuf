@@ -306,14 +306,16 @@ class PROTOBUF_EXPORT UntypedMapBase {
       TypeKind key_type, TypeKind value_type,
       const MessageLite* value_prototype_if_message);
 
-  constexpr UntypedMapBase(InternalMetadataOffset offset, TypeInfo type_info)
+  constexpr UntypedMapBase(InternalMetadataOffset offset, Arena* arena,
+                           TypeInfo type_info)
       : num_elements_(0),
         num_buckets_(internal::kGlobalEmptyTableSize),
         resolver_(offset),
         type_info_(type_info),
         table_(const_cast<NodeBase**>(internal::kGlobalEmptyTable)) {}
   explicit constexpr UntypedMapBase(TypeInfo type_info)
-      : UntypedMapBase(InternalMetadataOffset(), type_info) {}
+      : UntypedMapBase(InternalMetadataOffset(), /*arena=*/nullptr, type_info) {
+  }
 
   UntypedMapBase(const UntypedMapBase&) = delete;
   UntypedMapBase& operator=(const UntypedMapBase&) = delete;
@@ -1156,13 +1158,14 @@ class PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Map
   using hasher = absl::Hash<typename TS::ViewType>;
 
   constexpr Map() : Map(internal::InternalMetadataOffset()) {}
-  Map(const Map& other) : Map(internal::InternalMetadataOffset(), other) {}
+  Map(const Map& other)
+      : Map(internal::InternalMetadataOffset(), /*arena=*/nullptr, other) {}
 
   Map(internal::InternalVisibility, internal::InternalMetadataOffset offset)
       : Map(offset) {}
   Map(internal::InternalVisibility, internal::InternalMetadataOffset offset,
-      const Map& other)
-      : Map(offset, other) {}
+      Arena* arena, const Map& other)
+      : Map(offset, arena, other) {}
 
   Map(Map&& other) noexcept : Map(internal::InternalMetadataOffset()) {
     if (other.arena() != nullptr) {
@@ -1199,13 +1202,14 @@ class PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Map
 
  private:
   explicit constexpr Map(internal::InternalMetadataOffset offset)
-      : Base(offset, GetTypeInfo()) {
+      : Base(offset, /*arena=*/nullptr, GetTypeInfo()) {
     StaticValidityCheck();
   }
 
-  Map(internal::InternalMetadataOffset offset, const Map& other) : Map(offset) {
+  Map(internal::InternalMetadataOffset offset, Arena* arena, const Map& other)
+      : Map(offset) {
     StaticValidityCheck();
-    CopyFromImpl(arena(), other);
+    CopyFromImpl(arena, other);
   }
 
   static_assert(!std::is_const<mapped_type>::value &&

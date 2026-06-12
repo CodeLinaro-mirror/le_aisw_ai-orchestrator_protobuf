@@ -41,7 +41,11 @@ class FieldWithArena : public ContainerDestructorSkippableBase<T> {
     StaticallyVerifyLayout();
     // Construct `T` after setting `_internal_metadata_` so that `T` can safely
     // call ResolveArena().
-    new (&field_) T(BuildOffset(), std::forward<Args>(args)...);
+    if constexpr (sizeof...(Args) == 0) {
+      new (&field_) T(BuildOffset());
+    } else {
+      new (&field_) T(BuildOffset(), arena, std::forward<Args>(args)...);
+    }
   }
 
   ~FieldWithArena() {
