@@ -573,3 +573,25 @@ jobs:
         if: ${{ !matrix.continuous-only || inputs.continuous-run }}
         shell: bash
         run: sccache -s
+
+  linux-abseil-head:
+    name: Linux Abseil HEAD
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pending changes
+        uses: protocolbuffers/protobuf-ci/checkout@v5
+        with:
+          ref: ${{ inputs.safe-checkout }}
+      - name: Checkout Abseil HEAD
+        uses: actions/checkout@v4
+        with:
+          repository: abseil/abseil-cpp
+          path: abseil-cpp-head
+      - name: Run tests
+        uses: protocolbuffers/protobuf-ci/bazel-docker@v5
+        with:
+          image: us-docker.pkg.dev/protobuf-build/containers/test/linux/sanitize:8.0.1-d415763a389bb62a6f126b08c992e83f9f7dc1b4
+          credentials: ${{ secrets.GAR_SERVICE_ACCOUNT }}
+          bazel-cache: cpp_linux/abseil_head
+          bash: > 
+            bazel test //src/... --override_module=abseil-cpp=abseil-cpp-head $BAZEL_FLAGS
