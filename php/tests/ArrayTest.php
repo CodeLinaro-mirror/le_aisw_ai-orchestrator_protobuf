@@ -509,6 +509,13 @@ class ArrayTest extends TestBase
         $this->assertSame(1, count($arr));
     }
 
+    public function testOffsetNegative()
+    {
+        $this->expectException(\Throwable::class);
+        $arr = new RepeatedField(GPBType::INT32);
+        $arr[-1] = 4;
+    }
+
     public function testInsertRemoval()
     {
         $arr = new RepeatedField(GPBType::INT32);
@@ -681,5 +688,42 @@ class ArrayTest extends TestBase
 
         $arr->offsetUnset(0);
         $this->assertCount(0, $arr);
+    }
+
+    public function testIterationOutOfBoundsWithCustomErrorHandler()
+    {
+        $arr = new RepeatedField(GPBType::INT32);
+        $arr[] = 1;
+        $it = $arr->getIterator();
+        $it->next();
+
+        $triggered = false;
+        set_error_handler(function($errno, $errstr) use (&$triggered) {
+            $triggered = true;
+            $this->assertTrue(
+                $errno === E_USER_ERROR ||
+                $errno === E_WARNING ||
+                $errno === E_NOTICE
+            );
+            if ($errno === E_USER_ERROR) {
+                $this->assertStringContainsString("Element at 1 doesn't exist", $errstr);
+            } else {
+                // PHP implementation triggers E_WARNING/E_NOTICE with messages like:
+                // "Undefined array key 1" (PHP 8) or "Undefined offset: 1" (PHP 7).
+                $this->assertStringContainsString("1", $errstr);
+            }
+            // Returning true from a custom error handler bypasses the standard PHP
+            // error behavior (which would abort) and continues execution in the C extension.
+            return true;
+        });
+
+        try {
+            $val = $it->current();
+            $this->assertNull($val);
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertTrue($triggered);
     }
 }
