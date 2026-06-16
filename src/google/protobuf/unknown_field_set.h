@@ -173,16 +173,12 @@ class PROTOBUF_EXPORT UnknownFieldSet {
   // sizeof(*this) in the calculation.
   PROTOBUF_FUTURE_ADD_EARLY_NODISCARD size_t SpaceUsedExcludingSelfLong() const;
 
-  PROTOBUF_FUTURE_ADD_EARLY_NODISCARD int SpaceUsedExcludingSelf() const {
-    return internal::ToIntSize(SpaceUsedExcludingSelfLong());
-  }
+  PROTOBUF_FUTURE_ADD_EARLY_NODISCARD int SpaceUsedExcludingSelf() const;
 
   // Version of SpaceUsed() including sizeof(*this).
   PROTOBUF_FUTURE_ADD_EARLY_NODISCARD size_t SpaceUsedLong() const;
 
-  PROTOBUF_FUTURE_ADD_EARLY_NODISCARD int SpaceUsed() const {
-    return internal::ToIntSize(SpaceUsedLong());
-  }
+  PROTOBUF_FUTURE_ADD_EARLY_NODISCARD int SpaceUsed() const;
 
   // Returns the number of fields present in the UnknownFieldSet.
   PROTOBUF_FUTURE_ADD_EARLY_NODISCARD inline int field_count() const;
