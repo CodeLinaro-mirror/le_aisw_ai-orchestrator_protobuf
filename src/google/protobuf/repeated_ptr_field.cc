@@ -100,6 +100,29 @@ void RepeatedPtrFieldBase::ReserveWithArena(Arena* arena, int capacity) {
   }
 }
 
+void RepeatedPtrFieldBase::DestroyMessageLites(const ClassData* class_data) {
+  ABSL_DCHECK(NeedsDestroy());
+  ABSL_DCHECK_EQ(GetArena(), nullptr);
+
+  using H = GenericTypeHandler<MessageLite>;
+  const int n = allocated_size();
+  ABSL_DCHECK_LE(n, Capacity());
+  void** elems = elements();
+  void (*destroy)(MessageLite&) = class_data->destroy_message;
+  const size_t allocation_size = class_data->allocation_size();
+  for (int i = 0; i < n; i++) {
+    if (i + 5 < n) {
+      absl::PrefetchToLocalCacheNta(elems[i + 5]);
+    }
+    auto* ptr = cast<H>(elems[i]);
+    destroy(*ptr);
+    internal::SizedDelete(ptr, allocation_size);
+  }
+  if (!using_sso()) {
+    internal::SizedDelete(rep(), Capacity() * sizeof(void*) + kRepHeaderSize);
+  }
+}
+
 void RepeatedPtrFieldBase::DestroyProtos() {
   PROTOBUF_ALWAYS_INLINE_CALL Destroy<GenericTypeHandler<MessageLite>>();
 
