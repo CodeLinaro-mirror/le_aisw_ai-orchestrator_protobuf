@@ -48,6 +48,7 @@ const upb_Message* upb_Message_Convert(const upb_Message* src,
                                        const upb_MiniTable* src_mt,
                                        const upb_MiniTable* dst_mt,
                                        const upb_ExtensionRegistry* extreg,
+                                       int decode_options, int encode_options,
                                        upb_Arena* arena);
 
 #ifdef __cplusplus
