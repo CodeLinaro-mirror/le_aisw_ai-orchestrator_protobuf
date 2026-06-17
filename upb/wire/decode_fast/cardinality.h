@@ -436,6 +436,10 @@ bool upb_DecodeFast_Unpacked(upb_Decoder* d, const char** ptr, upb_Message* msg,
   return true;
 }
 
+// Decoding for varint sizes of len > 2.
+__attribute__((visibility("hidden"))) UPB_PRESERVE_MOST bool
+_upb_DecodeFast_DecodeSizeSlow(const char** pp, int* size);
+
 UPB_FORCEINLINE
 bool upb_DecodeFast_DecodeSize(upb_Decoder* d, const char** pp, int* size,
                                upb_DecodeFastNext* next) {
@@ -450,11 +454,11 @@ bool upb_DecodeFast_DecodeSize(upb_Decoder* d, const char** pp, int* size,
     return true;
   }
 
-  // We don't know if this is valid wire format or not, we didn't look at
-  // enough bytes to know if the varint is encoded overlong or the value
-  // is too large for the current message.  So we let the MiniTable decoder
-  // handle it.
-  return UPB_DECODEFAST_EXIT(kUpb_DecodeFastNext_FallbackToMiniTable, next);
+  if (UPB_LIKELY(_upb_DecodeFast_DecodeSizeSlow(pp, size))) {
+    return true;
+  }
+
+  return UPB_DECODEFAST_ERROR(d, kUpb_DecodeStatus_Malformed, next);
 }
 
 UPB_FORCEINLINE
