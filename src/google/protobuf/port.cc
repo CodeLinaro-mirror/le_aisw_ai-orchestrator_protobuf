@@ -16,6 +16,7 @@
 #include <string>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "absl/log/absl_log.h"
@@ -190,7 +191,7 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 GlobalEmptyString
         fixed_address_empty_string{};
 
-void HandleAddOverflow(int a, int b) {
+void HandleAddOverflow(absl::int128 a, absl::int128 b) {
   ABSL_LOG(FATAL) << "Integer overflow in CheckedAdd: " << a << " + " << b;
 }
 
