@@ -21,6 +21,23 @@ static PyObject* PyUpb_RepeatedCompositeContainer_Append(PyObject* _self,
                                                          PyObject* value);
 static PyObject* PyUpb_RepeatedScalarContainer_Append(PyObject* _self,
                                                       PyObject* value);
+static Py_ssize_t GetDefaultDTypeSize(upb_CType cpp_type) {
+  switch (cpp_type) {
+    case kUpb_CType_Bool:
+      return 1;
+    case kUpb_CType_UInt32:
+    case kUpb_CType_Int32:
+    case kUpb_CType_Enum:
+    case kUpb_CType_Float:
+      return 4;
+    case kUpb_CType_Int64:
+    case kUpb_CType_UInt64:
+    case kUpb_CType_Double:
+      return 8;
+    default:
+      return 0;
+  }
+}
 
 // Wrapper for a repeated field.
 typedef struct {
@@ -264,6 +281,40 @@ static bool PyUpb_IterInput(PyObject* value, const upb_FieldDef* field,
                             upb_Arena* arena, PyUpb_SizeCb size_cb,
                             PyUpb_ElemCb elem_cb, PyUpb_BulkCb bulk_cb,
                             void* ctx) {
+  // Detect if value is a repeated scalar container of the same field type.
+  PyUpb_ModuleState* state = PyUpb_ModuleState_MaybeGet();
+  if (state != NULL &&
+      Py_TYPE(value) == state->repeated_scalar_container_type) {
+    PyUpb_RepeatedContainer* other = (PyUpb_RepeatedContainer*)value;
+    const upb_FieldDef* other_f = PyUpb_RepeatedContainer_GetField(other);
+    if (upb_FieldDef_CType(other_f) == upb_FieldDef_CType(field)) {
+      Py_ssize_t itemsize = GetDefaultDTypeSize(upb_FieldDef_CType(field));
+      if (itemsize > 0) {
+        upb_Array* arr = PyUpb_RepeatedContainer_GetIfReified(other);
+        size_t count = arr ? upb_Array_Size(arr) : 0;
+        if (count == 0) {
+          return bulk_cb(NULL, 0, 0, ctx);
+        }
+        const void* data = upb_Array_DataPtr(arr);
+        if (upb_FieldDef_CType(field) == kUpb_CType_Enum &&
+            upb_FieldDef_EnumSubDef(other_f) !=
+                upb_FieldDef_EnumSubDef(field)) {
+          const upb_EnumDef* e = upb_FieldDef_EnumSubDef(field);
+          if (upb_EnumDef_IsClosed(e)) {
+            const int32_t* i32 = (const int32_t*)data;
+            for (Py_ssize_t i = 0; i < (Py_ssize_t)count; i++) {
+              if (!upb_EnumDef_CheckNumber(e, i32[i])) {
+                PyErr_Format(PyExc_ValueError, "invalid enumerator %d",
+                             (int)i32[i]);
+                return false;
+              }
+            }
+          }
+        }
+        return bulk_cb(data, count, itemsize, ctx);
+      }
+    }
+  }
 #if PyUpb_SUPPORT_BUFFER_VIEW
   Py_buffer view;
   if (PyObject_GetBuffer(value, &view, PyBUF_RECORDS_RO) == 0) {
@@ -316,8 +367,6 @@ static bool PyUpb_IterInput(PyObject* value, const upb_FieldDef* field,
   } else {
     PyErr_Clear();
   }
-#else
-  (void)bulk_cb;
 #endif
   PyObject* iter = NULL;
   PyObject* materialized = PySequence_Fast(value, "must assign iterable");
