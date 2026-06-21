@@ -1655,10 +1655,22 @@ template <>
              : static_cast<const Message*>(from);
 }
 template <>
+[[nodiscard]] inline Message* DynamicCastMessage(MessageLite* from) {
+  return from == nullptr || internal::GetClassData(*from)->is_lite
+             ? nullptr
+             : static_cast<Message*>(from);
+}
+template <>
 [[nodiscard]] inline const Message* DownCastMessage(const MessageLite* from) {
   ABSL_DCHECK_EQ(DynamicCastMessage<Message>(from), from)
       << "Cannot downcast " << from->GetTypeName() << " to Message";
   return static_cast<const Message*>(from);
+}
+template <>
+[[nodiscard]] inline Message* DownCastMessage(MessageLite* from) {
+  ABSL_DCHECK_EQ(DynamicCastMessage<Message>(from), from)
+      << "Cannot downcast " << from->GetTypeName() << " to Message";
+  return static_cast<Message*>(from);
 }
 
 // Specializations to handle smart pointers to `Message`. Without these,
