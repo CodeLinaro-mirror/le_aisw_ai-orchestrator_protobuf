@@ -23,6 +23,7 @@ def benchmark(
   @google_benchmark.register
   @google_benchmark.option.unit(google_benchmark.kMillisecond)
   @google_benchmark.option.arg_names(['num_bytes'])
+  @google_benchmark.option.arg(1024 * 1024 * 20)
   @google_benchmark.option.arg(1024 * 1024 * 100)
   @functools.wraps(func)
   def wrapper(state: google_benchmark.State) -> None:
@@ -30,6 +31,89 @@ def benchmark(
     state.bytes_processed = state.iterations * state.range(0)
 
   return wrapper
+
+
+@benchmark
+def bench_build_message_no_tip(state: google_benchmark.State):
+  arr = make_array(state.range(0)).view(dtype=np.int32)
+  while state:
+    msg = unittest_pb2.TestAllTypes()
+    msg.repeated_int32[:] = arr
+
+
+@benchmark
+def bench_build_message(state: google_benchmark.State):
+  arr = make_array(state.range(0)).view(dtype=np.int32)
+  while state:
+    _ = unittest_pb2.TestAllTypes(repeated_int32=arr)
+
+
+@benchmark
+def bench_build_message_nested_no_tip(state: google_benchmark.State):
+  arr = make_array(state.range(0)).view(dtype=np.int32)
+  while state:
+    msg = unittest_pb2.NestedTestAllTypes()
+    msg.payload.repeated_int32[:] = arr
+
+
+@benchmark
+def bench_build_nested_message_dict(state: google_benchmark.State):
+  arr = make_array(state.range(0)).view(dtype=np.int32)
+  while state:
+    _ = unittest_pb2.NestedTestAllTypes(payload=dict(repeated_int32=arr))
+
+
+@benchmark
+def bench_build_nested_message_int32(state: google_benchmark.State):
+  arr = make_array(state.range(0)).view(dtype=np.int32)
+  while state:
+    _ = unittest_pb2.NestedTestAllTypes(
+        payload=unittest_pb2.TestAllTypes(repeated_int32=arr)
+    )
+
+
+@benchmark
+def bench_build_nested_message_cord(state: google_benchmark.State):
+  chunk_size = state.range(0) // 1000
+  strings = ['a' * chunk_size] * 1000
+  while state:
+    _ = unittest_pb2.NestedTestAllTypes(
+        payload=unittest_pb2.TestAllTypes(repeated_cord=strings)
+    )
+
+
+@benchmark
+def bench_build_nested_message_string_piece(state: google_benchmark.State):
+  chunk_size = state.range(0) // 1000
+  strings = ['a' * chunk_size] * 1000
+  while state:
+    _ = unittest_pb2.NestedTestAllTypes(
+        payload=unittest_pb2.TestAllTypes(repeated_string_piece=strings)
+    )
+
+
+@benchmark
+def bench_build_nested_message_nested_message(state: google_benchmark.State):
+  subs = [unittest_pb2.TestAllTypes.NestedMessage(bb=123)] * (
+      state.range(0) // 8
+  )
+  while state:
+    _ = unittest_pb2.NestedTestAllTypes(
+        payload=unittest_pb2.TestAllTypes(repeated_nested_message=subs)
+    )
+
+
+@benchmark
+def bench_assign_repeated_float(state: google_benchmark.State):
+  arr = make_array(state.range(0)).view(dtype=np.float32)
+  msg = unittest_pb2.TestAllTypes()
+  msg_source = unittest_pb2.TestAllTypes()
+  msg_source.repeated_float.extend(arr)
+  while state:
+    state.pause_timing()
+    msg.Clear()
+    state.resume_timing()
+    msg.repeated_float[:] = msg_source.repeated_float
 
 
 @benchmark
@@ -60,7 +144,7 @@ def bench_assign_extend_int32(state: google_benchmark.State):
   msg = unittest_pb2.TestAllTypes()
   msg.repeated_int32[:] = arr
   while state:
-    msg.repeated_int32[len(arr):] = arr
+    msg.repeated_int32[len(arr) :] = arr
     state.pause_timing()
     msg.repeated_int32[:] = arr
     state.resume_timing()
