@@ -505,6 +505,66 @@ public class CodedInputStreamTest {
   }
 
   @Test
+  public void testSkipRawBytesSizeLimit() throws Exception {
+    InputStream input =
+        new InputStream() {
+          private long remaining = 5L * Integer.MAX_VALUE; // 10GB
+
+          @Override
+          public int read() throws IOException {
+            if (remaining <= 0) {
+              return -1;
+            }
+            remaining--;
+            return 0;
+          }
+
+          @Override
+          public int read(byte[] b, int off, int len) throws IOException {
+            if (remaining <= 0) {
+              return -1;
+            }
+            int toRead = (int) Math.min(len, remaining);
+            Arrays.fill(b, off, off + toRead, (byte) 0);
+            remaining -= toRead;
+            return toRead;
+          }
+
+          @Override
+          public long skip(long n) throws IOException {
+            long toSkip = Math.min(n, remaining);
+            remaining -= toSkip;
+            return toSkip;
+          }
+
+          @Override
+          public int available() {
+            return remaining > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) remaining;
+          }
+        };
+
+    CodedInputStream stream = CodedInputStream.newInstance(input);
+    stream.setSizeLimit(100);
+
+    // Skip 50 bytes (should succeed)
+    stream.skipRawBytes(50);
+
+    // Attempting to skip beyond the size limit should throw sizeLimitExceeded.
+    // We try to skip 100 bytes more (total 150, exceeds sizeLimit 100)
+    assertThrows(InvalidProtocolBufferException.class, () -> stream.skipRawBytes(100));
+
+    // Also try to skip a huge amount that would overflow the old naive check.
+    // In old code, this would succeed and allow further reads.
+    CodedInputStream stream2 = CodedInputStream.newInstance(input);
+    stream2.setSizeLimit(Integer.MAX_VALUE);
+    stream2.skipRawBytes(Integer.MAX_VALUE - 50); // should succeed
+
+    // This second skip will overflow A + size in buggy code, but in fixed code it should throw.
+    assertThrows(
+        InvalidProtocolBufferException.class, () -> stream2.skipRawBytes(Integer.MAX_VALUE));
+  }
+
+  @Test
   public void testStreamRawBytesWholeResult() throws Exception {
     // Allocate and initialize a 1MB blob.
     int blobSize = 1 << 20;

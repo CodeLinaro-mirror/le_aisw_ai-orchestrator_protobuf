@@ -2291,16 +2291,15 @@ public abstract class CodedInputStream {
       if (byteLimit < 0) {
         throw InvalidProtocolBufferException.negativeSize();
       }
-      byteLimit += totalBytesRetired + pos;
-      if (byteLimit < 0) {
-        // Check for for integer overflow in byteLimit
+      int rawPos = totalBytesRetired + pos;
+      if (byteLimit > Integer.MAX_VALUE - rawPos) {
         throw InvalidProtocolBufferException.sizeLimitExceeded();
       }
-      final int oldLimit = currentLimit;
-      if (byteLimit > oldLimit) {
+      if (isBeyondLimit(rawPos, byteLimit, currentLimit)) {
         throw InvalidProtocolBufferException.truncatedMessage();
       }
-      currentLimit = byteLimit;
+      final int oldLimit = currentLimit;
+      currentLimit = rawPos + byteLimit;
 
       recomputeBufferSizeAfterLimit();
 
@@ -2388,12 +2387,13 @@ public abstract class CodedInputStream {
       // Check whether the size of total message needs to read is bigger than the size limit.
       // We shouldn't throw an exception here as isAtEnd() function needs to get this function's
       // return as the result.
-      if (n > sizeLimit - totalBytesRetired - pos) {
+      int rawPos = totalBytesRetired + pos;
+      if (isBeyondLimit(rawPos, n, sizeLimit)) {
         return false;
       }
 
       // Shouldn't throw the exception here either.
-      if (totalBytesRetired + pos + n > currentLimit) {
+      if (isBeyondLimit(rawPos, n, currentLimit)) {
         // Oops, we hit a limit.
         return false;
       }
@@ -2547,15 +2547,17 @@ public abstract class CodedInputStream {
       }
 
       // Integer-overflow-conscious check that the message size so far has not exceeded sizeLimit.
-      int currentMessageSize = totalBytesRetired + pos + size;
-      if (currentMessageSize - sizeLimit > 0) {
+      int rawPos = totalBytesRetired + pos;
+      if (isBeyondLimit(rawPos, size, sizeLimit)) {
         throw InvalidProtocolBufferException.sizeLimitExceeded();
       }
 
       // Verify that the message size so far has not exceeded currentLimit.
-      if (currentMessageSize > currentLimit) {
+      if (isBeyondLimit(rawPos, size, currentLimit)) {
         // Read to the end of the stream anyway.
-        skipRawBytes(currentLimit - totalBytesRetired - pos);
+        if (currentLimit >= rawPos) {
+          skipRawBytes(currentLimit - rawPos);
+        }
         throw InvalidProtocolBufferException.truncatedMessage();
       }
 
@@ -2690,9 +2692,16 @@ public abstract class CodedInputStream {
         throw InvalidProtocolBufferException.negativeSize();
       }
 
-      if (totalBytesRetired + pos + size > currentLimit) {
+      int rawPos = totalBytesRetired + pos;
+      if (isBeyondLimit(rawPos, size, sizeLimit)) {
+        throw InvalidProtocolBufferException.sizeLimitExceeded();
+      }
+
+      if (isBeyondLimit(rawPos, size, currentLimit)) {
         // Read to the end of the stream anyway.
-        skipRawBytes(currentLimit - totalBytesRetired - pos);
+        if (currentLimit >= rawPos) {
+          skipRawBytes(currentLimit - rawPos);
+        }
         // Then fail.
         throw InvalidProtocolBufferException.truncatedMessage();
       }
@@ -2745,6 +2754,16 @@ public abstract class CodedInputStream {
 
         pos = size - tempPos;
       }
+    }
+
+    /**
+     * Helper to perform an integer-overflow-conscious check that {@code currentOffset + bytesToAdd}
+     * does not exceed {@code limit}.
+     *
+     * <p>Assumes that {@code currentOffset >= 0}, {@code bytesToAdd >= 0}, and {@code limit >= 0}.
+     */
+    private static boolean isBeyondLimit(int currentOffset, int bytesToAdd, int limit) {
+      return limit < currentOffset || bytesToAdd > limit - currentOffset;
     }
   }
 }
