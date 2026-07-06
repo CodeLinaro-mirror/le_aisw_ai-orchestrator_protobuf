@@ -93,7 +93,16 @@ public abstract class GeneratedMessageLite<
   @Override
   @SuppressWarnings("unchecked") // Guaranteed by runtime.
   public final Parser<MessageType> getParserForType() {
-    return (Parser<MessageType>) dynamicMethod(MethodToInvoke.GET_PARSER, null, null);
+    Class<?> clazz = getClass();
+    Parser<?> parser = parserMap.get(clazz);
+    if (parser == null) {
+      parser = new DefaultInstanceBasedParser<>(getDefaultInstanceForType());
+      Parser<?> existing = parserMap.putIfAbsent(clazz, parser);
+      if (existing != null) {
+        parser = existing;
+      }
+    }
+    return (Parser<MessageType>) parser;
   }
 
   @Override
@@ -360,6 +369,8 @@ public abstract class GeneratedMessageLite<
 
   private static final Map<Class<?>, GeneratedMessageLite<?, ?>> defaultInstanceMap =
       new ConcurrentHashMap<>();
+
+  private static final Map<Class<?>, Parser<?>> parserMap = new ConcurrentHashMap<>();
 
   @SuppressWarnings("unchecked")
   static <T extends GeneratedMessageLite<?, ?>> T getDefaultInstance(Class<T> clazz) {
