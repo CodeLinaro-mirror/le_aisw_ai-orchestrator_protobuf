@@ -267,7 +267,7 @@ uint32_t FieldFlags(const FieldDescriptor* field) {
       !field->is_extension() &&                      //
       field->cpp_type() == field->CPPTYPE_STRING &&  //
       field->cpp_string_type() == FieldDescriptor::CppStringType::kView) {
-    return internal::kMicroStringMask;
+    return internal::kMicroStringOffsetTag;
   }
   return 0;
 }
