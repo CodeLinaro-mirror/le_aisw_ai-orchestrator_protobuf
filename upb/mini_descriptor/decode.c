@@ -516,6 +516,9 @@ static const char* upb_MtDecoder_Parse(upb_MtDecoder* d, const char* ptr,
       ptr = upb_MdDecoder_DecodeBase92Varint(&d->base, ptr, ch,
                                              kUpb_EncodedValue_MinSkip,
                                              kUpb_EncodedValue_MaxSkip, &skip);
+      if (skip == 0) {
+        upb_MdDecoder_ErrorJmp(&d->base, "Invalid skip value: 0");
+      }
       last_field_number += skip;
       last_field_number--;  // Next field seen will increment.
     } else {
