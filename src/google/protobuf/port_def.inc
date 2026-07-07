@@ -245,6 +245,10 @@
 #define PROTOBUF_DECLSPEC_EMPTY_BASES
 #endif
 
+#if __cpp_concepts >= 201907L
+#define PROTOBUF_HAVE_CPP_CONCEPTS 1
+#endif
+
 #ifdef PROTOBUF_CC
 #error PROTOBUF_CC was previously defined
 #endif
