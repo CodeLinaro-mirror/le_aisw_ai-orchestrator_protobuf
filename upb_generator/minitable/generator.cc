@@ -311,13 +311,8 @@ void RegisterExtensions(Output& output, absl::string_view unique_name) {
   output("UPB_LINKARR_DECLARE(upb_AllExts, const upb_MiniTableExtension*);\n");
   output("UPB_CONSTRUCTOR(upb_GeneratedRegistry_Constructor, $0) {\n",
          unique_name);
-  // TODO Although we define this function as weak and only one
-  // copy will ever exist in any binary, every instance will get registered as a
-  // separate constructor call.  To avoid duplicate registrations, we use a
-  // static variable to ensure that the function is only executed once.
-  output("  static bool finished = false;\n");
-  output("  if (finished) return;\n");
-  output("  finished = true;\n");
+  // The constructor is guaranteed to run exactly once per binary/shared library
+  // due to the COMDAT deduplication in UPB_CONSTRUCTOR.
   output("  static UPB_PRIVATE(upb_GeneratedExtensionListEntry) entry = {\n");
   output("    UPB_LINKARR_START(upb_AllExts),\n");
   output("    UPB_LINKARR_STOP(upb_AllExts),\n");
