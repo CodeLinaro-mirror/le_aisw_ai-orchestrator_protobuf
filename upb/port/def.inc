@@ -693,42 +693,44 @@ Error, UINTPTR_MAX is undefined
  * entry in a COMDAT group (using inline assembly) to force the linker to
  * deduplicate the pointer to exactly one instance.
  */
-#define UPB_CONSTRUCTOR(name, unique_name)                                       \
-  _UPB_CONSTRUCTOR_PLACEHOLDER(unique_name)                                      \
-  __attribute__((weak, visibility("hidden"))) void UPB_PRIVATE(name)(void);      \
-  __asm__(                                                                     \
-      ".pushsection .init_array,\"awG\",%init_array," _UPB_STRINGIFY(UPB_PRIVATE(name)) ",comdat\n" \
-      ".dc.a " _UPB_STRINGIFY(UPB_PRIVATE(name)) "\n"                          \
-      ".popsection\n"                                                          \
-  ); \
-  __attribute__((weak, visibility("hidden"))) void UPB_PRIVATE(name)(void)
+#define UPB_CONSTRUCTOR_START(name, unique_name)                             \
+  _UPB_CONSTRUCTOR_PLACEHOLDER(unique_name)                                  \
+  __attribute__((weak, visibility("hidden"))) void UPB_PRIVATE(name)(void) { \
+    __asm__(                                                                 \
+        ".pushsection .init_array,\"awG\",%%init_array, %c0, comdat\n"       \
+        ".dc.a %c0\n"                                                        \
+        ".popsection\n"                                                      \
+        :                                                                    \
+        : "i"(UPB_PRIVATE(name)));
 #elif defined(__wasm__) || defined(__MACH__)
-#define UPB_CONSTRUCTOR(name, unique_name)                                   \
+#define UPB_CONSTRUCTOR_START(name, unique_name)                             \
   _UPB_CONSTRUCTOR_PLACEHOLDER(unique_name)                                  \
   __attribute__((weak, visibility("hidden"), constructor)) void UPB_PRIVATE( \
-      name)(void)
+      name)(void) {
 #elif defined(_MSC_VER)
-  /*
-   * See: https://stackoverflow.com/questions/1113409
-   *
-   * The /include pragma suggested in the link above doesn't work in our case
-   * because it requires globally unique names. We need a different solution
-   * to prevent optimizers from removing the constructor. Our solution is to
-   * create a dummy exported weak symbol that prevent this stripping.
-   */
+/*
+ * See: https://stackoverflow.com/questions/1113409
+ *
+ * The /include pragma suggested in the link above doesn't work in our case
+ * because it requires globally unique names. We need a different solution
+ * to prevent optimizers from removing the constructor. Our solution is to
+ * create a dummy exported weak symbol that prevent this stripping.
+ */
 #pragma section(".CRT$XCT", read)
-#define UPB_CONSTRUCTOR(name, unique_name)                                   \
+#define UPB_CONSTRUCTOR_START(name, unique_name)                             \
   static void __cdecl UPB_PRIVATE(name)(void);                               \
   __declspec(allocate(".CRT$XCT"), selectany) void(                          \
       __cdecl * UPB_PRIVATE(name##_))(void) = UPB_PRIVATE(name);             \
   __declspec(selectany, dllexport) void* UPB_PRIVATE(name##_force_linkage) = \
       &UPB_PRIVATE(name##_);                                                 \
-  static void __cdecl UPB_PRIVATE(name)(void)
-
+  static void __cdecl UPB_PRIVATE(name)(void) {
 #else
-  // No constructor support, nothing we can do except not break builds.
-#define UPB_CONSTRUCTOR(name, unique_name) static void UPB_PRIVATE(name)(void)
+// No constructor support, nothing we can do except not break builds.
+#define UPB_CONSTRUCTOR_START(name, unique_name) \
+  static void UPB_PRIVATE(name)(void) {
 #endif
+
+#define UPB_CONSTRUCTOR_END() }
 
 //
 // Weak alias platform support. Theoretically this should be possible to do with
@@ -765,9 +767,9 @@ Error, UINTPTR_MAX is undefined
 
 #elif defined(__ELF__) || defined(__wasm__)
 
-  // On ELF, weak aliases work properly, so we can have all weak MiniTables
-  // point to the same empty singleton MiniTable. This reduces code size if many
-  // MiniTables are tree shaken.
+// On ELF, weak aliases work properly, so we can have all weak MiniTables
+// point to the same empty singleton MiniTable. This reduces code size if many
+// MiniTables are tree shaken.
 #define UPB_WEAK_SINGLETON_PLACEHOLDER_MINITABLE()               \
   __attribute__((weak))                                          \
   const upb_MiniTable kUpb_WeakSingletonPlaceholderMiniTable = { \
