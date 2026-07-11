@@ -57,6 +57,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Before;
 import org.junit.Test;
@@ -3175,5 +3176,34 @@ public class LiteTest {
     TestOneofWithMultipleVariants int2 =
         TestOneofWithMultipleVariants.newBuilder().setIntegerValue(2).build();
     assertThat(int1).isNotEqualTo(int2);
+  }
+
+  @Test
+  public void testLazyParserRegistration() throws Exception {
+    // Force class initialization to trigger registration
+    @SuppressWarnings({"CheckReturnValue", "IgnoredPureGetter"})
+    Object unused = TestAllTypesLite.getDefaultInstance();
+
+    Class<TestAllTypesLite> clazz = TestAllTypesLite.class;
+
+    // Get the map via reflection
+    Field mapField = GeneratedMessageLite.class.getDeclaredField("parserOrInstanceMap");
+    mapField.setAccessible(true);
+    Map<?, ?> map = (Map<?, ?>) mapField.get(null);
+
+    Object before = map.get(clazz);
+    assertThat(before).isNotNull();
+    // It should be the default instance, not the parser
+    assertThat(before).isInstanceOf(GeneratedMessageLite.class);
+    assertThat(before).isNotInstanceOf(Parser.class);
+
+    // Now trigger parser creation
+    Parser<TestAllTypesLite> parser = GeneratedMessageLite.getParserForClass(clazz);
+    assertThat(parser).isNotNull();
+
+    Object after = map.get(clazz);
+    // Now it should be the parser
+    assertThat(after).isInstanceOf(Parser.class);
+    assertThat(after).isSameInstanceAs(parser);
   }
 }
