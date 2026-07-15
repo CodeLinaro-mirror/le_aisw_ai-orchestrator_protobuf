@@ -704,14 +704,21 @@ void RepeatedImmutableEnumFieldGenerator::GenerateMembers(
 
 void RepeatedImmutableEnumFieldGenerator::GenerateBuilderMembers(
     io::Printer* printer) const {
-  printer->Print(variables_,
-                 "private $field_list_type$ $name$_ = $empty_list$;\n"
-                 "private void ensure$capitalized_name$IsMutable() {\n"
-                 "  if (!$name$_.isModifiable()) {\n"
-                 "    $name$_ = makeMutableCopy($name$_);\n"
-                 "  }\n"
-                 "  $set_has_field_bit_builder$\n"
-                 "}\n");
+  printer->Print(
+      variables_,
+      "private $field_list_type$ $name$_ = $empty_list$;\n"
+      "private void ensure$capitalized_name$IsMutable() {\n"
+      "  if (!$name$_.isModifiable()) {\n"
+      "    $name$_ = makeMutableCopy($name$_);\n"
+      "  }\n"
+      "  $set_has_field_bit_builder$\n"
+      "}\n"
+      "private void ensure$capitalized_name$IsMutable(int capacity) {\n"
+      "  if (!$name$_.isModifiable()) {\n"
+      "    $name$_ = makeMutableCopy($name$_, capacity);\n"
+      "  }\n"
+      "  $set_has_field_bit_builder$\n"
+      "}\n");
 
   WriteFieldAccessorDocComment(printer, descriptor_, LIST_GETTER,
                                context_->options());
@@ -932,7 +939,8 @@ void RepeatedImmutableEnumFieldGenerator::GenerateBuilderParsingCodeFromPacked(
     printer->Print(variables_,
                    "int length = input.readRawVarint32();\n"
                    "int limit = input.pushLimit(length);\n"
-                   "ensure$capitalized_name$IsMutable();\n"
+                   "int count = input.countPackedVarints(length);\n"
+                   "ensure$capitalized_name$IsMutable(count);\n"
                    "while (input.getBytesUntilLimit() > 0) {\n"
                    "  $name$_.addInt(input.readEnum());\n"
                    "}\n"
@@ -941,7 +949,8 @@ void RepeatedImmutableEnumFieldGenerator::GenerateBuilderParsingCodeFromPacked(
     printer->Print(variables_,
                    "int length = input.readRawVarint32();\n"
                    "int limit = input.pushLimit(length);\n"
-                   "ensure$capitalized_name$IsMutable();\n"
+                   "int count = input.countPackedVarints(length);\n"
+                   "ensure$capitalized_name$IsMutable(count);\n"
                    "while (input.getBytesUntilLimit() > 0) {\n"
                    "  int tmpRaw = input.readEnum();\n"
                    "  $type$ tmpValue =\n"

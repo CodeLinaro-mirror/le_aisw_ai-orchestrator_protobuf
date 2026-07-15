@@ -13,6 +13,7 @@ import static com.google.protobuf.Internal.checkNotNull;
 import static com.google.protobuf.WireFormat.FIXED32_SIZE;
 import static com.google.protobuf.WireFormat.FIXED64_SIZE;
 import static com.google.protobuf.WireFormat.MAX_VARINT_SIZE;
+import static java.lang.Math.min;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.ByteArrayOutputStream;
@@ -641,6 +642,26 @@ public abstract class CodedInputStream {
    * this value to zero.
    */
   public abstract int getTotalBytesRead();
+
+  /**
+   * Scans ahead the next {@code length} bytes and returns the exact number of varints that can be
+   * parsed. This can be used to perfectly size collections when parsing packed repeated fields. By
+   * default, it returns a heuristic based upper-bound.
+   *
+   * <p>Precondition: this method assumes that the next {@code length} bytes represent a valid
+   * packed varints field.
+   *
+   * @param length The number of bytes in the packed payload.
+   * @return The number of elements expected.
+   */
+  public int countPackedVarints(int length) {
+    if (length < 0) {
+      return 0;
+    }
+    // Heuristic: If we don't know (e.g. streaming case), we assume an average size.
+    // Each varint is at least 1 byte, so the upper bound is `length`.
+    return min(length, 4096);
+  }
 
   /**
    * Read one byte from the input.
@@ -1546,6 +1567,22 @@ public abstract class CodedInputStream {
     @Override
     public int getTotalBytesRead() {
       return pos - startPos;
+    }
+
+    @Override
+    public int countPackedVarints(int length) {
+      if (length < 0 || length > limit - pos) {
+        return 0;
+      }
+      int count = 0;
+
+      // Counts of terminating bytes to determine how many varints are in the packed field.
+      for (int i = 0; i < length; i++) {
+        if (buffer[pos + i] >= 0) {
+          count++;
+        }
+      }
+      return count;
     }
 
     @Override

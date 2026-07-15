@@ -725,16 +725,14 @@ void RepeatedImmutablePrimitiveFieldGenerator::GenerateBuilderMembers(
                  "  }\n"
                  "  $set_has_field_bit_builder$\n"
                  "}\n");
-  if (FixedSize(GetType(descriptor_)) != -1) {
-    printer->Print(
-        variables_,
-        "private void ensure$capitalized_name$IsMutable(int capacity) {\n"
-        "  if (!$name$_.isModifiable()) {\n"
-        "    $name$_ = makeMutableCopy($name$_, capacity);\n"
-        "  }\n"
-        "  $set_has_field_bit_builder$\n"
-        "}\n");
-  }
+  printer->Print(
+      variables_,
+      "private void ensure$capitalized_name$IsMutable(int capacity) {\n"
+      "  if (!$name$_.isModifiable()) {\n"
+      "    $name$_ = makeMutableCopy($name$_, capacity);\n"
+      "  }\n"
+      "  $set_has_field_bit_builder$\n"
+      "}\n");
 
   // Note:  We return an unmodifiable list because otherwise the caller
   //   could hold on to the returned list and modify it after the message
@@ -894,7 +892,8 @@ void RepeatedImmutablePrimitiveFieldGenerator::
     printer->Print(variables_,
                    "int length = input.readRawVarint32();\n"
                    "int limit = input.pushLimit(length);\n"
-                   "ensure$capitalized_name$IsMutable();\n"
+                   "int count = input.countPackedVarints(length);\n"
+                   "ensure$capitalized_name$IsMutable(count);\n"
                    "while (input.getBytesUntilLimit() > 0) {\n"
                    "  $repeated_add$(input.read$capitalized_type$());\n"
                    "}\n"
