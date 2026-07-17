@@ -337,6 +337,11 @@ std::string ImmutableEnumFieldGenerator::GetBoxedType() const {
   return name_resolver_->GetImmutableClassName(descriptor_->enum_type());
 }
 
+const OneofGeneratorInfo* ImmutableEnumFieldGenerator::GetOneofGeneratorInfo()
+    const {
+  return context_->GetOneofGeneratorInfo(descriptor_->containing_oneof());
+}
+
 // ===================================================================
 
 ImmutableEnumOneofFieldGenerator::ImmutableEnumOneofFieldGenerator(
@@ -418,9 +423,11 @@ void ImmutableEnumOneofFieldGenerator::GenerateBuilderMembers(
                                           /* builder */ true);
     printer->Print(variables_,
                    "$deprecation$public Builder "
-                   "${$set$capitalized_name$Value$}$(int value) {\n"
-                   "  $set_oneof_case_message$;\n"
-                   "  $oneof_name$_ = value;\n"
+                   "${$set$capitalized_name$Value$}$(int value) {\n");
+    printer->Indent();
+    WriteSetOneof(printer, variables_, GetOneofGeneratorInfo(), "value");
+    printer->Outdent();
+    printer->Print(variables_,
                    "  onChanged();\n"
                    "  return this;\n"
                    "}\n");
@@ -446,9 +453,12 @@ void ImmutableEnumOneofFieldGenerator::GenerateBuilderMembers(
   printer->Print(variables_,
                  "$deprecation$public Builder "
                  "${$set$capitalized_name$$}$($type$ value) {\n"
-                 "  $null_check$\n"
-                 "  $set_oneof_case_message$;\n"
-                 "  $oneof_name$_ = value.getNumber();\n"
+                 "  $null_check$\n");
+  printer->Indent();
+  WriteSetOneof(printer, variables_, GetOneofGeneratorInfo(),
+                "value.getNumber()");
+  printer->Outdent();
+  printer->Print(variables_,
                  "  onChanged();\n"
                  "  return this;\n"
                  "}\n");
@@ -462,12 +472,15 @@ void ImmutableEnumOneofFieldGenerator::GenerateBuilderMembers(
       "$deprecation$public Builder ${$clear$capitalized_name$$}$() {\n"
       "  if ($has_oneof_case_message$) {\n"
       "    $clear_oneof_case_message$;\n"
+      "    $clear_has_field_bit_builder$\n"
       "    $oneof_name$_ = null;\n"
       "    onChanged();\n"
       "  }\n"
       "  return this;\n"
       "}\n");
   printer->Annotate("{", "}", descriptor_, Semantic::kSet);
+
+  GenerateBuilderParserMethod(printer);
 }
 
 void ImmutableEnumOneofFieldGenerator::GenerateBuilderClearCode(
@@ -494,11 +507,22 @@ void ImmutableEnumOneofFieldGenerator::GenerateMergingCode(
 
 void ImmutableEnumOneofFieldGenerator::GenerateBuilderParsingCode(
     io::Printer* printer) const {
+  printer->Print(variables_,
+                 "parse$capitalized_name$(input, extensionRegistry);\n");
+}
+
+void ImmutableEnumOneofFieldGenerator::GenerateBuilderParserMethod(
+    io::Printer* printer) const {
+  printer->Print(
+      variables_,
+      "private void parse$capitalized_name$(\n"
+      "    com.google.protobuf.CodedInputStream input,\n"
+      "    com.google.protobuf.ExtensionRegistryLite extensionRegistry)\n"
+      "    throws java.io.IOException {\n");
+  printer->Indent();
   if (SupportUnknownEnumValue(descriptor_)) {
-    printer->Print(variables_,
-                   "int rawValue = input.readEnum();\n"
-                   "$set_oneof_case_message$;\n"
-                   "$oneof_name$_ = rawValue;\n");
+    printer->Print(variables_, "int rawValue = input.readEnum();\n");
+    WriteSetOneof(printer, variables_, GetOneofGeneratorInfo(), "rawValue");
   } else {
     printer->Print(variables_,
                    "int rawValue = input.readEnum();\n"
@@ -506,11 +530,14 @@ void ImmutableEnumOneofFieldGenerator::GenerateBuilderParsingCode(
                    "    $type$.forNumber(rawValue);\n"
                    "if (value == null) {\n"
                    "  mergeUnknownVarintField($number$, rawValue);\n"
-                   "} else {\n"
-                   "  $set_oneof_case_message$;\n"
-                   "  $oneof_name$_ = rawValue;\n"
-                   "}\n");
+                   "} else {\n");
+    printer->Indent();
+    WriteSetOneof(printer, variables_, GetOneofGeneratorInfo(), "rawValue");
+    printer->Outdent();
+    printer->Print(variables_, "}\n");
   }
+  printer->Outdent();
+  printer->Print("}\n");
 }
 
 void ImmutableEnumOneofFieldGenerator::GenerateSerializationCode(

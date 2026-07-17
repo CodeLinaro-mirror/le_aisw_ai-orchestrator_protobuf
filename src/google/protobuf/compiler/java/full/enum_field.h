@@ -25,6 +25,7 @@ namespace compiler {
 namespace java {
 class Context;            // context.h
 class ClassNameResolver;  // name_resolver.h
+struct OneofGeneratorInfo;
 }  // namespace java
 }  // namespace compiler
 }  // namespace protobuf
@@ -65,6 +66,7 @@ class ImmutableEnumFieldGenerator : public ImmutableFieldGenerator {
   std::string GetBoxedType() const override;
 
  protected:
+  const OneofGeneratorInfo* GetOneofGeneratorInfo() const;
 };
 
 class ImmutableEnumOneofFieldGenerator : public ImmutableEnumFieldGenerator {
@@ -87,6 +89,9 @@ class ImmutableEnumOneofFieldGenerator : public ImmutableEnumFieldGenerator {
   void GenerateSerializedSizeCode(io::Printer* printer) const override;
   void GenerateEqualsCode(io::Printer* printer) const override;
   void GenerateHashCode(io::Printer* printer) const override;
+
+ private:
+  void GenerateBuilderParserMethod(io::Printer* printer) const;
 };
 
 class RepeatedImmutableEnumFieldGenerator : public ImmutableEnumFieldGenerator {
