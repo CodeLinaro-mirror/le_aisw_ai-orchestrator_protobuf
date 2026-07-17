@@ -313,6 +313,72 @@ std::string GetFieldRep(const DefPoolPair& pools, upb::FieldDefPtr field) {
 }
 
 void GenerateExtensionInHeader(Context& c, upb::FieldDefPtr ext) {
+  if (c.options().bootstrap_stage == 0) {
+    c.Emit(
+        {
+            {"ident_base", ExtensionIdentBase(ext)},
+            {"name", ext.name()},
+            {"ctype", MessageType(ext.containing_type())},
+        },
+        R"cc(
+          // In stage0 bootstrapping, extensions are not present.
+          UPB_INLINE bool $ident_base$_has_$name$(const struct $ctype$* msg) {
+            (void)msg;
+            return false;
+          }
+
+          UPB_INLINE void $ident_base$_clear_$name$(struct $ctype$* msg) { (void)msg; }
+        )cc");
+
+    if (ext.IsSequence()) {
+      // Repeated extensions are accessed via generic upb_Array and
+      // upb_Message_GetExtension APIs.
+    } else {
+      c.Emit(
+          {
+              {"ctype_const", CTypeConst(ext)},
+              {"ident_base", ExtensionIdentBase(ext)},
+              {"name", ext.name()},
+              {"ctype", MessageType(ext.containing_type())},
+              {"default", FieldDefault(ext)},
+          },
+          R"cc(
+            UPB_INLINE $ctype_const$
+            $ident_base$_$name$(const struct $ctype$* msg) {
+              (void)msg;
+              return $default$;
+            }
+
+            UPB_INLINE void $ident_base$_set_$name$(struct $ctype$* msg,
+                                                    $ctype_const$ val,
+                                                    upb_Arena* arena) {
+              (void)msg;
+              (void)val;
+              (void)arena;
+            }
+          )cc");
+
+      if (ext.IsSubMessage()) {
+        c.Emit(
+            {
+                {"sub_ctype", MessageType(ext.message_type())},
+                {"ident_base", ExtensionIdentBase(ext)},
+                {"name", ext.name()},
+                {"ctype", MessageType(ext.containing_type())},
+            },
+            R"cc(
+              UPB_INLINE struct $sub_ctype$* $ident_base$_mutable_$name$(
+                  struct $ctype$* msg, upb_Arena* arena) {
+                (void)msg;
+                (void)arena;
+                return NULL;
+              }
+            )cc");
+      }
+    }
+    return;
+  }
+
   c.Emit(
       {
           {"ident_base", ExtensionIdentBase(ext)},
@@ -331,7 +397,8 @@ void GenerateExtensionInHeader(Context& c, upb::FieldDefPtr ext) {
       )cc");
 
   if (ext.IsSequence()) {
-    // TODO: We need generated accessors for repeated extensions.
+    // Repeated extensions are accessed via generic upb_Array and
+    // upb_Message_GetExtension APIs.
   } else {
     c.Emit(
         {

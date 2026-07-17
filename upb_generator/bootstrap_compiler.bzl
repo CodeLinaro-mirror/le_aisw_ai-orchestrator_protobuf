@@ -3,6 +3,10 @@
 load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 load("@rules_cc//cc:defs.bzl", "cc_library")
 load(
+    "//upb/bazel:copts.bzl",
+    "UPB_DEFAULT_COPTS",
+)
+load(
     "//upb/bazel:upb_minitable_proto_library.bzl",
     "upb_minitable_proto_library",
 )
@@ -14,6 +18,11 @@ load(
     "//upb/cmake:build_defs.bzl",
     "staleness_test",
 )
+
+def _cc_library_with_default_copts(**kwargs):
+    cc_kwargs = dict(kwargs)
+    cc_kwargs["copts"] = UPB_DEFAULT_COPTS + cc_kwargs.get("copts", [])
+    cc_library(**cc_kwargs)
 
 _stages = ["_stage0", "_stage1", ""]
 _protoc = "//src/google/protobuf/compiler/release:protoc_minimal"
@@ -60,7 +69,7 @@ def bootstrap_cc_library(name, visibility = [], deps = [], bootstrap_deps = [], 
           upb_proto_library().
     """
     for stage in _stages:
-        cc_library(
+        _cc_library_with_default_copts(
             name = name + stage,
             deps = deps + [dep + stage for dep in bootstrap_deps],
             visibility = _stage_visibility(stage, visibility),
@@ -125,7 +134,10 @@ def _stage0_proto_staleness_test(name, src_files, src_rules, strip_prefix):
         name = name + "_stage0_staleness_test",
         outs = [f.replace("third_party", "3rd_party") for f in _generated_hdrs_and_srcs(src_files, "stage0", "upb")],
         generated_pattern = "bootstrap_generated_sources/%s",
-        target_files = native.glob(["stage0/**"]),
+        target_files = [
+            f.replace("third_party", "3rd_party")
+            for f in _generated_hdrs_and_srcs(src_files, "stage0", "upb")
+        ],
         # To avoid skew problems for descriptor.proto/plugin.proto between
         # GitHub repos.  It's not critical that the checked-in protos are up to
         # date for every change, they just needs to be complete enough to have
@@ -217,7 +229,7 @@ def bootstrap_upb_proto_library(
     _stage0_proto_staleness_test(name, src_files, src_rules, strip_prefix)
 
     # stage0 uses checked-in protos, and has no MiniTable.
-    cc_library(
+    _cc_library_with_default_copts(
         name = name + "_stage0",
         srcs = _generated_hdrs_and_srcs(src_files, "stage0", "upb"),
         hdrs = [bootstrap_hdr],
@@ -233,7 +245,7 @@ def bootstrap_upb_proto_library(
     # Generate stage1 protos (C API and MiniTables) using stage0 compiler.
     _generate_stage1_proto(name, src_files, src_rules, "upb", kwargs)
     _generate_stage1_proto(name, src_files, src_rules, "upb_minitable", kwargs)
-    cc_library(
+    _cc_library_with_default_copts(
         name = name + "_minitable_stage1",
         srcs = _generated_files(src_files, "stage1", "upb_minitable", "c"),
         hdrs = _generated_files(src_files, "stage1", "upb_minitable", "h"),
@@ -244,7 +256,7 @@ def bootstrap_upb_proto_library(
         ] + [dep + "_minitable_stage1" for dep in deps],
         **kwargs
     )
-    cc_library(
+    _cc_library_with_default_copts(
         name = name + "_stage1",
         srcs = _generated_files(src_files, "stage1", "upb", "h"),
         hdrs = [bootstrap_hdr],
@@ -263,7 +275,7 @@ def bootstrap_upb_proto_library(
         deps = proto_lib_deps,
         **kwargs
     )
-    cc_library(
+    _cc_library_with_default_copts(
         name = name,
         hdrs = [bootstrap_hdr],
         deps = [name + "_upb_proto"],
