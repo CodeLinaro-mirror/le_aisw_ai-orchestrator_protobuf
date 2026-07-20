@@ -694,21 +694,6 @@ struct KeyNode : NodeBase {
   decltype(auto) key() const { return ReadKey<Key>(GetVoidKey()); }
 };
 
-inline map_index_t Hash(absl::string_view k, void* salt) {
-  // Note: we could potentially also use CRC32-based hashing here.
-  return absl::HashOf(k, salt);
-}
-inline map_index_t Hash(uint64_t k, void* salt) {
-  if constexpr (!HasCrc32()) {
-    return absl::HashOf(k, salt);
-  } else {
-    uintptr_t salt_int = reinterpret_cast<uintptr_t>(salt);
-    // Note: Crc32(salt_int, k) causes the random iteration order test to fail
-    // so we also rotate.
-    return Crc32(salt_int, absl::rotr(k, salt_int & 0x3f));
-  }
-}
-
 // KeyMapBase is a chaining hash map.
 // The implementation doesn't need the full generality of unordered_map,
 // and it doesn't have it.  More bells and whistles can be added as needed.
@@ -1040,7 +1025,7 @@ class KeyMapBase : public UntypedMapBase {
         : table_(table), mask_(num_buckets - 1), map_(map) {}
 
     map_index_t BucketNumber(KeyNode* node) const {
-      return Hash(node->key(), table_) & mask_;
+      return absl::HashOf(node->key(), table_) & mask_;
     }
 
     void InsertUnique(KeyNode* node, map_index_t bucket) {
@@ -1064,7 +1049,7 @@ class KeyMapBase : public UntypedMapBase {
   };
 
   map_index_t BucketNumber(typename TS::ViewType k) const {
-    return Hash(k, table_) & (num_buckets_ - 1);
+    return absl::HashOf(k, table_) & (num_buckets_ - 1);
   }
 };
 
