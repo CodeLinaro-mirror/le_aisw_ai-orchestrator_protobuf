@@ -46,6 +46,15 @@ $PROTOC -Isrc --csharp_out=csharp/src/Google.Protobuf \
     src/google/protobuf/wrappers.proto \
     src/google/protobuf/compiler/plugin.proto
 
+# Language-neutral options
+mkdir -p csharp/src/Pb
+$PROTOC -Isrc --csharp_out=csharp/src/Pb \
+    --csharp_opt=base_namespace=Pb \
+    --csharp_opt=file_extension=.pb.cs \
+    src/google/protobuf/json_options.proto \
+    src/google/protobuf/json_enumvalue_options.proto
+
+
 # C# features
 $PROTOC -Icsharp -Isrc --csharp_out=csharp/src/Google.Protobuf \
     --csharp_opt=base_namespace=Google.Protobuf \
