@@ -39,7 +39,7 @@ using Semantic = ::google::protobuf::io::AnnotationCollector::Semantic;
 namespace {
 
 void SetPrimitiveVariables(
-    const FieldDescriptor* descriptor, int messageBitIndex, int builderBitIndex,
+    const FieldDescriptor* descriptor, int bitIndex,
     const FieldGeneratorInfo* info, ClassNameResolver* name_resolver,
     absl::flat_hash_map<absl::string_view, std::string>* variables,
     Context* context) {
@@ -75,13 +75,13 @@ void SetPrimitiveVariables(
   if (HasHasbit(descriptor)) {
     // For singular messages and builders, one bit is used for the hasField bit.
     (*variables)["set_has_field_bit_to_local"] =
-        GenerateSetBitToLocal(messageBitIndex);
+        GenerateSetBitToLocal(bitIndex);
 
     // Note that these have a trailing ";".
     (*variables)["set_has_field_bit_message"] =
-        absl::StrCat(GenerateSetBit(messageBitIndex), ";");
+        absl::StrCat(GenerateSetBit(bitIndex), ";");
 
-    (*variables)["is_field_present_message"] = GenerateGetBit(messageBitIndex);
+    (*variables)["is_field_present_message"] = GenerateGetBit(bitIndex);
   } else {
     (*variables)["set_has_field_bit_to_local"] = "";
     (*variables)["set_has_field_bit_message"] = "";
@@ -91,13 +91,13 @@ void SetPrimitiveVariables(
                                     (*variables)["name"], "_)")});
   }
 
-  (*variables)["get_has_field_bit_builder"] = GenerateGetBit(builderBitIndex);
+  (*variables)["get_has_field_bit_builder"] = GenerateGetBit(bitIndex);
   (*variables)["get_has_field_bit_from_local"] =
-      GenerateGetBitFromLocal(builderBitIndex);
+      GenerateGetBitFromLocal(bitIndex);
   (*variables)["set_has_field_bit_builder"] =
-      absl::StrCat(GenerateSetBit(builderBitIndex), ";");
+      absl::StrCat(GenerateSetBit(bitIndex), ";");
   (*variables)["clear_has_field_bit_builder"] =
-      absl::StrCat(GenerateClearBit(builderBitIndex), ";");
+      absl::StrCat(GenerateClearBit(bitIndex), ";");
 }
 
 }  // namespace
@@ -105,20 +105,15 @@ void SetPrimitiveVariables(
 // ===================================================================
 
 ImmutableStringFieldGenerator::ImmutableStringFieldGenerator(
-    const FieldDescriptor* descriptor, int messageBitIndex, int builderBitIndex,
-    Context* context)
-    : ImmutableFieldGenerator(descriptor, messageBitIndex, builderBitIndex,
-                              context) {
-  SetPrimitiveVariables(descriptor, messageBitIndex, builderBitIndex,
+    const FieldDescriptor* descriptor, int bitIndex, Context* context)
+    : ImmutableFieldGenerator(descriptor, bitIndex, context) {
+  SetPrimitiveVariables(descriptor, bitIndex,
                         context->GetFieldGeneratorInfo(descriptor),
                         name_resolver_, &variables_, context);
 }
 
 ImmutableStringFieldGenerator::~ImmutableStringFieldGenerator() = default;
 
-int ImmutableStringFieldGenerator::GetNumBitsForMessage() const {
-  return HasHasbit(descriptor_) ? 1 : 0;
-}
 // A note about how strings are handled. This code used to just store a String
 // in the Message. This had two issues:
 //
@@ -386,7 +381,7 @@ void ImmutableStringFieldGenerator::GenerateBuildingCode(
   printer->Print(variables_,
                  "if ($get_has_field_bit_from_local$) {\n"
                  "  result.$name$_ = $name$_;\n");
-  if (GetNumBitsForMessage() > 0) {
+  if (GetNumBits() > 0) {
     printer->Print(variables_, "  $set_has_field_bit_to_local$;\n");
   }
   printer->Print("}\n");
@@ -442,14 +437,21 @@ std::string ImmutableStringFieldGenerator::GetBoxedType() const {
 
 // ===================================================================
 
+const OneofGeneratorInfo* ImmutableStringFieldGenerator::GetOneofGeneratorInfo()
+    const {
+  return context_->GetOneofGeneratorInfo(descriptor_->containing_oneof());
+}
+
+// ===================================================================
+
 ImmutableStringOneofFieldGenerator::ImmutableStringOneofFieldGenerator(
-    const FieldDescriptor* descriptor, int messageBitIndex, int builderBitIndex,
-    Context* context)
-    : ImmutableStringFieldGenerator(descriptor, messageBitIndex,
-                                    builderBitIndex, context) {
+    const FieldDescriptor* descriptor, int bitIndex, Context* context)
+    : ImmutableStringFieldGenerator(descriptor, bitIndex, context) {
   const OneofGeneratorInfo* info =
       context->GetOneofGeneratorInfo(descriptor->containing_oneof());
   SetCommonOneofVariables(descriptor, info, &variables_);
+  variables_["set_has_field_bit_builder"] =
+      absl::StrCat(GenerateSetBit(bitIndex), ";");
 }
 
 ImmutableStringOneofFieldGenerator::~ImmutableStringOneofFieldGenerator() =
@@ -590,9 +592,11 @@ void ImmutableStringOneofFieldGenerator::GenerateBuilderMembers(
   printer->Print(variables_,
                  "$deprecation$public Builder ${$set$capitalized_name$$}$(\n"
                  "    java.lang.String value) {\n"
-                 "  $null_check$\n"
-                 "  $set_oneof_case_message$;\n"
-                 "  $oneof_name$_ = value;\n"
+                 "  $null_check$\n");
+  printer->Indent();
+  WriteSetOneof(printer, variables_, GetOneofGeneratorInfo(), "value");
+  printer->Outdent();
+  printer->Print(variables_,
                  "  $on_changed$\n"
                  "  return this;\n"
                  "}\n");
@@ -605,6 +609,7 @@ void ImmutableStringOneofFieldGenerator::GenerateBuilderMembers(
       "$deprecation$public Builder ${$clear$capitalized_name$$}$() {\n"
       "  if ($has_oneof_case_message$) {\n"
       "    $clear_oneof_case_message$;\n"
+      "    $clear_has_field_bit_builder$\n"
       "    $oneof_name$_ = null;\n"
       "    $on_changed$\n"
       "  }\n"
@@ -624,12 +629,15 @@ void ImmutableStringOneofFieldGenerator::GenerateBuilderMembers(
   if (CheckUtf8(descriptor_)) {
     printer->Print(variables_, "  checkByteStringIsUtf8(value);\n");
   }
+  printer->Indent();
+  WriteSetOneof(printer, variables_, GetOneofGeneratorInfo(), "value");
+  printer->Outdent();
   printer->Print(variables_,
-                 "  $set_oneof_case_message$;\n"
-                 "  $oneof_name$_ = value;\n"
                  "  $on_changed$\n"
                  "  return this;\n"
                  "}\n");
+
+  GenerateBuilderParserMethod(printer);
 }
 
 void ImmutableStringOneofFieldGenerator::GenerateBuilderClearCode(
@@ -641,10 +649,9 @@ void ImmutableStringOneofFieldGenerator::GenerateMergingCode(
     io::Printer* printer) const {
   // Allow a slight breach of abstraction here in order to avoid forcing
   // all string fields to Strings when copying fields from a Message.
-  printer->Print(variables_,
-                 "$set_oneof_case_message$;\n"
-                 "$oneof_name$_ = other.$oneof_name$_;\n"
-                 "$on_changed$\n");
+  WriteSetOneof(printer, variables_, GetOneofGeneratorInfo(),
+                "other.$oneof_name$_");
+  printer->Print(variables_, "$on_changed$\n");
 }
 
 void ImmutableStringOneofFieldGenerator::GenerateBuildingCode(
@@ -654,18 +661,34 @@ void ImmutableStringOneofFieldGenerator::GenerateBuildingCode(
 
 void ImmutableStringOneofFieldGenerator::GenerateBuilderParsingCode(
     io::Printer* printer) const {
+  printer->Print(variables_,
+                 "parse$capitalized_name$(input, extensionRegistry);\n");
+}
+
+void ImmutableStringOneofFieldGenerator::GenerateBuilderParserMethod(
+    io::Printer* printer) const {
+  printer->Print(
+      variables_,
+      "private void parse$capitalized_name$(\n"
+      "    com.google.protobuf.CodedInputStream input,\n"
+      "    com.google.protobuf.ExtensionRegistryLite extensionRegistry)\n"
+      "    throws java.io.IOException {\n");
+  printer->Indent();
+
   if (CheckUtf8(descriptor_)) {
     printer->Print(variables_,
-                   "$set_oneof_case_message$;\n"
-                   "$oneof_name$_ = "
+                   "java.lang.Object value = "
                    "input.readStringRequireUtf8();\n"
     );
+    WriteSetOneof(printer, variables_, GetOneofGeneratorInfo(), "value");
   } else {
-    printer->Print(variables_,
-                   "com.google.protobuf.ByteString bs = input.readBytes();\n"
-                   "$set_oneof_case_message$;\n"
-                   "$oneof_name$_ = bs;\n");
+    printer->Print(
+        variables_,
+        "com.google.protobuf.ByteString value = input.readBytes();\n");
+    WriteSetOneof(printer, variables_, GetOneofGeneratorInfo(), "value");
   }
+  printer->Outdent();
+  printer->Print("}\n");
 }
 
 void ImmutableStringOneofFieldGenerator::GenerateSerializationCode(
@@ -687,17 +710,11 @@ void ImmutableStringOneofFieldGenerator::GenerateSerializedSizeCode(
 // ===================================================================
 
 RepeatedImmutableStringFieldGenerator::RepeatedImmutableStringFieldGenerator(
-    const FieldDescriptor* descriptor, int messageBitIndex, int builderBitIndex,
-    Context* context)
-    : ImmutableStringFieldGenerator(descriptor, messageBitIndex,
-                                    builderBitIndex, context) {}
+    const FieldDescriptor* descriptor, int bitIndex, Context* context)
+    : ImmutableStringFieldGenerator(descriptor, bitIndex, context) {}
 
 RepeatedImmutableStringFieldGenerator::
     ~RepeatedImmutableStringFieldGenerator() = default;
-
-int RepeatedImmutableStringFieldGenerator::GetNumBitsForMessage() const {
-  return 0;
-}
 
 void RepeatedImmutableStringFieldGenerator::GenerateInterfaceMembers(
     io::Printer* printer) const {

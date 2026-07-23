@@ -132,7 +132,16 @@ void Context::InitializeFieldGeneratorInfoForMessage(
     OneofGeneratorInfo info;
     info.name = UnderscoresToCamelCase(oneof->name(), false);
     info.capitalized_name = UnderscoresToCamelCase(oneof->name(), true);
-    oneof_generator_info_map_[oneof] = info;
+    for (int j = 0; j < oneof->field_count(); ++j) {
+      const FieldDescriptor* field = oneof->field(j);
+      int bit_index = field->index();
+      uint32_t mask = (1u << (bit_index % 32));
+      info.masks_by_int[bit_index / 32] |= mask;
+      if (field->cpp_type() != FieldDescriptor::CPPTYPE_MESSAGE) {
+        info.non_message_masks_by_int[bit_index / 32] |= mask;
+      }
+    }
+    oneof_generator_info_map_[oneof] = std::move(info);
   }
 }
 

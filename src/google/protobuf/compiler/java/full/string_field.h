@@ -22,7 +22,8 @@ namespace google {
 namespace protobuf {
 namespace compiler {
 namespace java {
-class Context;            // context.h
+class Context;  // context.h
+struct OneofGeneratorInfo;
 class ClassNameResolver;  // name_resolver.h
 }  // namespace java
 }  // namespace compiler
@@ -37,8 +38,7 @@ namespace java {
 class ImmutableStringFieldGenerator : public ImmutableFieldGenerator {
  public:
   explicit ImmutableStringFieldGenerator(const FieldDescriptor* descriptor,
-                                         int messageBitIndex,
-                                         int builderBitIndex, Context* context);
+                                         int bitIndex, Context* context);
   ImmutableStringFieldGenerator(const ImmutableStringFieldGenerator&) = delete;
   ImmutableStringFieldGenerator& operator=(
       const ImmutableStringFieldGenerator&) = delete;
@@ -46,7 +46,7 @@ class ImmutableStringFieldGenerator : public ImmutableFieldGenerator {
 
   // implements ImmutableFieldGenerator
   // ---------------------------------------
-  int GetNumBitsForMessage() const override;
+
   void GenerateInterfaceMembers(io::Printer* printer) const override;
   void GenerateMembers(io::Printer* printer) const override;
   void GenerateBuilderMembers(io::Printer* printer) const override;
@@ -64,6 +64,8 @@ class ImmutableStringFieldGenerator : public ImmutableFieldGenerator {
 
   std::string GetBoxedType() const override;
 
+  const OneofGeneratorInfo* GetOneofGeneratorInfo() const;
+
  protected:
 };
 
@@ -71,8 +73,8 @@ class ImmutableStringOneofFieldGenerator
     : public ImmutableStringFieldGenerator {
  public:
   ImmutableStringOneofFieldGenerator(const FieldDescriptor* descriptor,
-                                     int messageBitIndex, int builderBitIndex,
-                                     Context* context);
+                                     int bitIndex, Context* context);
+  void GenerateBuilderParserMethod(io::Printer* printer) const;
   ImmutableStringOneofFieldGenerator(
       const ImmutableStringOneofFieldGenerator&) = delete;
   ImmutableStringOneofFieldGenerator& operator=(
@@ -94,8 +96,7 @@ class RepeatedImmutableStringFieldGenerator
     : public ImmutableStringFieldGenerator {
  public:
   explicit RepeatedImmutableStringFieldGenerator(
-      const FieldDescriptor* descriptor, int messageBitIndex,
-      int builderBitIndex, Context* context);
+      const FieldDescriptor* descriptor, int bitIndex, Context* context);
   RepeatedImmutableStringFieldGenerator(
       const RepeatedImmutableStringFieldGenerator&) = delete;
   RepeatedImmutableStringFieldGenerator& operator=(
@@ -103,7 +104,6 @@ class RepeatedImmutableStringFieldGenerator
   ~RepeatedImmutableStringFieldGenerator() override;
 
   // implements ImmutableFieldGenerator ---------------------------------------
-  int GetNumBitsForMessage() const override;
   void GenerateInterfaceMembers(io::Printer* printer) const override;
   void GenerateMembers(io::Printer* printer) const override;
   void GenerateBuilderMembers(io::Printer* printer) const override;

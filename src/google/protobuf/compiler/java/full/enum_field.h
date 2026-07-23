@@ -23,7 +23,8 @@ namespace google {
 namespace protobuf {
 namespace compiler {
 namespace java {
-class Context;            // context.h
+class Context;  // context.h
+struct OneofGeneratorInfo;
 class ClassNameResolver;  // name_resolver.h
 }  // namespace java
 }  // namespace compiler
@@ -38,8 +39,7 @@ namespace java {
 class ImmutableEnumFieldGenerator : public ImmutableFieldGenerator {
  public:
   explicit ImmutableEnumFieldGenerator(const FieldDescriptor* descriptor,
-                                       int messageBitIndex, int builderBitIndex,
-                                       Context* context);
+                                       int bitIndex, Context* context);
   ImmutableEnumFieldGenerator(const ImmutableEnumFieldGenerator&) = delete;
   ImmutableEnumFieldGenerator& operator=(const ImmutableEnumFieldGenerator&) =
       delete;
@@ -47,7 +47,7 @@ class ImmutableEnumFieldGenerator : public ImmutableFieldGenerator {
 
   // implements ImmutableFieldGenerator
   // ---------------------------------------
-  int GetNumBitsForMessage() const override;
+
   void GenerateInterfaceMembers(io::Printer* printer) const override;
   void GenerateMembers(io::Printer* printer) const override;
   void GenerateBuilderMembers(io::Printer* printer) const override;
@@ -65,14 +65,16 @@ class ImmutableEnumFieldGenerator : public ImmutableFieldGenerator {
 
   std::string GetBoxedType() const override;
 
+  const OneofGeneratorInfo* GetOneofGeneratorInfo() const;
+
  protected:
 };
 
 class ImmutableEnumOneofFieldGenerator : public ImmutableEnumFieldGenerator {
  public:
   ImmutableEnumOneofFieldGenerator(const FieldDescriptor* descriptor,
-                                   int messageBitIndex, int builderBitIndex,
-                                   Context* context);
+                                   int bitIndex, Context* context);
+  void GenerateBuilderParserMethod(io::Printer* printer) const;
   ImmutableEnumOneofFieldGenerator(const ImmutableEnumOneofFieldGenerator&) =
       delete;
   ImmutableEnumOneofFieldGenerator& operator=(
@@ -94,8 +96,7 @@ class ImmutableEnumOneofFieldGenerator : public ImmutableEnumFieldGenerator {
 class RepeatedImmutableEnumFieldGenerator : public ImmutableEnumFieldGenerator {
  public:
   explicit RepeatedImmutableEnumFieldGenerator(
-      const FieldDescriptor* descriptor, int messageBitIndex,
-      int builderBitIndex, Context* context);
+      const FieldDescriptor* descriptor, int bitIndex, Context* context);
   RepeatedImmutableEnumFieldGenerator(
       const RepeatedImmutableEnumFieldGenerator&) = delete;
   RepeatedImmutableEnumFieldGenerator& operator=(
@@ -103,7 +104,6 @@ class RepeatedImmutableEnumFieldGenerator : public ImmutableEnumFieldGenerator {
   ~RepeatedImmutableEnumFieldGenerator() override;
 
   // implements ImmutableFieldGenerator ---------------------------------------
-  int GetNumBitsForMessage() const override;
   void GenerateInterfaceMembers(io::Printer* printer) const override;
   void GenerateMembers(io::Printer* printer) const override;
   void GenerateBuilderMembers(io::Printer* printer) const override;
