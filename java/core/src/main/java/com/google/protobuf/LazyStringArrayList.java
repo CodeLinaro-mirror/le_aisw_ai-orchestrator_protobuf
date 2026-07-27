@@ -36,7 +36,7 @@ import java.util.RandomAccess;
  *
  * @author jonp@google.com (Jon Perlow)
  */
-public class LazyStringArrayList extends AbstractProtobufList<String>
+public final class LazyStringArrayList extends AbstractProtobufList<String>
     implements LazyStringList, RandomAccess {
 
   private static final LazyStringArrayList EMPTY_LIST = new LazyStringArrayList(false);
@@ -215,6 +215,56 @@ public class LazyStringArrayList extends AbstractProtobufList<String>
     ensureIsMutable();
     list.clear();
     modCount++;
+  }
+
+  @Override
+  public boolean equals(
+          Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (!(o instanceof List)) {
+      return false;
+    }
+    // Handle lists that do not support RandomAccess as efficiently as possible by using an iterator
+    // based approach in our super class. Otherwise our index based approach will avoid those
+    // allocations.
+    if (!(o instanceof RandomAccess)) {
+      return super.equals(o);
+    }
+
+    List<?> other = (List<?>) o;
+    final int size = size();
+    if (size != other.size()) {
+      return false;
+    }
+
+    if (o instanceof LazyStringArrayList) {
+      LazyStringArrayList otherArray = (LazyStringArrayList) o;
+      for (int i = 0; i < size; i++) {
+        if (!get(i).equals(otherArray.get(i))) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    for (int i = 0; i < size; i++) {
+      if (!get(i).equals(other.get(i))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    final int size = size();
+    int hashCode = 1;
+    for (int i = 0; i < size; i++) {
+      hashCode = (31 * hashCode) + get(i).hashCode();
+    }
+    return hashCode;
   }
 
   @Override
