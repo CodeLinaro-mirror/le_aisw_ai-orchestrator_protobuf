@@ -21,12 +21,11 @@ namespace java {
 class ImmutableMapFieldGenerator : public ImmutableFieldGenerator {
  public:
   explicit ImmutableMapFieldGenerator(const FieldDescriptor* descriptor,
-                                      int messageBitIndex, int builderBitIndex,
-                                      Context* context);
+                                      int bit_index, Context* context);
   ~ImmutableMapFieldGenerator() override = default;
 
   // implements ImmutableFieldGenerator ---------------------------------------
-  int GetNumBitsForMessage() const override;
+
   void GenerateInterfaceMembers(io::Printer* printer) const override;
   void GenerateMembers(io::Printer* printer) const override;
   void GenerateBuilderMembers(io::Printer* printer) const override;

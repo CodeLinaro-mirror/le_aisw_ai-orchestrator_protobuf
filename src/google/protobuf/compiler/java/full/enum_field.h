@@ -38,8 +38,7 @@ namespace java {
 class ImmutableEnumFieldGenerator : public ImmutableFieldGenerator {
  public:
   explicit ImmutableEnumFieldGenerator(const FieldDescriptor* descriptor,
-                                       int messageBitIndex, int builderBitIndex,
-                                       Context* context);
+                                       int bit_index, Context* context);
   ImmutableEnumFieldGenerator(const ImmutableEnumFieldGenerator&) = delete;
   ImmutableEnumFieldGenerator& operator=(const ImmutableEnumFieldGenerator&) =
       delete;
@@ -47,7 +46,7 @@ class ImmutableEnumFieldGenerator : public ImmutableFieldGenerator {
 
   // implements ImmutableFieldGenerator
   // ---------------------------------------
-  int GetNumBitsForMessage() const override;
+
   void GenerateInterfaceMembers(io::Printer* printer) const override;
   void GenerateMembers(io::Printer* printer) const override;
   void GenerateBuilderMembers(io::Printer* printer) const override;
@@ -71,8 +70,7 @@ class ImmutableEnumFieldGenerator : public ImmutableFieldGenerator {
 class ImmutableEnumOneofFieldGenerator : public ImmutableEnumFieldGenerator {
  public:
   ImmutableEnumOneofFieldGenerator(const FieldDescriptor* descriptor,
-                                   int messageBitIndex, int builderBitIndex,
-                                   Context* context);
+                                   int bit_index, Context* context);
   ImmutableEnumOneofFieldGenerator(const ImmutableEnumOneofFieldGenerator&) =
       delete;
   ImmutableEnumOneofFieldGenerator& operator=(
@@ -94,8 +92,7 @@ class ImmutableEnumOneofFieldGenerator : public ImmutableEnumFieldGenerator {
 class RepeatedImmutableEnumFieldGenerator : public ImmutableEnumFieldGenerator {
  public:
   explicit RepeatedImmutableEnumFieldGenerator(
-      const FieldDescriptor* descriptor, int messageBitIndex,
-      int builderBitIndex, Context* context);
+      const FieldDescriptor* descriptor, int bit_index, Context* context);
   RepeatedImmutableEnumFieldGenerator(
       const RepeatedImmutableEnumFieldGenerator&) = delete;
   RepeatedImmutableEnumFieldGenerator& operator=(
@@ -103,7 +100,6 @@ class RepeatedImmutableEnumFieldGenerator : public ImmutableEnumFieldGenerator {
   ~RepeatedImmutableEnumFieldGenerator() override;
 
   // implements ImmutableFieldGenerator ---------------------------------------
-  int GetNumBitsForMessage() const override;
   void GenerateInterfaceMembers(io::Printer* printer) const override;
   void GenerateMembers(io::Printer* printer) const override;
   void GenerateBuilderMembers(io::Printer* printer) const override;
