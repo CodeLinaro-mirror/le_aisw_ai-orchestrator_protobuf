@@ -356,6 +356,12 @@ UPB_API_INLINE bool UPB_PRIVATE(_upb_Message_SetNonCanonicalExtension)(
   return true;
 }
 
+UPB_NODISCARD UPB_API_INLINE bool upb_Message_SetNonCanonicalExtension(
+    struct upb_Message* msg, const upb_MiniTableExtension* e, const void* value,
+    upb_Arena* a) {
+  return UPB_PRIVATE(_upb_Message_SetNonCanonicalExtension)(msg, e, value, a);
+}
+
 // Sets the value of the given field in the given msg. The return value is true
 // if the operation completed successfully, or false if memory allocation
 // failed.
