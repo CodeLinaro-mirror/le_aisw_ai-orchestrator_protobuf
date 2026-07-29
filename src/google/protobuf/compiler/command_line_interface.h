@@ -358,7 +358,8 @@ class PROTOC_EXPORT CommandLineInterface {
       absl::flat_hash_set<const FileDescriptor*>* already_seen,
       RepeatedPtrField<FileDescriptorProto>* output,
       const TransitiveDependencyOptions& options =
-          TransitiveDependencyOptions()) const;
+          TransitiveDependencyOptions(),
+      bool is_transitive = false) const;
 
 
   // -----------------------------------------------------------------

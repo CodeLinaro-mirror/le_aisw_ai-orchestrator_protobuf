@@ -325,7 +325,7 @@ void CommandLineInterface::GetTransitiveDependencies(
     const FileDescriptor* file,
     absl::flat_hash_set<const FileDescriptor*>* already_seen,
     RepeatedPtrField<FileDescriptorProto>* output,
-    const TransitiveDependencyOptions& options) const {
+    const TransitiveDependencyOptions& options, bool is_transitive) const {
   if (!already_seen->insert(file).second) {
     // Already saw this file.  Skip.
     return;
@@ -334,16 +334,20 @@ void CommandLineInterface::GetTransitiveDependencies(
   // Add all dependencies.
   for (int i = 0; i < file->dependency_count(); ++i) {
     GetTransitiveDependencies(file->dependency(i), already_seen, output,
-                              options);
+                              options, /*is_transitive=*/true);
   }
-  for (int i = 0; i < file->option_dependency_count(); ++i) {
-    const FileDescriptor* dep =
-        file->pool()->FindFileByName(file->option_dependency_name(i));
-    ABSL_CHECK(dep != nullptr || !descriptor_set_in_names_.empty())
-        << "Option dependency " << file->option_dependency_name(i)
-        << " not found in pool.  This should never happen.";
-    if (dep != nullptr) {
-      GetTransitiveDependencies(dep, already_seen, output, options);
+  if (!is_transitive) {
+    // Only gather direct option dependencies for top-level files.
+    for (int i = 0; i < file->option_dependency_count(); ++i) {
+      const FileDescriptor* dep =
+          file->pool()->FindFileByName(file->option_dependency_name(i));
+      ABSL_CHECK(dep != nullptr || !descriptor_set_in_names_.empty())
+          << "Option dependency " << file->option_dependency_name(i)
+          << " not found in pool.  This should never happen.";
+      if (dep != nullptr) {
+        GetTransitiveDependencies(dep, already_seen, output, options,
+                                  /*is_transitive=*/true);
+      }
     }
   }
 
@@ -393,7 +397,7 @@ class CommandLineInterface::ErrorPrinter
   }
 
   void RecordWarning(int line, int column, absl::string_view message) override {
-    AddErrorOrWarning("input", line, column, message, "warning", std::clog);
+    RecordWarning("input", line, column, message);
   }
 
   // implements DescriptorPool::ErrorCollector-------------------------
