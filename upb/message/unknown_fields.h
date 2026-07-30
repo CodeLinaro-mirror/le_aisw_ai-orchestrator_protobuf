@@ -24,6 +24,8 @@
 extern "C" {
 #endif
 
+typedef struct upb_Extension upb_Extension;
+
 typedef enum {
   kUpb_MessageUnknownType_StringView,
   kUpb_MessageUnknownType_NonCanonicalExtension,
