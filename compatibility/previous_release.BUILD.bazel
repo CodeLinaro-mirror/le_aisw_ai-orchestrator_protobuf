@@ -1,0 +1,105 @@
+# Protocol Buffers - Google's data interchange format
+# Copyright 2008 Google Inc.  All rights reserved.
+#
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file or at
+# https://developers.google.com/open-source/licenses/bsd
+
+load("@com_google_protobuf//bazel:proto_library.bzl", "proto_library")
+
+package(default_visibility = ["//visibility:public"])
+
+proto_library(
+    name = "any_proto",
+    srcs = ["src/google/protobuf/any.proto"],
+    strip_import_prefix = "src",
+)
+
+proto_library(
+    name = "api_proto",
+    srcs = ["src/google/protobuf/api.proto"],
+    strip_import_prefix = "src",
+    deps = [
+        ":source_context_proto",
+        ":type_proto",
+    ],
+)
+
+proto_library(
+    name = "descriptor_proto",
+    srcs = ["src/google/protobuf/descriptor.proto"],
+    strip_import_prefix = "src",
+)
+
+proto_library(
+    name = "duration_proto",
+    srcs = ["src/google/protobuf/duration.proto"],
+    strip_import_prefix = "src",
+)
+
+proto_library(
+    name = "empty_proto",
+    srcs = ["src/google/protobuf/empty.proto"],
+    strip_import_prefix = "src",
+)
+
+proto_library(
+    name = "field_mask_proto",
+    srcs = ["src/google/protobuf/field_mask.proto"],
+    strip_import_prefix = "src",
+)
+
+proto_library(
+    name = "source_context_proto",
+    srcs = ["src/google/protobuf/source_context.proto"],
+    strip_import_prefix = "src",
+)
+
+proto_library(
+    name = "struct_proto",
+    srcs = ["src/google/protobuf/struct.proto"],
+    strip_import_prefix = "src",
+)
+
+proto_library(
+    name = "timestamp_proto",
+    srcs = ["src/google/protobuf/timestamp.proto"],
+    strip_import_prefix = "src",
+)
+
+proto_library(
+    name = "type_proto",
+    srcs = ["src/google/protobuf/type.proto"],
+    strip_import_prefix = "src",
+    deps = [
+        ":any_proto",
+        ":source_context_proto",
+    ],
+)
+
+proto_library(
+    name = "wrappers_proto",
+    srcs = ["src/google/protobuf/wrappers.proto"],
+    strip_import_prefix = "src",
+)
+
+proto_library(
+    name = "compiler_plugin_proto",
+    srcs = ["src/google/protobuf/compiler/plugin.proto"],
+    strip_import_prefix = "src",
+    deps = [":descriptor_proto"],
+)
+
+proto_library(
+    name = "cpp_features_proto",
+    srcs = ["src/google/protobuf/cpp_features.proto"],
+    strip_import_prefix = "src",
+    deps = [":descriptor_proto"],
+)
+
+proto_library(
+    name = "java_features_proto",
+    srcs = ["java/core/src/main/resources/google/protobuf/java_features.proto"],
+    strip_import_prefix = "java/core/src/main/resources",
+    deps = [":descriptor_proto"],
+)
