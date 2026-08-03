@@ -1611,7 +1611,7 @@ void ExtensionSet::GrowCapacity(Arena* arena, size_t minimum_new_capacity) {
 
   auto new_flat_capacity = flat_capacity_;
   do {
-    new_flat_capacity = new_flat_capacity == 0 ? 1 : new_flat_capacity * 4;
+    new_flat_capacity = new_flat_capacity == 0 ? 1 : new_flat_capacity * 2;
   } while (new_flat_capacity < minimum_new_capacity);
 
   KeyValue* begin = flat_begin();
