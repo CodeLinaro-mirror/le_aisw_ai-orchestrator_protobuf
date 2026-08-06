@@ -1,0 +1,9 @@
+[package]
+name = "google-protobuf-macros"
+version = "{VERSION}"
+edition = "2021"
+license = "BSD-3-Clause"
+description = "Re-export of protobuf-macros"
+
+[dependencies]
+protobuf_macros = { package = "protobuf-macros", version = "{PROTOBUF_VERSION}", path = "../protobuf_macros" }

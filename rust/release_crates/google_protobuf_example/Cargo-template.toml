@@ -1,0 +1,14 @@
+[package]
+name = "google-protobuf-example"
+version = "{VERSION}"
+edition = "2021"
+description = "Example use of Rust Protocol Buffers bindings"
+license = "BSD-3-Clause"
+
+[dependencies]
+protobuf = { package = "google-protobuf", version = "={VERSION}", path = "../google_protobuf" }
+protobuf-well-known-types = { package = "google-protobuf-well-known-types", version = "={VERSION}", path = "../google_protobuf_well_known_types" }
+
+[build-dependencies]
+protobuf-codegen = { package = "google-protobuf-codegen", version = "={VERSION}", path = "../google_protobuf_codegen" }
+protobuf-well-known-types = { package = "google-protobuf-well-known-types", version = "={VERSION}", path = "../google_protobuf_well_known_types" }

@@ -1,0 +1,9 @@
+[package]
+name = "google-protobuf-well-known-types"
+version = "{VERSION}"
+edition = "2021"
+license = "BSD-3-Clause"
+description = "Re-export of protobuf-well-known-types"
+
+[dependencies]
+protobuf_well_known_types = { package = "protobuf-well-known-types", version = "{PROTOBUF_VERSION}", path = "../protobuf_well_known_types" }
