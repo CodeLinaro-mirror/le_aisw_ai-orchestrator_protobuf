@@ -503,13 +503,34 @@ void FileGenerator::GenerateDescriptorInitializationCodeForImmutable(
       "  return descriptor;\n"
       "}\n"
       "private static final com.google.protobuf.Descriptors.FileDescriptor\n"
-      "    descriptor;\n"
-      "static {\n");
+      "    descriptor;\n");
+
+  if (google::protobuf::internal::IsOss()) {
+    // In OSS protobuf, generate an inner nested class to hold the descriptors
+    // to be accessed by the depending message in order to avoid statically
+    // initializing the generated file outer class when only the descriptor is
+    // needed.
+    printer->Print(
+        "public static final class InternalDescriptors {\n"
+        "  public static final com.google.protobuf.Descriptors.FileDescriptor\n"
+        "      descriptor;\n"
+        "  static {\n");
+    printer->Indent();
+    printer->Indent();
+    SharedCodeGenerator shared_code_generator(file_, options_);
+    shared_code_generator.GenerateDescriptors(printer);
+    printer->Outdent();
+    printer->Outdent();
+    printer->Print(
+        "  }\n"
+        "}\n\n");
+  }
+
+  printer->Print("static {\n");
   printer->Indent();
 
   if (google::protobuf::internal::IsOss()) {
-    SharedCodeGenerator shared_code_generator(file_, options_);
-    shared_code_generator.GenerateDescriptors(printer);
+    printer->Print("descriptor = InternalDescriptors.descriptor;\n");
   } else {
   }
 
