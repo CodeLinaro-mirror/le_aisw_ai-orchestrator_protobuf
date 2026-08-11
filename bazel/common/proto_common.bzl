@@ -11,37 +11,26 @@ load("@proto_bazel_features//:features.bzl", "bazel_features")
 load("//bazel/common:proto_lang_toolchain_info.bzl", "ProtoLangToolchainInfo")
 load("//bazel/private:toolchain_helpers.bzl", "toolchains")
 
-def _import_virtual_proto_path(path):
-    """Imports all paths for virtual imports.
+def _proto_import_path(file):
+    """Single callback to extract -I flags from a File object."""
+    path = file.path
 
-      They're of the form:
-      'bazel-out/k8-fastbuild/bin/external/foo/e/_virtual_imports/e' or
-      'bazel-out/foo/k8-fastbuild/bin/e/_virtual_imports/e'"""
-    if path.count("/") > 4:
-        return "-I%s" % path
-    return None
+    # Case 1: Virtual imports (e.g., proto_library with import_prefix/strip_import_prefix)
+    idx = path.find("_virtual_imports/")
+    if idx >= 0:
+        end = path.find("/", idx + len("_virtual_imports/"))
+        return "-I%s" % path[:end] if end >= 0 else None
 
-def _import_repo_proto_path(path):
-    """Imports all paths for generated files in external repositories.
+    # Case 2: Generated protos in external repos or main repo
+    if file.root.path and file.root.path != ".":
+        return "-I%s" % file.root.path
 
-      They are of the form:
-      'bazel-out/k8-fastbuild/bin/external/foo' or
-      'bazel-out/foo/k8-fastbuild/bin'"""
-    path_count = path.count("/")
-    if path_count > 2 and path_count <= 4:
-        return "-I%s" % path
-    return None
+    # Case 3: Source protos in external repos (e.g. external/repo_name/...)
+    if path.startswith("external/") or path.startswith("../"):
+        parts = path.split("/", 2)
+        return "-I%s/%s" % (parts[0], parts[1])
 
-def _import_main_output_proto_path(path):
-    """Imports all paths for generated files or source files in external repositories.
-
-      They're of the form:
-      'bazel-out/k8-fastbuild/bin'
-      'external/foo'
-      '../foo'
-    """
-    if path.count("/") <= 2 and path != ".":
-        return "-I%s" % path
+    # Case 4: Main workspace source files (already covered by -I.)
     return None
 
 def _remove_repo(file):
@@ -206,9 +195,7 @@ def _compile(
     # For example: 'bazel-out/k8-fastbuild/bin/external/foo' needs to be listed
     # before 'bazel-out/k8-fastbuild/bin'. If not, protoc will discover file under
     # the shorter path and use 'external/foo/...' as its package path.
-    args.add_all(proto_info.transitive_proto_path, map_each = _import_virtual_proto_path)
-    args.add_all(proto_info.transitive_proto_path, map_each = _import_repo_proto_path)
-    args.add_all(proto_info.transitive_proto_path, map_each = _import_main_output_proto_path)
+    args.add_all(proto_info.transitive_sources, map_each = _proto_import_path, uniquify = True)
     args.add("-I.")  # Needs to come last
 
     args.add_all(proto_lang_toolchain_info.protoc_opts)
