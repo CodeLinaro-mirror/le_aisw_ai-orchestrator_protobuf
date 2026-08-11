@@ -42,6 +42,12 @@ class CppFileOptions::_Internal {
   static constexpr ::int32_t kHasBitsOffset =
       8 * PROTOBUF_FIELD_OFFSET(CppFileOptions, _impl_._has_bits_);
 };
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+CppFileOptions::_Helpers::_Helpers() {
+  static_assert(!::std::is_trivial_v<CppFileOptions::_Helpers>);
+  static_assert(!::std::is_aggregate_v<CppFileOptions::_Helpers>);
+}
+#endif  // PROTOBUF_CUSTOM_VTABLE
 
 constexpr CppFileOptions::ParseTableT_ CppFileOptions::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
   return ParseTableT_{
@@ -124,7 +130,8 @@ constexpr auto CppFileOptions::InternalGenerateClassData_(
           Super_::GetNewImpl<CppFileOptions>(),
 #if defined(PROTOBUF_CUSTOM_VTABLE)
           &CppFileOptions::SharedDtor,
-          &CppFileOptions::Clear, &CppFileOptions::ByteSizeLong, &CppFileOptions::_InternalSerialize,
+          &CppFileOptions::_Helpers::Clear, &CppFileOptions::_Helpers::ByteSizeLong,
+              &CppFileOptions::_Helpers::_InternalSerialize,
 #endif  // PROTOBUF_CUSTOM_VTABLE
           PROTOBUF_FIELD_OFFSET(CppFileOptions, _impl_._cached_size_),
           false,
@@ -322,7 +329,7 @@ PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const CppFileOptions::ParseTableT_
         CppFileOptions::InternalGenerateParseTable_(CppFileOptions_class_data_.base());
 #endif  // !PROTOBUF_MESSAGE_GLOBALS
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-PROTOBUF_NOINLINE void CppFileOptions::Clear(MessageLite& base) {
+PROTOBUF_NOINLINE void CppFileOptions::_Helpers::Clear(MessageLite& base) {
   CppFileOptions& this_ = static_cast<CppFileOptions&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 PROTOBUF_NOINLINE void CppFileOptions::Clear() {
@@ -342,7 +349,7 @@ PROTOBUF_NOINLINE void CppFileOptions::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::uint8_t* PROTOBUF_NONNULL CppFileOptions::_InternalSerialize(
+::uint8_t* PROTOBUF_NONNULL CppFileOptions::_Helpers::_InternalSerialize(
     const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
     ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
   const CppFileOptions& this_ = static_cast<const CppFileOptions&>(base);
@@ -378,7 +385,7 @@ PROTOBUF_NOINLINE void CppFileOptions::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::size_t CppFileOptions::ByteSizeLong(const MessageLite& base) {
+::size_t CppFileOptions::_Helpers::ByteSizeLong(const MessageLite& base) {
   const CppFileOptions& this_ = static_cast<const CppFileOptions&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 ::size_t CppFileOptions::ByteSizeLong() const {

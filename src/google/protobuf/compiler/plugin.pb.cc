@@ -49,6 +49,12 @@ class Version::_Internal {
   static constexpr ::int32_t kHasBitsOffset =
       8 * PROTOBUF_FIELD_OFFSET(Version, _impl_._has_bits_);
 };
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+Version::_Helpers::_Helpers() {
+  static_assert(!::std::is_trivial_v<Version::_Helpers>);
+  static_assert(!::std::is_aggregate_v<Version::_Helpers>);
+}
+#endif  // PROTOBUF_CUSTOM_VTABLE
 
 constexpr Version::ParseTableT_ Version::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
   return ParseTableT_{
@@ -149,7 +155,8 @@ constexpr auto Version::InternalGenerateClassData_(
           Super_::GetNewImpl<Version>(),
 #if defined(PROTOBUF_CUSTOM_VTABLE)
           &Version::SharedDtor,
-          &Version::Clear, &Version::ByteSizeLong, &Version::_InternalSerialize,
+          &Version::_Helpers::Clear, &Version::_Helpers::ByteSizeLong,
+              &Version::_Helpers::_InternalSerialize,
 #endif  // PROTOBUF_CUSTOM_VTABLE
           PROTOBUF_FIELD_OFFSET(Version, _impl_._cached_size_),
           false,
@@ -212,6 +219,12 @@ class CodeGeneratorResponse_File::_Internal {
   static constexpr ::int32_t kHasBitsOffset =
       8 * PROTOBUF_FIELD_OFFSET(CodeGeneratorResponse_File, _impl_._has_bits_);
 };
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+CodeGeneratorResponse_File::_Helpers::_Helpers() {
+  static_assert(!::std::is_trivial_v<CodeGeneratorResponse_File::_Helpers>);
+  static_assert(!::std::is_aggregate_v<CodeGeneratorResponse_File::_Helpers>);
+}
+#endif  // PROTOBUF_CUSTOM_VTABLE
 
 constexpr CodeGeneratorResponse_File::ParseTableT_ CodeGeneratorResponse_File::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
   return ParseTableT_{
@@ -322,7 +335,8 @@ constexpr auto CodeGeneratorResponse_File::InternalGenerateClassData_(
           Super_::GetNewImpl<CodeGeneratorResponse_File>(),
 #if defined(PROTOBUF_CUSTOM_VTABLE)
           &CodeGeneratorResponse_File::SharedDtor,
-          &CodeGeneratorResponse_File::Clear, &CodeGeneratorResponse_File::ByteSizeLong, &CodeGeneratorResponse_File::_InternalSerialize,
+          &CodeGeneratorResponse_File::_Helpers::Clear, &CodeGeneratorResponse_File::_Helpers::ByteSizeLong,
+              &CodeGeneratorResponse_File::_Helpers::_InternalSerialize,
 #endif  // PROTOBUF_CUSTOM_VTABLE
           PROTOBUF_FIELD_OFFSET(CodeGeneratorResponse_File, _impl_._cached_size_),
           false,
@@ -385,6 +399,12 @@ class CodeGeneratorResponse::_Internal {
   static constexpr ::int32_t kHasBitsOffset =
       8 * PROTOBUF_FIELD_OFFSET(CodeGeneratorResponse, _impl_._has_bits_);
 };
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+CodeGeneratorResponse::_Helpers::_Helpers() {
+  static_assert(!::std::is_trivial_v<CodeGeneratorResponse::_Helpers>);
+  static_assert(!::std::is_aggregate_v<CodeGeneratorResponse::_Helpers>);
+}
+#endif  // PROTOBUF_CUSTOM_VTABLE
 
 constexpr CodeGeneratorResponse::ParseTableT_ CodeGeneratorResponse::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
   return ParseTableT_{
@@ -505,7 +525,8 @@ constexpr auto CodeGeneratorResponse::InternalGenerateClassData_(
           Super_::GetNewImpl<CodeGeneratorResponse>(),
 #if defined(PROTOBUF_CUSTOM_VTABLE)
           &CodeGeneratorResponse::SharedDtor,
-          &CodeGeneratorResponse::Clear, &CodeGeneratorResponse::ByteSizeLong, &CodeGeneratorResponse::_InternalSerialize,
+          &CodeGeneratorResponse::_Helpers::Clear, &CodeGeneratorResponse::_Helpers::ByteSizeLong,
+              &CodeGeneratorResponse::_Helpers::_InternalSerialize,
 #endif  // PROTOBUF_CUSTOM_VTABLE
           PROTOBUF_FIELD_OFFSET(CodeGeneratorResponse, _impl_._cached_size_),
           false,
@@ -568,6 +589,12 @@ class CodeGeneratorRequest::_Internal {
   static constexpr ::int32_t kHasBitsOffset =
       8 * PROTOBUF_FIELD_OFFSET(CodeGeneratorRequest, _impl_._has_bits_);
 };
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+CodeGeneratorRequest::_Helpers::_Helpers() {
+  static_assert(!::std::is_trivial_v<CodeGeneratorRequest::_Helpers>);
+  static_assert(!::std::is_aggregate_v<CodeGeneratorRequest::_Helpers>);
+}
+#endif  // PROTOBUF_CUSTOM_VTABLE
 
 constexpr CodeGeneratorRequest::ParseTableT_ CodeGeneratorRequest::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
   return ParseTableT_{
@@ -703,7 +730,8 @@ constexpr auto CodeGeneratorRequest::InternalGenerateClassData_(
           Super_::GetNewImpl<CodeGeneratorRequest>(),
 #if defined(PROTOBUF_CUSTOM_VTABLE)
           &CodeGeneratorRequest::SharedDtor,
-          &CodeGeneratorRequest::Clear, &CodeGeneratorRequest::ByteSizeLong, &CodeGeneratorRequest::_InternalSerialize,
+          &CodeGeneratorRequest::_Helpers::Clear, &CodeGeneratorRequest::_Helpers::ByteSizeLong,
+              &CodeGeneratorRequest::_Helpers::_InternalSerialize,
 #endif  // PROTOBUF_CUSTOM_VTABLE
           PROTOBUF_FIELD_OFFSET(CodeGeneratorRequest, _impl_._cached_size_),
           false,
@@ -990,7 +1018,7 @@ PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const Version::ParseTableT_
         Version::InternalGenerateParseTable_(Version_class_data_.base());
 #endif  // !PROTOBUF_MESSAGE_GLOBALS
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-PROTOBUF_NOINLINE void Version::Clear(MessageLite& base) {
+PROTOBUF_NOINLINE void Version::_Helpers::Clear(MessageLite& base) {
   Version& this_ = static_cast<Version&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 PROTOBUF_NOINLINE void Version::Clear() {
@@ -1017,7 +1045,7 @@ PROTOBUF_NOINLINE void Version::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::uint8_t* PROTOBUF_NONNULL Version::_InternalSerialize(
+::uint8_t* PROTOBUF_NONNULL Version::_Helpers::_InternalSerialize(
     const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
     ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
   const Version& this_ = static_cast<const Version&>(base);
@@ -1072,7 +1100,7 @@ PROTOBUF_NOINLINE void Version::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::size_t Version::ByteSizeLong(const MessageLite& base) {
+::size_t Version::_Helpers::ByteSizeLong(const MessageLite& base) {
   const Version& this_ = static_cast<const Version&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 ::size_t Version::ByteSizeLong() const {
@@ -1306,7 +1334,7 @@ PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const CodeGeneratorRequest::ParseTableT_
         CodeGeneratorRequest::InternalGenerateParseTable_(CodeGeneratorRequest_class_data_.base());
 #endif  // !PROTOBUF_MESSAGE_GLOBALS
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-PROTOBUF_NOINLINE void CodeGeneratorRequest::Clear(MessageLite& base) {
+PROTOBUF_NOINLINE void CodeGeneratorRequest::_Helpers::Clear(MessageLite& base) {
   CodeGeneratorRequest& this_ = static_cast<CodeGeneratorRequest&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 PROTOBUF_NOINLINE void CodeGeneratorRequest::Clear() {
@@ -1341,7 +1369,7 @@ PROTOBUF_NOINLINE void CodeGeneratorRequest::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::uint8_t* PROTOBUF_NONNULL CodeGeneratorRequest::_InternalSerialize(
+::uint8_t* PROTOBUF_NONNULL CodeGeneratorRequest::_Helpers::_InternalSerialize(
     const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
     ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
   const CodeGeneratorRequest& this_ = static_cast<const CodeGeneratorRequest&>(base);
@@ -1414,7 +1442,7 @@ PROTOBUF_NOINLINE void CodeGeneratorRequest::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::size_t CodeGeneratorRequest::ByteSizeLong(const MessageLite& base) {
+::size_t CodeGeneratorRequest::_Helpers::ByteSizeLong(const MessageLite& base) {
   const CodeGeneratorRequest& this_ = static_cast<const CodeGeneratorRequest&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 ::size_t CodeGeneratorRequest::ByteSizeLong() const {
@@ -1648,7 +1676,7 @@ PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const CodeGeneratorResponse_File::ParseTableT_
         CodeGeneratorResponse_File::InternalGenerateParseTable_(CodeGeneratorResponse_File_class_data_.base());
 #endif  // !PROTOBUF_MESSAGE_GLOBALS
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-PROTOBUF_NOINLINE void CodeGeneratorResponse_File::Clear(MessageLite& base) {
+PROTOBUF_NOINLINE void CodeGeneratorResponse_File::_Helpers::Clear(MessageLite& base) {
   CodeGeneratorResponse_File& this_ = static_cast<CodeGeneratorResponse_File&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 PROTOBUF_NOINLINE void CodeGeneratorResponse_File::Clear() {
@@ -1680,7 +1708,7 @@ PROTOBUF_NOINLINE void CodeGeneratorResponse_File::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::uint8_t* PROTOBUF_NONNULL CodeGeneratorResponse_File::_InternalSerialize(
+::uint8_t* PROTOBUF_NONNULL CodeGeneratorResponse_File::_Helpers::_InternalSerialize(
     const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
     ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
   const CodeGeneratorResponse_File& this_ = static_cast<const CodeGeneratorResponse_File&>(base);
@@ -1733,7 +1761,7 @@ PROTOBUF_NOINLINE void CodeGeneratorResponse_File::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::size_t CodeGeneratorResponse_File::ByteSizeLong(const MessageLite& base) {
+::size_t CodeGeneratorResponse_File::_Helpers::ByteSizeLong(const MessageLite& base) {
   const CodeGeneratorResponse_File& this_ = static_cast<const CodeGeneratorResponse_File&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 ::size_t CodeGeneratorResponse_File::ByteSizeLong() const {
@@ -1943,7 +1971,7 @@ PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const CodeGeneratorResponse::ParseTableT_
         CodeGeneratorResponse::InternalGenerateParseTable_(CodeGeneratorResponse_class_data_.base());
 #endif  // !PROTOBUF_MESSAGE_GLOBALS
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-PROTOBUF_NOINLINE void CodeGeneratorResponse::Clear(MessageLite& base) {
+PROTOBUF_NOINLINE void CodeGeneratorResponse::_Helpers::Clear(MessageLite& base) {
   CodeGeneratorResponse& this_ = static_cast<CodeGeneratorResponse&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 PROTOBUF_NOINLINE void CodeGeneratorResponse::Clear() {
@@ -1975,7 +2003,7 @@ PROTOBUF_NOINLINE void CodeGeneratorResponse::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::uint8_t* PROTOBUF_NONNULL CodeGeneratorResponse::_InternalSerialize(
+::uint8_t* PROTOBUF_NONNULL CodeGeneratorResponse::_Helpers::_InternalSerialize(
     const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
     ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
   const CodeGeneratorResponse& this_ = static_cast<const CodeGeneratorResponse&>(base);
@@ -2042,7 +2070,7 @@ PROTOBUF_NOINLINE void CodeGeneratorResponse::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::size_t CodeGeneratorResponse::ByteSizeLong(const MessageLite& base) {
+::size_t CodeGeneratorResponse::_Helpers::ByteSizeLong(const MessageLite& base) {
   const CodeGeneratorResponse& this_ = static_cast<const CodeGeneratorResponse&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 ::size_t CodeGeneratorResponse::ByteSizeLong() const {

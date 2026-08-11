@@ -41,6 +41,12 @@ class CSharpFeatures::_Internal {
   static constexpr ::int32_t kHasBitsOffset =
       8 * PROTOBUF_FIELD_OFFSET(CSharpFeatures, _impl_._has_bits_);
 };
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+CSharpFeatures::_Helpers::_Helpers() {
+  static_assert(!::std::is_trivial_v<CSharpFeatures::_Helpers>);
+  static_assert(!::std::is_aggregate_v<CSharpFeatures::_Helpers>);
+}
+#endif  // PROTOBUF_CUSTOM_VTABLE
 
 constexpr CSharpFeatures::ParseTableT_ CSharpFeatures::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
   return ParseTableT_{
@@ -118,7 +124,8 @@ constexpr auto CSharpFeatures::InternalGenerateClassData_(
           Super_::GetNewImpl<CSharpFeatures>(),
 #if defined(PROTOBUF_CUSTOM_VTABLE)
           &CSharpFeatures::SharedDtor,
-          &CSharpFeatures::Clear, &CSharpFeatures::ByteSizeLong, &CSharpFeatures::_InternalSerialize,
+          &CSharpFeatures::_Helpers::Clear, &CSharpFeatures::_Helpers::ByteSizeLong,
+              &CSharpFeatures::_Helpers::_InternalSerialize,
 #endif  // PROTOBUF_CUSTOM_VTABLE
           PROTOBUF_FIELD_OFFSET(CSharpFeatures, _impl_._cached_size_),
           false,
@@ -303,7 +310,7 @@ PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const CSharpFeatures::ParseTableT_
         CSharpFeatures::InternalGenerateParseTable_(CSharpFeatures_class_data_.base());
 #endif  // !PROTOBUF_MESSAGE_GLOBALS
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-PROTOBUF_NOINLINE void CSharpFeatures::Clear(MessageLite& base) {
+PROTOBUF_NOINLINE void CSharpFeatures::_Helpers::Clear(MessageLite& base) {
   CSharpFeatures& this_ = static_cast<CSharpFeatures&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 PROTOBUF_NOINLINE void CSharpFeatures::Clear() {
@@ -320,7 +327,7 @@ PROTOBUF_NOINLINE void CSharpFeatures::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::uint8_t* PROTOBUF_NONNULL CSharpFeatures::_InternalSerialize(
+::uint8_t* PROTOBUF_NONNULL CSharpFeatures::_Helpers::_InternalSerialize(
     const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
     ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
   const CSharpFeatures& this_ = static_cast<const CSharpFeatures&>(base);
@@ -355,7 +362,7 @@ PROTOBUF_NOINLINE void CSharpFeatures::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::size_t CSharpFeatures::ByteSizeLong(const MessageLite& base) {
+::size_t CSharpFeatures::_Helpers::ByteSizeLong(const MessageLite& base) {
   const CSharpFeatures& this_ = static_cast<const CSharpFeatures&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 ::size_t CSharpFeatures::ByteSizeLong() const {

@@ -40,6 +40,12 @@ namespace pb {
 class JavaFeatures_NestInFileClassFeature::_Internal {
  public:
 };
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+JavaFeatures_NestInFileClassFeature::_Helpers::_Helpers() {
+  static_assert(!::std::is_trivial_v<JavaFeatures_NestInFileClassFeature::_Helpers>);
+  static_assert(!::std::is_aggregate_v<JavaFeatures_NestInFileClassFeature::_Helpers>);
+}
+#endif  // PROTOBUF_CUSTOM_VTABLE
 
 constexpr JavaFeatures_NestInFileClassFeature::ParseTableT_ JavaFeatures_NestInFileClassFeature::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
   return ParseTableT_{
@@ -167,6 +173,12 @@ class JavaFeatures::_Internal {
   static constexpr ::int32_t kHasBitsOffset =
       8 * PROTOBUF_FIELD_OFFSET(JavaFeatures, _impl_._has_bits_);
 };
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+JavaFeatures::_Helpers::_Helpers() {
+  static_assert(!::std::is_trivial_v<JavaFeatures::_Helpers>);
+  static_assert(!::std::is_aggregate_v<JavaFeatures::_Helpers>);
+}
+#endif  // PROTOBUF_CUSTOM_VTABLE
 
 constexpr JavaFeatures::ParseTableT_ JavaFeatures::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
   return ParseTableT_{
@@ -278,7 +290,8 @@ constexpr auto JavaFeatures::InternalGenerateClassData_(
           Super_::GetNewImpl<JavaFeatures>(),
 #if defined(PROTOBUF_CUSTOM_VTABLE)
           &JavaFeatures::SharedDtor,
-          &JavaFeatures::Clear, &JavaFeatures::ByteSizeLong, &JavaFeatures::_InternalSerialize,
+          &JavaFeatures::_Helpers::Clear, &JavaFeatures::_Helpers::ByteSizeLong,
+              &JavaFeatures::_Helpers::_InternalSerialize,
 #endif  // PROTOBUF_CUSTOM_VTABLE
           PROTOBUF_FIELD_OFFSET(JavaFeatures, _impl_._cached_size_),
           false,
@@ -579,7 +592,7 @@ PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const JavaFeatures::ParseTableT_
         JavaFeatures::InternalGenerateParseTable_(JavaFeatures_class_data_.base());
 #endif  // !PROTOBUF_MESSAGE_GLOBALS
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-PROTOBUF_NOINLINE void JavaFeatures::Clear(MessageLite& base) {
+PROTOBUF_NOINLINE void JavaFeatures::_Helpers::Clear(MessageLite& base) {
   JavaFeatures& this_ = static_cast<JavaFeatures&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 PROTOBUF_NOINLINE void JavaFeatures::Clear() {
@@ -603,7 +616,7 @@ PROTOBUF_NOINLINE void JavaFeatures::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::uint8_t* PROTOBUF_NONNULL JavaFeatures::_InternalSerialize(
+::uint8_t* PROTOBUF_NONNULL JavaFeatures::_Helpers::_InternalSerialize(
     const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
     ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
   const JavaFeatures& this_ = static_cast<const JavaFeatures&>(base);
@@ -666,7 +679,7 @@ PROTOBUF_NOINLINE void JavaFeatures::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::size_t JavaFeatures::ByteSizeLong(const MessageLite& base) {
+::size_t JavaFeatures::_Helpers::ByteSizeLong(const MessageLite& base) {
   const JavaFeatures& this_ = static_cast<const JavaFeatures&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 ::size_t JavaFeatures::ByteSizeLong() const {
