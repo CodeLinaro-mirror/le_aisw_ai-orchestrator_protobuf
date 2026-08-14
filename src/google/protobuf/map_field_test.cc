@@ -44,13 +44,15 @@ struct MapFieldTestPeer {
   }
 };
 
-using TestMapField = ::google::protobuf::internal::MapField<
-    proto2_unittest::TestMap_MapInt32Int32Entry_DoNotUse, ::int32_t, ::int32_t>;
+constexpr const void* kEntryGlobals = static_cast<const void*>(
+    &proto2_unittest::TestMap_MapInt32Int32Entry_DoNotUse_globals_);
+
+using TestMapField =
+    ::google::protobuf::internal::MapField<kEntryGlobals, ::int32_t, ::int32_t>;
 
 class MapFieldBasePrimitiveTest : public testing::TestWithParam<bool> {
  protected:
-  typedef proto2_unittest::TestMap_MapInt32Int32Entry_DoNotUse EntryType;
-  typedef MapField<EntryType, int32_t, int32_t> MapFieldType;
+  typedef MapField<kEntryGlobals, int32_t, int32_t> MapFieldType;
 
   MapFieldBasePrimitiveTest()
       : arena_(GetParam() ? new Arena() : nullptr),
@@ -166,8 +168,7 @@ enum State { CLEAN, MAP_DIRTY, REPEATED_DIRTY };
 class MapFieldStateTest
     : public testing::TestWithParam<std::tuple<State, bool>> {
  protected:
-  typedef proto2_unittest::TestMap_MapInt32Int32Entry_DoNotUse EntryType;
-  typedef MapField<EntryType, int32_t, int32_t> MapFieldType;
+  typedef MapField<kEntryGlobals, int32_t, int32_t> MapFieldType;
   MapFieldStateTest()
       : arena_(std::get<1>(GetParam()) ? new Arena() : nullptr),
         map_field_(arena_.get()),
@@ -436,9 +437,7 @@ TEST_P(MapFieldStateTest, MutableMapField) {
   }
 }
 
-using MyMapField =
-    MapField<proto2_unittest::TestMap_MapInt32Int32Entry_DoNotUse, int32_t,
-             int32_t>;
+using MyMapField = MapField<kEntryGlobals, int32_t, int32_t>;
 
 TEST(MapFieldTest, ConstInit) {
   // This tests that `MapField` and all its base classes can be constant
