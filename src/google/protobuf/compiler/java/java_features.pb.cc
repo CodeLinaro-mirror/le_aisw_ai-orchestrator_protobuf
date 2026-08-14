@@ -41,7 +41,11 @@ class JavaFeatures_NestInFileClassFeature::_Internal {
  public:
 };
 
-constexpr JavaFeatures_NestInFileClassFeature::ParseTableT_ JavaFeatures_NestInFileClassFeature::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+JavaFeatures_NestInFileClassFeature::_Helpers::_Helpers() {
+  static_assert(!::std::is_trivial_v<JavaFeatures_NestInFileClassFeature::_Helpers>);
+  static_assert(!::std::is_aggregate_v<JavaFeatures_NestInFileClassFeature::_Helpers>);
+}
+constexpr JavaFeatures_NestInFileClassFeature::ParseTableT_ JavaFeatures_NestInFileClassFeature::_Helpers::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
   return ParseTableT_{
     {
       PROTOBUF_FIELD_OFFSET(JavaFeatures_NestInFileClassFeature,
@@ -168,7 +172,11 @@ class JavaFeatures::_Internal {
       8 * PROTOBUF_FIELD_OFFSET(JavaFeatures, _impl_._has_bits_);
 };
 
-constexpr JavaFeatures::ParseTableT_ JavaFeatures::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+JavaFeatures::_Helpers::_Helpers() {
+  static_assert(!::std::is_trivial_v<JavaFeatures::_Helpers>);
+  static_assert(!::std::is_aggregate_v<JavaFeatures::_Helpers>);
+}
+constexpr JavaFeatures::ParseTableT_ JavaFeatures::_Helpers::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
   return ParseTableT_{
     {
       PROTOBUF_FIELD_OFFSET(JavaFeatures, _impl_._has_bits_),
@@ -278,7 +286,8 @@ constexpr auto JavaFeatures::InternalGenerateClassData_(
           Super_::GetNewImpl<JavaFeatures>(),
 #if defined(PROTOBUF_CUSTOM_VTABLE)
           &JavaFeatures::SharedDtor,
-          &JavaFeatures::Clear, &JavaFeatures::ByteSizeLong, &JavaFeatures::_InternalSerialize,
+          &JavaFeatures::_Helpers::Clear, &JavaFeatures::_Helpers::ByteSizeLong,
+              &JavaFeatures::_Helpers::_InternalSerialize,
 #endif  // PROTOBUF_CUSTOM_VTABLE
           PROTOBUF_FIELD_OFFSET(JavaFeatures, _impl_._cached_size_),
           false,
@@ -489,8 +498,8 @@ JavaFeatures_NestInFileClassFeature::GetClassData() const {
 #ifndef PROTOBUF_MESSAGE_GLOBALS
 PROTOBUF_CONSTINIT
 PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const JavaFeatures_NestInFileClassFeature::ParseTableT_
-    JavaFeatures_NestInFileClassFeature::_table_ =
-        JavaFeatures_NestInFileClassFeature::InternalGenerateParseTable_(JavaFeatures_NestInFileClassFeature_class_data_.base());
+    JavaFeatures_NestInFileClassFeature::_table_ = JavaFeatures_NestInFileClassFeature::_Helpers::InternalGenerateParseTable_(
+        JavaFeatures_NestInFileClassFeature_class_data_.base());
 #endif  // !PROTOBUF_MESSAGE_GLOBALS
 
 
@@ -575,11 +584,11 @@ JavaFeatures::GetClassData() const {
 #ifndef PROTOBUF_MESSAGE_GLOBALS
 PROTOBUF_CONSTINIT
 PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const JavaFeatures::ParseTableT_
-    JavaFeatures::_table_ =
-        JavaFeatures::InternalGenerateParseTable_(JavaFeatures_class_data_.base());
+    JavaFeatures::_table_ = JavaFeatures::_Helpers::InternalGenerateParseTable_(
+        JavaFeatures_class_data_.base());
 #endif  // !PROTOBUF_MESSAGE_GLOBALS
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-PROTOBUF_NOINLINE void JavaFeatures::Clear(MessageLite& base) {
+PROTOBUF_NOINLINE void JavaFeatures::_Helpers::Clear(MessageLite& base) {
   JavaFeatures& this_ = static_cast<JavaFeatures&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 PROTOBUF_NOINLINE void JavaFeatures::Clear() {
@@ -603,7 +612,7 @@ PROTOBUF_NOINLINE void JavaFeatures::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::uint8_t* PROTOBUF_NONNULL JavaFeatures::_InternalSerialize(
+::uint8_t* PROTOBUF_NONNULL JavaFeatures::_Helpers::_InternalSerialize(
     const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
     ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
   const JavaFeatures& this_ = static_cast<const JavaFeatures&>(base);
@@ -666,7 +675,7 @@ PROTOBUF_NOINLINE void JavaFeatures::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::size_t JavaFeatures::ByteSizeLong(const MessageLite& base) {
+::size_t JavaFeatures::_Helpers::ByteSizeLong(const MessageLite& base) {
   const JavaFeatures& this_ = static_cast<const JavaFeatures&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 ::size_t JavaFeatures::ByteSizeLong() const {

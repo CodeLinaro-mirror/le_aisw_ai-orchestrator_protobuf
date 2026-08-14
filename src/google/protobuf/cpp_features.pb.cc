@@ -42,7 +42,11 @@ class CppFeatures::_Internal {
       8 * PROTOBUF_FIELD_OFFSET(CppFeatures, _impl_._has_bits_);
 };
 
-constexpr CppFeatures::ParseTableT_ CppFeatures::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+CppFeatures::_Helpers::_Helpers() {
+  static_assert(!::std::is_trivial_v<CppFeatures::_Helpers>);
+  static_assert(!::std::is_aggregate_v<CppFeatures::_Helpers>);
+}
+constexpr CppFeatures::ParseTableT_ CppFeatures::_Helpers::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
   return ParseTableT_{
     {
       PROTOBUF_FIELD_OFFSET(CppFeatures, _impl_._has_bits_),
@@ -142,7 +146,8 @@ constexpr auto CppFeatures::InternalGenerateClassData_(
           Super_::GetNewImpl<CppFeatures>(),
 #if defined(PROTOBUF_CUSTOM_VTABLE)
           &CppFeatures::SharedDtor,
-          &CppFeatures::Clear, &CppFeatures::ByteSizeLong, &CppFeatures::_InternalSerialize,
+          &CppFeatures::_Helpers::Clear, &CppFeatures::_Helpers::ByteSizeLong,
+              &CppFeatures::_Helpers::_InternalSerialize,
 #endif  // PROTOBUF_CUSTOM_VTABLE
           PROTOBUF_FIELD_OFFSET(CppFeatures, _impl_._cached_size_),
           false,
@@ -360,11 +365,11 @@ CppFeatures::GetClassData() const {
 #ifndef PROTOBUF_MESSAGE_GLOBALS
 PROTOBUF_CONSTINIT
 PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const CppFeatures::ParseTableT_
-    CppFeatures::_table_ =
-        CppFeatures::InternalGenerateParseTable_(CppFeatures_class_data_.base());
+    CppFeatures::_table_ = CppFeatures::_Helpers::InternalGenerateParseTable_(
+        CppFeatures_class_data_.base());
 #endif  // !PROTOBUF_MESSAGE_GLOBALS
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-PROTOBUF_NOINLINE void CppFeatures::Clear(MessageLite& base) {
+PROTOBUF_NOINLINE void CppFeatures::_Helpers::Clear(MessageLite& base) {
   CppFeatures& this_ = static_cast<CppFeatures&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 PROTOBUF_NOINLINE void CppFeatures::Clear() {
@@ -388,7 +393,7 @@ PROTOBUF_NOINLINE void CppFeatures::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::uint8_t* PROTOBUF_NONNULL CppFeatures::_InternalSerialize(
+::uint8_t* PROTOBUF_NONNULL CppFeatures::_Helpers::_InternalSerialize(
     const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
     ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
   const CppFeatures& this_ = static_cast<const CppFeatures&>(base);
@@ -444,7 +449,7 @@ PROTOBUF_NOINLINE void CppFeatures::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::size_t CppFeatures::ByteSizeLong(const MessageLite& base) {
+::size_t CppFeatures::_Helpers::ByteSizeLong(const MessageLite& base) {
   const CppFeatures& this_ = static_cast<const CppFeatures&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
 ::size_t CppFeatures::ByteSizeLong() const {

@@ -1431,10 +1431,17 @@ void MessageGenerator::GenerateMapEntryClassDefinition(io::Printer* p) {
           friend $globals_type$;
 
           $alias_parse_table_type$;
-          static constexpr ParseTableT_ InternalGenerateParseTable_(
-              const $pbi$::ClassData* $nonnull$ class_data);
           $parse_decls$;
           $decl_annotate$;
+
+          struct _Helpers {
+            //~ Declare a single constructor out of line to enable constructor
+            //~ homing. See go/constructor-homing.
+            PROTOBUF_NODEBUG _Helpers();
+
+            static constexpr $Msg$::ParseTableT_ InternalGenerateParseTable_(
+                const $pbi$::ClassData* $nonnull$ class_data);
+          };
 
           const $pbi$::ClassData* $nonnull$ GetClassData() const PROTOBUF_FINAL;
           static void* $nonnull$ PlacementNew_(
@@ -1928,25 +1935,18 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* p) {
             // binary in both modes.
             p->Emit(R"cc(
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-              private:
-              static void Clear($pb$::MessageLite& msg);
-              $nodiscard $static::size_t ByteSizeLong(const $pb$::MessageLite& msg);
-              $nodiscard $static $uint8$* $nonnull$ _InternalSerialize(
-                  const $pb$::MessageLite& msg, $uint8$* $nonnull$ target,
-                  $pb$::io::EpsCopyOutputStream* $nonnull$ stream);
-
-              public:
-              ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-                Clear(*this);
+              ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+              Clear() {
+                _Helpers::Clear(*this);
               }
               PROTOBUF_ALWAYS_INLINE_NODEBUG $nodiscard $::size_t ByteSizeLong() const {
-                return ByteSizeLong(*this);
+                return _Helpers::ByteSizeLong(*this);
               }
               PROTOBUF_ALWAYS_INLINE_NODEBUG $nodiscard $$uint8$* $nonnull$
               _InternalSerialize($uint8$* $nonnull$ target,
                                  $pb$::io::EpsCopyOutputStream* $nonnull$
                                      stream) const {
-                return _InternalSerialize(*this, target, stream);
+                return _Helpers::_InternalSerialize(*this, target, stream);
               }
 #else   // PROTOBUF_CUSTOM_VTABLE
               ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -2243,12 +2243,26 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* p) {
           // @@protoc_insertion_point(class_scope:$full_name$)
           //~ Generate private members.
          private:
+          $alias_parse_table_type$;
           class _Internal;
+          struct _Helpers {
+            //~ Declare a single constructor out of line to enable constructor
+            //~ homing. See go/constructor-homing.
+            PROTOBUF_NODEBUG _Helpers();
+
+            static constexpr $Msg$::ParseTableT_ InternalGenerateParseTable_(
+                const $pbi$::ClassData* $nonnull$ class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+            static void Clear($pb$::MessageLite& msg);
+            $nodiscard $static::size_t ByteSizeLong(const $pb$::MessageLite& msg);
+            $nodiscard $static $uint8$* $nonnull$ _InternalSerialize(
+                const $pb$::MessageLite& msg, $uint8$* $nonnull$ target,
+                $pb$::io::EpsCopyOutputStream* $nonnull$ stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          };
           $decl_set_has$;
           $decl_oneof_has$;
-          $alias_parse_table_type$;
-          static constexpr ParseTableT_ InternalGenerateParseTable_(
-              const $pbi$::ClassData* $nonnull$ class_data);
           $decl_data$;
           $post_loop_handler$;
 
@@ -3545,7 +3559,7 @@ void MessageGenerator::GenerateClear(io::Printer* p) {
       },
       R"cc(
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-        PROTOBUF_NOINLINE void $Msg$::Clear(MessageLite& base) {
+        PROTOBUF_NOINLINE void $Msg$::_Helpers::Clear(MessageLite& base) {
           $Msg$& this_ = static_cast<$Msg$&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
         PROTOBUF_NOINLINE void $Msg$::Clear() {
@@ -3808,9 +3822,16 @@ void MessageGenerator::GenerateInternalGenerateClassData(io::Printer* p) {
   const auto custom_vtable_methods = [&] {
     if (HasGeneratedMethods(descriptor_->file(), options_) &&
         !IsMapEntryMessage(descriptor_)) {
-      p->Emit(R"cc(
-        &$Msg$::Clear, &$Msg$::ByteSizeLong, &$Msg$::_InternalSerialize,
-      )cc");
+      if (HasSimpleBaseClass(descriptor_, options_)) {
+        p->Emit(R"cc(
+          &$Msg$::Clear, &$Msg$::ByteSizeLong, &$Msg$::_InternalSerialize,
+        )cc");
+      } else {
+        p->Emit(R"cc(
+          &$Msg$::_Helpers::Clear, &$Msg$::_Helpers::ByteSizeLong,
+              &$Msg$::_Helpers::_InternalSerialize,
+        )cc");
+      }
     } else {
       p->Emit(R"cc(
         &$Msg$::ClearImpl, Super_::ByteSizeLongImpl,
@@ -4515,11 +4536,11 @@ void MessageGenerator::GenerateSerializeWithCachedSizesToArray(io::Printer* p) {
     // Special-case MessageSet.
     p->Emit(R"cc(
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-      $uint8$* $nonnull$ $Msg$::_InternalSerialize(
+      $uint8$* $nonnull$ $Msg$::_Helpers::_InternalSerialize(
           const $pb$::MessageLite& base, $uint8$* $nonnull$ target,
           $pb$::io::EpsCopyOutputStream* $nonnull$ stream) {
         const $Msg$& this_ = static_cast<const $Msg$&>(base);
-#else   // PROTOBUF_CUSTOM_VTABLE
+#else
       $uint8$* $nonnull$ $Msg$::_InternalSerialize(
           $uint8$* $nonnull$ target,
           $pb$::io::EpsCopyOutputStream* $nonnull$ stream) const {
@@ -4560,7 +4581,7 @@ void MessageGenerator::GenerateSerializeWithCachedSizesToArray(io::Printer* p) {
       },
       R"cc(
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-        $uint8$* $nonnull$ $Msg$::_InternalSerialize(
+        $uint8$* $nonnull$ $Msg$::_Helpers::_InternalSerialize(
             const $pb$::MessageLite& base, $uint8$* $nonnull$ target,
             $pb$::io::EpsCopyOutputStream* $nonnull$ stream) {
           const $Msg$& this_ = static_cast<const $Msg$&>(base);
@@ -5086,7 +5107,7 @@ void MessageGenerator::GenerateByteSize(io::Printer* p) {
     p->Emit(
         R"cc(
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-          ::size_t $Msg$::ByteSizeLong(const MessageLite& base) {
+          ::size_t $Msg$::_Helpers::ByteSizeLong(const MessageLite& base) {
             const $Msg$& this_ = static_cast<const $Msg$&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
           ::size_t $Msg$::ByteSizeLong() const {
@@ -5223,7 +5244,7 @@ void MessageGenerator::GenerateByteSize(io::Printer* p) {
         }}},
       R"cc(
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-        ::size_t $Msg$::ByteSizeLong(const MessageLite& base) {
+        ::size_t $Msg$::_Helpers::ByteSizeLong(const MessageLite& base) {
           const $Msg$& this_ = static_cast<const $Msg$&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
         ::size_t $Msg$::ByteSizeLong() const {
@@ -5504,6 +5525,16 @@ void MessageGenerator::GenerateSourceDefaultInstance(io::Printer* p) {
         )cc");
     p->Emit("\n");
   }
+
+  p->Emit(
+      R"cc(
+        $Msg$::_Helpers::_Helpers() {
+          //~ Requirements on `_Helpers` for constructor homing to work, along
+          //~ with having no constexpr constructors.
+          static_assert(!::std::is_trivial_v<$Msg$::_Helpers>);
+          static_assert(!::std::is_aggregate_v<$Msg$::_Helpers>);
+        }
+      )cc");
 
   parse_function_generator_->GenerateParseTableHelperDefinition(p);
   p->Emit("\n");

@@ -1366,25 +1366,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED UninterpretedOption
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -1461,13 +1454,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED UninterpretedOption
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.UninterpretedOption.NamePart)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<1, 2,
                           0, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr UninterpretedOption_NamePart::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -1604,25 +1609,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SourceCodeInfo_Loca
     return true;
   }
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -1771,13 +1769,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SourceCodeInfo_Loca
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.SourceCodeInfo.Location)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<3, 5,
                           0, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr SourceCodeInfo_Location::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -1919,25 +1929,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GeneratedCodeInfo_A
     return true;
   }
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -2079,13 +2082,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GeneratedCodeInfo_A
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.GeneratedCodeInfo.Annotation)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<3, 5,
                           1, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr GeneratedCodeInfo_Annotation::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -2226,25 +2241,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FieldOptions_Featur
     return true;
   }
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -2362,13 +2370,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FieldOptions_Featur
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.FieldOptions.FeatureSupport)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<3, 5,
                           3, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr FieldOptions_FeatureSupport::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -2508,25 +2528,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FieldOptions_Editio
     return true;
   }
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -2603,13 +2616,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FieldOptions_Editio
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.FieldOptions.EditionDefault)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<1, 2,
                           1, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr FieldOptions_EditionDefault::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -2793,13 +2818,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FeatureSet_Visibili
   // accessors -------------------------------------------------------
   // @@protoc_insertion_point(class_scope:google.protobuf.FeatureSet.VisibilityFeature)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<0, 0,
                           0, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr FeatureSet_VisibilityFeature::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -2964,13 +3001,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FeatureSet_ProtoLim
   // accessors -------------------------------------------------------
   // @@protoc_insertion_point(class_scope:google.protobuf.FeatureSet.ProtoLimitsFeature)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<0, 0,
                           0, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr FeatureSet_ProtoLimitsFeature::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -3095,25 +3144,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FeatureSet final : 
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -3610,13 +3652,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FeatureSet final : 
   }
   // @@protoc_insertion_point(class_scope:google.protobuf.FeatureSet)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<4, 9,
                           9, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr FeatureSet::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -3761,25 +3815,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ExtensionRangeOptio
     return true;
   }
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -3897,13 +3944,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ExtensionRangeOptio
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.ExtensionRangeOptions.Declaration)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<3, 5,
                           0, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr ExtensionRangeOptions_Declaration::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -4043,25 +4102,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnumDescriptorProto
     return true;
   }
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -4133,13 +4185,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnumDescriptorProto
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.EnumDescriptorProto.EnumReservedRange)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<1, 2,
                           0, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr EnumDescriptorProto_EnumReservedRange::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -4276,25 +4340,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DescriptorProto_Res
     return true;
   }
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -4366,13 +4423,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DescriptorProto_Res
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.DescriptorProto.ReservedRange)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<1, 2,
                           0, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr DescriptorProto_ReservedRange::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -4514,25 +4583,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED UninterpretedOption
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -4689,13 +4751,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED UninterpretedOption
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.UninterpretedOption)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<3, 7,
                           1, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr UninterpretedOption::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -4842,25 +4916,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SourceCodeInfo fina
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -5120,13 +5187,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SourceCodeInfo fina
   }
   // @@protoc_insertion_point(class_scope:google.protobuf.SourceCodeInfo)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<0, 1,
                           1, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr SourceCodeInfo::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -5263,25 +5342,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GeneratedCodeInfo f
     return true;
   }
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -5351,13 +5423,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GeneratedCodeInfo f
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.GeneratedCodeInfo)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<0, 1,
                           1, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr GeneratedCodeInfo::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -5498,25 +5582,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FeatureSetDefaults_
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -5608,13 +5685,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FeatureSetDefaults_
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<2, 3,
                           3, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr FeatureSetDefaults_FeatureSetEditionDefault::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -5757,25 +5846,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ServiceOptions fina
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -6062,13 +6144,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ServiceOptions fina
   }
   // @@protoc_insertion_point(class_scope:google.protobuf.ServiceOptions)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<2, 3,
                           2, 0,
                           12>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr ServiceOptions::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -6212,25 +6306,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED OneofOptions final 
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -6505,13 +6592,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED OneofOptions final 
   }
   // @@protoc_insertion_point(class_scope:google.protobuf.OneofOptions)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<2, 2,
                           2, 0,
                           7>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr OneofOptions::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -6654,25 +6753,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED MethodOptions final
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -6992,13 +7084,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED MethodOptions final
   }
   // @@protoc_insertion_point(class_scope:google.protobuf.MethodOptions)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<3, 4,
                           3, 0,
                           12>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr MethodOptions::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -7143,25 +7247,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED MessageOptions fina
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -7496,13 +7593,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED MessageOptions fina
   }
   // @@protoc_insertion_point(class_scope:google.protobuf.MessageOptions)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<3, 7,
                           2, 0,
                           7>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr MessageOptions::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -7650,25 +7759,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FileOptions final :
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -8242,13 +8344,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FileOptions final :
   }
   // @@protoc_insertion_point(class_scope:google.protobuf.FileOptions)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<5, 21,
                           3, 0,
                           12>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr FileOptions::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -8410,25 +8524,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FieldOptions final 
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -8962,13 +9069,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FieldOptions final 
   }
   // @@protoc_insertion_point(class_scope:google.protobuf.FieldOptions)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<4, 14,
                           8, 0,
                           7>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr FieldOptions::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -9123,25 +9242,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FeatureSetDefaults 
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -9235,13 +9347,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FeatureSetDefaults 
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.FeatureSetDefaults)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<1, 3,
                           3, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr FeatureSetDefaults::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -9384,25 +9508,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ExtensionRangeOptio
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -9731,13 +9848,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ExtensionRangeOptio
   }
   // @@protoc_insertion_point(class_scope:google.protobuf.ExtensionRangeOptions)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<3, 4,
                           4, 0,
                           12>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr ExtensionRangeOptions::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -9882,25 +10011,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnumValueOptions fi
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -10215,13 +10337,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnumValueOptions fi
   }
   // @@protoc_insertion_point(class_scope:google.protobuf.EnumValueOptions)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<3, 5,
                           3, 0,
                           7>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr EnumValueOptions::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -10367,25 +10501,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnumOptions final :
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -10696,13 +10823,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnumOptions final :
   }
   // @@protoc_insertion_point(class_scope:google.protobuf.EnumOptions)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<3, 5,
                           2, 0,
                           7>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr EnumOptions::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -10848,25 +10987,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED OneofDescriptorProt
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -10947,13 +11079,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED OneofDescriptorProt
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.OneofDescriptorProto)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<1, 2,
                           1, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr OneofDescriptorProto::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -11095,25 +11239,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED MethodDescriptorPro
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -11252,13 +11389,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED MethodDescriptorPro
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.MethodDescriptorProto)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<3, 6,
                           1, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr MethodDescriptorProto::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -11404,25 +11553,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FieldDescriptorProt
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -11688,13 +11830,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FieldDescriptorProt
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.FieldDescriptorProto)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<4, 11,
                           3, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr FieldDescriptorProto::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -11845,25 +11999,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnumValueDescriptor
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -11956,13 +12103,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnumValueDescriptor
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.EnumValueDescriptorProto)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<2, 3,
                           1, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr EnumValueDescriptorProto::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -12105,25 +12264,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DescriptorProto_Ext
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -12211,13 +12363,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DescriptorProto_Ext
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.DescriptorProto.ExtensionRange)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<2, 3,
                           1, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr DescriptorProto_ExtensionRange::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -12360,25 +12524,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ServiceDescriptorPr
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -12480,13 +12637,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ServiceDescriptorPr
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.ServiceDescriptorProto)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<2, 3,
                           2, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr ServiceDescriptorProto::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -12629,25 +12798,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnumDescriptorProto
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -12810,13 +12972,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnumDescriptorProto
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.EnumDescriptorProto)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<3, 6,
                           4, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr EnumDescriptorProto::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -12962,25 +13136,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DescriptorProto fin
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -13249,13 +13416,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DescriptorProto fin
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.DescriptorProto)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<4, 11,
                           9, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr DescriptorProto::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -13406,25 +13585,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FileDescriptorProto
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -13745,13 +13917,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FileDescriptorProto
   public:
   // @@protoc_insertion_point(class_scope:google.protobuf.FileDescriptorProto)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<4, 14,
                           7, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr FileDescriptorProto::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
@@ -13905,25 +14089,18 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FileDescriptorSet f
 
   public:
   #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static void Clear(::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void Clear() {
-    Clear(*this);
+  ABSL_ATTRIBUTE_REINITIALIZES PROTOBUF_ALWAYS_INLINE_NODEBUG void
+  Clear() {
+    _Helpers::Clear(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::size_t ByteSizeLong() const {
-    return ByteSizeLong(*this);
+    return _Helpers::ByteSizeLong(*this);
   }
   PROTOBUF_ALWAYS_INLINE_NODEBUG [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL
   _InternalSerialize(::uint8_t* PROTOBUF_NONNULL target,
                      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL
                          stream) const {
-    return _InternalSerialize(*this, target, stream);
+    return _Helpers::_InternalSerialize(*this, target, stream);
   }
   #else   // PROTOBUF_CUSTOM_VTABLE
   ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
@@ -14182,13 +14359,25 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FileDescriptorSet f
   }
   // @@protoc_insertion_point(class_scope:google.protobuf.FileDescriptorSet)
  private:
-  class _Internal;
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<0, 1,
                           1, 0,
                           2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  class _Internal;
+  struct _Helpers {
+    PROTOBUF_NODEBUG _Helpers();
+
+    static constexpr FileDescriptorSet::ParseTableT_ InternalGenerateParseTable_(
+        const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    static void Clear(::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+    [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+        const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+        ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  };
   friend class ::google::protobuf::internal::TcParser;
   #ifndef PROTOBUF_MESSAGE_GLOBALS
   static const ParseTableT_ _table_;
