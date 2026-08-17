@@ -1441,10 +1441,12 @@ public abstract class CodedInputStream {
       if (length < 0 || length > limit - pos) {
         return 0;
       }
-      int count = 0;
+      return countPackedVarintsSimple(length);
+    }
 
-      // Counts of terminating bytes to determine how many varints are in the packed field.
+    private int countPackedVarintsSimple(int length) {
       final int end = pos + length;
+      int count = 0;
       for (int i = pos; i < end; i++) {
         if (buffer[i] >= 0) {
           count++;
