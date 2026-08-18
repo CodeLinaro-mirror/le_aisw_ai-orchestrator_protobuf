@@ -2616,6 +2616,24 @@ const FieldDescriptor* Descriptor::map_value() const {
   return field(1);
 }
 
+static std::vector<uint32_t> MakeEnumValidatorData(const EnumDescriptor* desc) {
+  std::vector<int> numbers;
+  numbers.reserve(desc->value_count());
+  for (int i = 0; i < desc->value_count(); ++i) {
+    numbers.push_back(desc->value(i)->number());
+  }
+
+  absl::c_sort(numbers);
+  numbers.erase(std::unique(numbers.begin(), numbers.end()), numbers.end());
+  return internal::GenerateEnumData(numbers);
+}
+
+const uint32_t* EnumDescriptor::GetEnumValidationData() const {
+  return DescriptorPool::MemoizeProjection(
+             this, [](auto* e) { return MakeEnumValidatorData(e); })
+      .data();
+}
+
 const EnumValueDescriptor* EnumDescriptor::FindValueByName(
     absl::string_view name) const {
   return file()->tables_->FindNestedSymbol(this, name).enum_value_descriptor();
