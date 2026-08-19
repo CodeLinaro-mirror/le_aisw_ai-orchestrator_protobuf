@@ -130,9 +130,6 @@ constexpr UninterpretedOption_NamePart::ParseTableT_ UninterpretedOption_NamePar
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::UninterpretedOption_NamePart>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       // required bool is_extension = 2;
       {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(UninterpretedOption_NamePart, _impl_.is_extension_), 1>(),
@@ -248,9 +245,6 @@ constexpr SourceCodeInfo_Location::ParseTableT_ SourceCodeInfo_Location::_Intern
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::SourceCodeInfo_Location>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // repeated int32 path = 1 [packed = true];
@@ -404,9 +398,6 @@ constexpr GeneratedCodeInfo_Annotation::ParseTableT_ GeneratedCodeInfo_Annotatio
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::GeneratedCodeInfo_Annotation>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // repeated int32 path = 1 [packed = true];
@@ -552,9 +543,6 @@ constexpr FieldOptions_FeatureSupport::ParseTableT_ FieldOptions_FeatureSupport:
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::FieldOptions_FeatureSupport>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional .google.protobuf.Edition edition_introduced = 1;
@@ -700,9 +688,6 @@ constexpr FieldOptions_EditionDefault::ParseTableT_ FieldOptions_EditionDefault:
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::FieldOptions_EditionDefault>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       // optional string value = 2;
       {::_pbi::TcParser::FastBS1,
@@ -818,9 +803,6 @@ constexpr FeatureSet_VisibilityFeature::ParseTableT_ FeatureSet_VisibilityFeatur
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::FeatureSet_VisibilityFeature>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
     }}, {{
@@ -910,9 +892,6 @@ constexpr FeatureSet_ProtoLimitsFeature::ParseTableT_ FeatureSet_ProtoLimitsFeat
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::FeatureSet_ProtoLimitsFeature>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
     }}, {{
@@ -1004,9 +983,6 @@ constexpr FeatureSet::ParseTableT_ FeatureSet::_Internal::GenerateParseTable(con
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::FeatureSet>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional .google.protobuf.FeatureSet.FieldPresence field_presence = 1 [retention = RETENTION_RUNTIME, targets = TARGET_TYPE_FIELD, targets = TARGET_TYPE_FILE, edition_defaults = {
@@ -1186,9 +1162,6 @@ constexpr ExtensionRangeOptions_Declaration::ParseTableT_ ExtensionRangeOptions_
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::ExtensionRangeOptions_Declaration>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional int32 number = 1;
@@ -1330,9 +1303,6 @@ constexpr EnumDescriptorProto_EnumReservedRange::ParseTableT_ EnumDescriptorProt
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::EnumDescriptorProto_EnumReservedRange>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       // optional int32 end = 2;
       {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(EnumDescriptorProto_EnumReservedRange, _impl_.end_), 1>(),
@@ -1446,9 +1416,6 @@ constexpr DescriptorProto_ReservedRange::ParseTableT_ DescriptorProto_ReservedRa
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::DescriptorProto_ReservedRange>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       // optional int32 end = 2;
       {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(DescriptorProto_ReservedRange, _impl_.end_), 1>(),
@@ -1562,9 +1529,6 @@ constexpr UninterpretedOption::ParseTableT_ UninterpretedOption::_Internal::Gene
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::UninterpretedOption>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       // optional string aggregate_value = 8;
       {::_pbi::TcParser::FastBS1,
@@ -1726,9 +1690,6 @@ constexpr SourceCodeInfo::ParseTableT_ SourceCodeInfo::_Internal::GenerateParseT
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::SourceCodeInfo>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       // repeated .google.protobuf.SourceCodeInfo.Location location = 1;
       {::_pbi::TcParser::FastMcR1,
@@ -1841,9 +1802,6 @@ constexpr GeneratedCodeInfo::ParseTableT_ GeneratedCodeInfo::_Internal::Generate
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::GeneratedCodeInfo>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       // repeated .google.protobuf.GeneratedCodeInfo.Annotation annotation = 1;
       {::_pbi::TcParser::FastMcR1,
@@ -1956,9 +1914,6 @@ constexpr FeatureSetDefaults_FeatureSetEditionDefault::ParseTableT_ FeatureSetDe
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::FeatureSetDefaults_FeatureSetEditionDefault>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       // optional .google.protobuf.FeatureSet overridable_features = 4;
       {::_pbi::TcParser::FastMcS1,
@@ -2084,9 +2039,6 @@ constexpr ServiceOptions::ParseTableT_ ServiceOptions::_Internal::GenerateParseT
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::ServiceOptions>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional bool deprecated = 33 [default = false];
@@ -2219,9 +2171,6 @@ constexpr OneofOptions::ParseTableT_ OneofOptions::_Internal::GenerateParseTable
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::OneofOptions>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional .google.protobuf.FeatureSet features = 1;
@@ -2346,9 +2295,6 @@ constexpr MethodOptions::ParseTableT_ MethodOptions::_Internal::GenerateParseTab
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::MethodOptions>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional bool deprecated = 33 [default = false];
@@ -2492,9 +2438,6 @@ constexpr MessageOptions::ParseTableT_ MessageOptions::_Internal::GenerateParseT
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::MessageOptions>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional bool message_set_wire_format = 1 [default = false];
@@ -2647,9 +2590,6 @@ constexpr FileOptions::ParseTableT_ FileOptions::_Internal::GenerateParseTable(c
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::FileOptions>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional string java_package = 1;
@@ -2927,9 +2867,6 @@ constexpr FieldOptions::ParseTableT_ FieldOptions::_Internal::GenerateParseTable
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::FieldOptions>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       // optional bool debug_redact = 16 [default = false];
       {::_pbi::TcParser::FastV8S2,
@@ -3140,9 +3077,6 @@ constexpr FeatureSetDefaults::ParseTableT_ FeatureSetDefaults::_Internal::Genera
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::FeatureSetDefaults>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       // optional .google.protobuf.Edition minimum_edition = 4;
       {::_pbi::TcParser::FastEvS1,
@@ -3267,9 +3201,6 @@ constexpr ExtensionRangeOptions::ParseTableT_ ExtensionRangeOptions::_Internal::
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::ExtensionRangeOptions>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       {::_pbi::TcParser::MiniParse, {}},
@@ -3415,9 +3346,6 @@ constexpr EnumValueOptions::ParseTableT_ EnumValueOptions::_Internal::GeneratePa
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::EnumValueOptions>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional bool deprecated = 1 [default = false];
@@ -3565,9 +3493,6 @@ constexpr EnumOptions::ParseTableT_ EnumOptions::_Internal::GenerateParseTable(c
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::EnumOptions>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       {::_pbi::TcParser::MiniParse, {}},
@@ -3711,9 +3636,6 @@ constexpr OneofDescriptorProto::ParseTableT_ OneofDescriptorProto::_Internal::Ge
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::OneofDescriptorProto>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       // optional .google.protobuf.OneofOptions options = 2;
       {::_pbi::TcParser::FastMcS1,
@@ -3831,9 +3753,6 @@ constexpr MethodDescriptorProto::ParseTableT_ MethodDescriptorProto::_Internal::
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::MethodDescriptorProto>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional string name = 1;
@@ -3985,9 +3904,6 @@ constexpr FieldDescriptorProto::ParseTableT_ FieldDescriptorProto::_Internal::Ge
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::FieldDescriptorProto>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional string name = 1;
@@ -4180,9 +4096,6 @@ constexpr EnumValueDescriptorProto::ParseTableT_ EnumValueDescriptorProto::_Inte
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::EnumValueDescriptorProto>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional string name = 1;
@@ -4308,9 +4221,6 @@ constexpr DescriptorProto_ExtensionRange::ParseTableT_ DescriptorProto_Extension
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::DescriptorProto_ExtensionRange>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional int32 start = 1;
@@ -4434,9 +4344,6 @@ constexpr ServiceDescriptorProto::ParseTableT_ ServiceDescriptorProto::_Internal
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::ServiceDescriptorProto>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional string name = 1;
@@ -4567,9 +4474,6 @@ constexpr EnumDescriptorProto::ParseTableT_ EnumDescriptorProto::_Internal::Gene
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::EnumDescriptorProto>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional string name = 1;
@@ -4732,9 +4636,6 @@ constexpr DescriptorProto::ParseTableT_ DescriptorProto::_Internal::GeneratePars
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::DescriptorProto>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional string name = 1;
@@ -4960,9 +4861,6 @@ constexpr FileDescriptorProto::ParseTableT_ FileDescriptorProto::_Internal::Gene
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::MpUnknownFields,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::FileDescriptorProto>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // optional string name = 1;
@@ -5208,9 +5106,6 @@ constexpr FileDescriptorSet::ParseTableT_ FileDescriptorSet::_Internal::Generate
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::google::protobuf::FileDescriptorSet>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
       // repeated .google.protobuf.FileDescriptorProto file = 1;
       {::_pbi::TcParser::FastMcR1,
