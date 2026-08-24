@@ -18,11 +18,33 @@
 #include "upb/message/internal/message.h"
 #include "upb/message/internal/types.h"
 #include "upb/mini_table/extension.h"
+#include "upb/wire/encode.h"
+#include "upb/wire/encode_extension.h"
 #include "upb/wire/eps_copy_input_stream.h"
 #include "upb/wire/reader.h"
 
 // Must be last.
 #include "upb/port/def.inc"
+
+bool upb_Message_NextWireFormatUnknown(const struct upb_Message* msg,
+                                       struct upb_Arena** arena,
+                                       upb_StringView* data, uintptr_t* iter) {
+  upb_MessageUnknown unknown;
+  if (!upb_Message_NextUnknown2(msg, &unknown, iter)) {
+    return false;
+  }
+  if (unknown.type == kUpb_MessageUnknownType_StringView) {
+    *data = unknown.value.bytes;
+    return true;
+  }
+  UPB_ASSERT(unknown.type == kUpb_MessageUnknownType_NonCanonicalExtension);
+  if (!*arena) {
+    *arena = upb_Arena_New();
+  }
+  upb_EncodeStatus status =
+      upb_EncodeExtension(unknown.value.extension, *arena, data, 0);
+  return status == kUpb_EncodeStatus_Ok;
+}
 
 static upb_FindUnknownRet2 upb_FindUnknownRet2_ParseError(void) {
   return (upb_FindUnknownRet2){.status = kUpb_FindUnknown_ParseError};
