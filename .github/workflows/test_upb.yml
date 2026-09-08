@@ -216,6 +216,9 @@ jobs:
           tar -xzvf *.tar.gz
           cd protobuf-*/
           pip install .
+      - name: Check the interpreter info
+        if: ${{ !matrix.continuous-only || inputs.continuous-run }}
+        run: python -v -c 'import sys ; print(sys.executable + " " + sys.version)'
       - name: Test that module is importable
         if: ${{ !matrix.continuous-only || inputs.continuous-run }}
         run: python -v -c 'from google._upb import _message; assert "google._upb._message.MessageMeta" in str(_message.MessageMeta)'
