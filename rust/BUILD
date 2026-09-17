@@ -95,6 +95,7 @@ ALL_RUST_SRCS = PROTOBUF_SHARED + [
     "cpp_kernel/message.rs",
     "cpp_kernel/mod.rs",
     "cpp_kernel/raw.rs",
+    "cpp_kernel/reflection.rs",
     "cpp_kernel/repeated.rs",
     "cpp_kernel/string.rs",
     "gtest_matchers.rs",
