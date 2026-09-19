@@ -319,7 +319,8 @@ cc_library(
     deps = [
         ":conformance_cc_proto",
         ":failure_list_trie_node",
-        "//src/google/protobuf/stubs",
+        ":testee",
+        "@abseil-cpp//absl/algorithm:container",
         "@abseil-cpp//absl/container:btree",
         "@abseil-cpp//absl/container:flat_hash_map",
         "@abseil-cpp//absl/container:flat_hash_set",
@@ -328,6 +329,7 @@ cc_library(
         "@abseil-cpp//absl/status",
         "@abseil-cpp//absl/strings",
         "@abseil-cpp//absl/strings:string_view",
+        "@abseil-cpp//absl/types:optional",
     ],
 )
 
@@ -403,12 +405,14 @@ cc_test(
     srcs = ["test_manager_test.cc"],
     deps = [
         ":test_manager",
+        ":testee",
         "//src/google/protobuf/testing",
         "//src/google/protobuf/testing:file",
         "@abseil-cpp//absl/log:absl_check",
         "@abseil-cpp//absl/status",
         "@abseil-cpp//absl/status:status_matchers",
         "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/types:optional",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
