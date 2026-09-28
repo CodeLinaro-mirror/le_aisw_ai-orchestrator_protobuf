@@ -13,6 +13,7 @@ import static com.google.protobuf.TestUtil.TEST_REQUIRED_INITIALIZED;
 import static com.google.protobuf.TestUtil.TEST_REQUIRED_UNINITIALIZED;
 
 import com.google.protobuf.Descriptors.FieldDescriptor;
+import dynamicmessagetest.DynamicMessageTestProto.HashCodeTestMessage;
 import proto2_unittest.UnittestOptimizeFor.TestOptimizedForSize;
 import proto2_unittest.UnittestProto;
 import proto2_unittest.UnittestProto.ForeignMessage;
@@ -537,6 +538,25 @@ public class AbstractMessageTest {
     assertThat(message1).isEqualTo(message2);
     assertThat(message2).isEqualTo(message1);
     assertThat(message2.hashCode()).isEqualTo(message1.hashCode());
+  }
+
+  @Test
+  public void testHashCodeMatchesGeneratedForSubclassWithoutOneofReflection() {
+    // AbstractMessageWrapper does not override hasOneof/getOneofFieldDescriptor, so this checks
+    // that AbstractMessage.hashCode() only relies on getAllFields().
+    HashCodeTestMessage generated =
+        HashCodeTestMessage.newBuilder()
+            .setImplicitInt32HighNumber(5)
+            .setExplicitInt32LowNumber(0)
+            .setFirstOneofString("oneof")
+            .setSecondOneofInt32(0)
+            .addRepeatedString("r")
+            .putStringInt32Map("k", 1)
+            .build();
+
+    assertThat(new AbstractMessageWrapper(generated).hashCode()).isEqualTo(generated.hashCode());
+    assertThat(new AbstractMessageWrapper(HashCodeTestMessage.getDefaultInstance()).hashCode())
+        .isEqualTo(HashCodeTestMessage.getDefaultInstance().hashCode());
   }
 
   /**

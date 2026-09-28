@@ -18,3 +18,48 @@ message EmptyMessage {}
 message MessageWithMapFields {
   map<string, EmptyMessage> string_message_map = 1;
 }
+
+enum HashCodeTestEnum {
+  HASH_CODE_TEST_ENUM_UNSPECIFIED = 0;
+  HASH_CODE_TEST_ENUM_ONE = 1;
+  HASH_CODE_TEST_ENUM_TWO = 2;
+}
+
+message HashCodeTestMessage {
+  // Out-of-order field numbers and mixed explicit/implicit presence.
+  int32 implicit_int32_high_number = 50 [features.field_presence = IMPLICIT];
+  int32 explicit_int32_low_number = 2;
+  string implicit_string = 40 [features.field_presence = IMPLICIT];
+  bytes implicit_bytes = 30 [features.field_presence = IMPLICIT];
+  bool implicit_bool = 25 [features.field_presence = IMPLICIT];
+  double implicit_double = 24 [features.field_presence = IMPLICIT];
+  float implicit_float = 23 [features.field_presence = IMPLICIT];
+  int64 implicit_int64 = 22 [features.field_presence = IMPLICIT];
+  HashCodeTestEnum implicit_enum = 20 [features.field_presence = IMPLICIT];
+
+  oneof first_oneof {
+    int32 first_oneof_int32 = 1;
+    string first_oneof_string = 60;
+  }
+
+  repeated string repeated_string = 15;
+  repeated HashCodeTestEnum repeated_enum = 14;
+  map<string, int32> string_int32_map = 13;
+  map<string, HashCodeTestMessage> nested_map = 12;
+
+  oneof second_oneof {
+    int32 second_oneof_int32 = 3;
+    HashCodeTestMessage second_oneof_message = 4;
+  }
+
+  int32 trailing_implicit_int32 = 5 [features.field_presence = IMPLICIT];
+  int32 trailing_explicit_int32 = 6;
+  HashCodeTestMessage nested_message = 7;
+
+  extensions 8 to 11;
+}
+
+extend HashCodeTestMessage {
+  int32 ext_int32 = 9;
+  string ext_string = 8;
+}

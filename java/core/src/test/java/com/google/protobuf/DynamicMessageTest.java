@@ -13,7 +13,10 @@ import static org.junit.Assert.assertThrows;
 import com.google.protobuf.Descriptors.EnumDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.OneofDescriptor;
+import dynamicmessagetest.DynamicMessageTestProto;
 import dynamicmessagetest.DynamicMessageTestProto.EmptyMessage;
+import dynamicmessagetest.DynamicMessageTestProto.HashCodeTestEnum;
+import dynamicmessagetest.DynamicMessageTestProto.HashCodeTestMessage;
 import dynamicmessagetest.DynamicMessageTestProto.MessageWithMapFields;
 import proto2_unittest.UnittestMset.TestMessageSetExtension2;
 import proto2_unittest.UnittestProto;
@@ -424,5 +427,83 @@ public class DynamicMessageTest {
 
     assertThat(complicatedlyBuiltMessage).isEqualTo(expectedMessage);
     assertThat(roundtrippedMessage).isEqualTo(expectedMessage);
+  }
+
+  @Test
+  public void hashCode_matchesGeneratedMessage_defaultInstanceWithImplicitPresence() {
+    HashCodeTestMessage generated = HashCodeTestMessage.getDefaultInstance();
+    DynamicMessage dynamicDefault =
+        DynamicMessage.getDefaultInstance(HashCodeTestMessage.getDescriptor());
+    DynamicMessage dynamicBuilt =
+        DynamicMessage.newBuilder(HashCodeTestMessage.getDescriptor()).build();
+
+    assertThat(dynamicDefault.hashCode()).isEqualTo(generated.hashCode());
+    assertThat(dynamicBuilt.hashCode()).isEqualTo(generated.hashCode());
+  }
+
+  @Test
+  public void hashCode_matchesGeneratedMessage_outOfOrderFieldsAndOneofsAndExtensions()
+      throws Exception {
+    ExtensionRegistry registry = ExtensionRegistry.newInstance();
+    DynamicMessageTestProto.registerAllExtensions(registry);
+
+    HashCodeTestMessage nested =
+        HashCodeTestMessage.newBuilder()
+            .setImplicitInt32HighNumber(42)
+            .setExplicitInt32LowNumber(7)
+            .setFirstOneofString("nested_oneof")
+            .build();
+
+    HashCodeTestMessage generated =
+        HashCodeTestMessage.newBuilder()
+            .setImplicitInt32HighNumber(100)
+            .setExplicitInt32LowNumber(200)
+            .setImplicitString("hello")
+            .setImplicitBytes(ByteString.copyFromUtf8("world"))
+            .setImplicitBool(true)
+            .setImplicitDouble(3.14)
+            .setImplicitFloat(2.5f)
+            .setImplicitInt64(9999999999L)
+            .setImplicitEnum(HashCodeTestEnum.HASH_CODE_TEST_ENUM_TWO)
+            .setFirstOneofInt32(11)
+            .addRepeatedString("a")
+            .addRepeatedString("b")
+            .addRepeatedEnum(HashCodeTestEnum.HASH_CODE_TEST_ENUM_ONE)
+            .addRepeatedEnumValue(999)
+            .putStringInt32Map("k1", 1)
+            .putStringInt32Map("k2", 2)
+            .putNestedMap("nested_key", nested)
+            .setSecondOneofMessage(nested)
+            .setTrailingImplicitInt32(0)
+            .setTrailingExplicitInt32(0)
+            .setNestedMessage(HashCodeTestMessage.getDefaultInstance())
+            .setExtension(DynamicMessageTestProto.extInt32, 123)
+            .setExtension(DynamicMessageTestProto.extString, "ext")
+            .setUnknownFields(
+                UnknownFieldSet.newBuilder()
+                    .addField(999, UnknownFieldSet.Field.newBuilder().addVarint(77).build())
+                    .build())
+            .build();
+
+    DynamicMessage dynamicFromCopy = DynamicMessage.newBuilder(generated).build();
+    DynamicMessage dynamicFromBytes =
+        DynamicMessage.parseFrom(
+            HashCodeTestMessage.getDescriptor(), generated.toByteString(), registry);
+
+    assertThat(dynamicFromCopy.hashCode()).isEqualTo(generated.hashCode());
+    assertThat(dynamicFromBytes.hashCode()).isEqualTo(generated.hashCode());
+  }
+
+  @Test
+  public void hashCode_matchesGeneratedMessage_unknownEnumValueInImplicitPresenceField()
+      throws Exception {
+    HashCodeTestMessage generated =
+        HashCodeTestMessage.newBuilder().setImplicitEnumValue(12345).build();
+    DynamicMessage dynamicFromCopy = DynamicMessage.newBuilder(generated).build();
+    DynamicMessage dynamicFromBytes =
+        DynamicMessage.parseFrom(HashCodeTestMessage.getDescriptor(), generated.toByteString());
+
+    assertThat(dynamicFromCopy.hashCode()).isEqualTo(generated.hashCode());
+    assertThat(dynamicFromBytes.hashCode()).isEqualTo(generated.hashCode());
   }
 }
