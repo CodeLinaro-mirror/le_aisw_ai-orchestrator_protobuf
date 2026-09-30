@@ -7,6 +7,15 @@
 
 use core::marker::PhantomData;
 
+#[cfg(not(bzl))]
+mod reflection {
+    pub use super::super::sys::reflection::*;
+}
+#[cfg(not(bzl))]
+mod upb {
+    pub use super::super::*;
+}
+
 use reflection::def_pool::{
     upb_DefPool_FindMessageByNameWithSize, upb_DefPool_Free, upb_DefPool_LoadDefInit,
     upb_DefPool_New, RawDefPool,
