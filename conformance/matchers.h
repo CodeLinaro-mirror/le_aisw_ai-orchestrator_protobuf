@@ -18,11 +18,15 @@
 #define GOOGLE_PROTOBUF_CONFORMANCE_MATCHERS_H__
 
 #include <ostream>
+#include <utility>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include "absl/base/nullability.h"
 #include "absl/strings/string_view.h"
 #include "conformance/binary_wireformat.h"
 #include "conformance/testee.h"
+#include "google/protobuf/descriptor.h"
 #include "google/protobuf/message.h"
 
 namespace google {
@@ -38,7 +42,47 @@ namespace internal {
 // printed.
 void PrintTo(const TestResult& result, std::ostream* os);
 
+// Implements WhenParsed() and WhenParsedAs() below.  The payload is
+// decoded as `type_override` if it is non-null, and as the test's message type
+// otherwise.
+testing::Matcher<const TestResult&> MakeWhenParsedMatcher(
+    testing::Matcher<const Message&> m,
+    const Descriptor* absl_nullable type_override = nullptr);
+
 }  // namespace internal
+
+// Matches a result whose payload, decoded as the test's message type, matches
+// `m`.  The payload is decoded from binary or text output.  `m` is any matcher
+// on `const Message&`, usually EqualsTextProto() or EqualsBinaryProto().
+//
+//   EXPECT_THAT(result,
+//               WhenParsed(EqualsTextProto(R"pb(optional_int32: 1)pb")));
+//
+// A payload that can't be decoded fails with "<format> output we received
+// from test was unparseable."  Otherwise the failure message comes from `m`.
+// JSON output can't be decoded yet (b/410122158) and fails with a message
+// saying so.  Use RawPayload() for it.
+template <typename M>
+testing::Matcher<const internal::TestResult&> WhenParsed(M m) {
+  return internal::MakeWhenParsedMatcher(
+      testing::SafeMatcherCast<const Message&>(std::move(m)));
+}
+
+// Like WhenParsed(), but decodes the payload as the generated type `T`
+// instead of the message type the test was run against.  Use it when the
+// testee serializes unknown fields that a richer "shadow" type such as
+// UnknownToTestAllTypes can decode:
+//
+//   EXPECT_THAT(Testee("Foo").ParseBinary(type, input).SerializeBinary(),
+//               Yields(WhenParsedAs<UnknownToTestAllTypes>(
+//                   EqualsBinaryProto(input))));
+//
+// Failure messages are the same as WhenParsed()'s.
+template <typename T, typename M>
+testing::Matcher<const internal::TestResult&> WhenParsedAs(M m) {
+  return internal::MakeWhenParsedMatcher(
+      testing::SafeMatcherCast<const Message&>(std::move(m)), T::descriptor());
+}
 
 // Matches a result whose raw payload is exactly `bytes`, whatever the output
 // format.
@@ -56,7 +100,8 @@ testing::Matcher<const internal::TestResult&> RawPayload(Wire bytes);
 // Matches a message equivalent to `text`, parsed as the actual message's type.
 // Messages are compared with MessageDifferencer, with NaN equal to NaN.
 //
-//   EXPECT_THAT(message, EqualsTextProto(R"pb(optional_int32: 1)pb"));
+//   EXPECT_THAT(result,
+//               WhenParsed(EqualsTextProto(R"pb(optional_int32: 1)pb")));
 testing::Matcher<const Message&> EqualsTextProto(absl::string_view text);
 
 // Like EqualsTextProto(), but the expected message is the binary serialization

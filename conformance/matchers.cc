@@ -13,7 +13,9 @@
 #include <string>
 #include <utility>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include "absl/base/nullability.h"
 #include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/ascii.h"
@@ -261,6 +263,46 @@ std::string UnparseableMessage(WireFormat format) {
   }
 }
 
+// Parses the payload of `result` (according to its requested output format)
+// into a message of type `type`.  Returns null and sets `failure_message` if
+// the payload is invalid or the format isn't supported.
+std::unique_ptr<Message> ParsePayload(const TestResult& result,
+                                      const Descriptor* type,
+                                      std::string& failure_message) {
+  std::unique_ptr<Message> message = NewMessage(type);
+  switch (result.format()) {
+    case ::conformance::PROTOBUF:
+      if (!message->ParseFromString(result.response().protobuf_payload())) {
+        failure_message = UnparseableMessage(result.format());
+        return nullptr;
+      }
+      return message;
+    case ::conformance::TEXT_FORMAT: {
+      TextFormat::Parser parser;
+      // Testees asked to print unknown fields emit them by field number, and
+      // a known field named by number is the same field, so always accept
+      // them.  Unknown numbers still fail to parse.
+      parser.AllowFieldNumber(true);
+      if (!parser.ParseFromString(result.response().text_payload(),
+                                  message.get())) {
+        failure_message = UnparseableMessage(result.format());
+        return nullptr;
+      }
+      return message;
+    }
+    case ::conformance::JSON:
+    case ::conformance::JSPB:
+    case ::conformance::UNSPECIFIED:
+    default:
+      // TODO: b/410122158 - Support JSON once the JSON suite is migrated.
+      failure_message = absl::StrCat(
+          "WhenParsed is not supported for ", WireFormat_Name(result.format()),
+          " output; use RawPayload() to match the raw JSON text until JSON "
+          "matching is migrated to gtest (b/410122158).");
+      return nullptr;
+  }
+}
+
 // Formats binary data the same way the legacy runner does in failure messages.
 std::string ToOctString(absl::string_view binary_string) {
   std::string oct_string;
@@ -338,6 +380,59 @@ bool PayloadMatcher::MatchAndExplain(
   return MatchPayload(result, listener);
 }
 
+// Implements WhenParsed() and WhenParsedAs().
+class WhenParsedMatcher : public PayloadMatcher {
+ public:
+  // The payload is decoded as `type_override` if it is non-null, and as the
+  // test's message type otherwise.
+  explicit WhenParsedMatcher(testing::Matcher<const Message&> matcher,
+                             const Descriptor* type_override = nullptr)
+      : matcher_(std::move(matcher)), type_override_(type_override) {}
+
+ private:
+  bool MatchPayload(const TestResult& result,
+                    testing::MatchResultListener* listener) const override;
+  void DescribeInnerTo(std::ostream* os, bool negation) const override;
+
+  testing::Matcher<const Message&> matcher_;
+  // Null means "the test's message type".
+  const Descriptor* absl_nullable type_override_;
+};
+
+bool WhenParsedMatcher::MatchPayload(
+    const TestResult& result, testing::MatchResultListener* listener) const {
+  std::string failure_message;
+  std::unique_ptr<Message> actual = ParsePayload(
+      result, type_override_ != nullptr ? type_override_ : result.type(),
+      failure_message);
+  if (actual == nullptr) {
+    *listener << failure_message;
+    return false;
+  }
+
+  testing::StringMatchResultListener inner_listener;
+  if (matcher_.MatchAndExplain(*actual, &inner_listener)) {
+    *listener << inner_listener.str();
+    return true;
+  }
+  if (inner_listener.str().empty()) {
+    *listener << "Expect: when parsed, "
+              << testing::DescribeMatcher<const Message&>(matcher_)
+              << ", but got: {" << ToShortString(*actual) << "}";
+  } else {
+    *listener << inner_listener.str();
+  }
+  return false;
+}
+
+void WhenParsedMatcher::DescribeInnerTo(std::ostream* os, bool negation) const {
+  *os << "when parsed";
+  if (type_override_ != nullptr) {
+    *os << " as " << type_override_->full_name();
+  }
+  *os << ", " << testing::DescribeMatcher<const Message&>(matcher_, negation);
+}
+
 // Implements RawPayload().
 class RawPayloadMatcher : public PayloadMatcher {
  public:
@@ -395,6 +490,12 @@ void PrintTo(const TestResult& result, std::ostream* os) {
       *os << " (unparseable)";
     }
   }
+}
+
+testing::Matcher<const TestResult&> MakeWhenParsedMatcher(
+    testing::Matcher<const Message&> m,
+    const Descriptor* absl_nullable type_override) {
+  return WhenParsedMatcher(std::move(m), type_override);
 }
 
 }  // namespace internal
