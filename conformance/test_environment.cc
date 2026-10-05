@@ -209,7 +209,8 @@ ConformanceEnvironment& ConformanceEnvironment::Get() {
   ABSL_CHECK(global_environment != nullptr)
       << "No ConformanceEnvironment has been installed.  Conformance test "
          "binaries must call ConformanceEnvironment::Install() before "
-         "RUN_ALL_TESTS().";
+         "RUN_ALL_TESTS(); the usual way to do that is to depend on the "
+         "test_environment_main library instead of a generic gtest main.";
   return *global_environment;
 }
 
