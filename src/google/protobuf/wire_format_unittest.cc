@@ -16,6 +16,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -30,6 +31,7 @@
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
 #include "google/protobuf/message_lite.h"
 #include "google/protobuf/parse_context.h"
+#include "google/protobuf/protobuf_test.h"
 #include "google/protobuf/repeated_ptr_field.h"
 #include "google/protobuf/test_protos/lazy_field_test.pb.h"
 #include "google/protobuf/text_format.h"

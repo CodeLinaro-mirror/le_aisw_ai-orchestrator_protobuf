@@ -15,6 +15,7 @@
 #include "google/protobuf/io/coded_stream.h"
 #include "google/protobuf/map_test_util.h"
 #include "google/protobuf/map_unittest.pb.h"
+#include "google/protobuf/protobuf_test.h"
 #include "google/protobuf/test_util.h"
 #include "google/protobuf/unittest.pb.h"
 #include "google/protobuf/unittest_mset.pb.h"
@@ -36,15 +37,106 @@ using ::proto2_unittest::TestPackedExtensions;
 using ::proto2_unittest::TestPackedTypes;
 using ::proto2_wireformat_unittest::TestMessageSet;
 
+TestMessageSet* CreateTestMessageSet(Arena& arena) {
+  auto* msg = Arena::Create<TestMessageSet>(&arena);
+  auto* ext1 = msg->MutableExtension(
+      unittest::TestMessageSetExtension1::message_set_extension);
+  ext1->set_i(-1);
+  auto* ext3 = ext1->mutable_recursive()->MutableExtension(
+      unittest::TestMessageSetExtension3::message_set_extension);
+  ext3->set_required_int(-1);
+  ext3->mutable_msg()->set_b(0);
+  return msg;
+}
+
+NestedTestAllTypes* CreateNestedTestAllTypes(Arena& arena) {
+  auto* msg = Arena::Create<NestedTestAllTypes>(&arena);
+  TestUtil::SetAllFields(msg->mutable_payload());
+  TestUtil::SetAllFields(msg->mutable_lazy_child()->mutable_payload());
+  return msg;
+}
+
 struct TestParam {
   absl::string_view name;
   Message* (*create_message)(Arena& arena);
+
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, const TestParam& param) {
+    sink.Append(param.name);
+  }
 };
 
-class VisitFieldsTest : public testing::TestWithParam<TestParam> {
+class VisitFieldsTest : public testing::Test {
  public:
   VisitFieldsTest() {
-    message_ = GetParam().create_message(arena_);
+    static const TestParam kTestParams[] = {
+        {"TestAllTypes",
+         [](Arena& arena) -> Message* {
+           auto* msg = Arena::Create<TestAllTypes>(&arena);
+           TestUtil::SetAllFields(msg);
+           return msg;
+         }},
+        {"TestAllExtensions",
+         [](Arena& arena) -> Message* {
+           auto* msg = Arena::Create<TestAllExtensions>(&arena);
+           TestUtil::SetAllExtensions(msg);
+           return msg;
+         }},
+        {"TestAllExtensionsLazy",
+         [](Arena& arena) -> Message* {
+           TestAllExtensions original;
+           TestUtil::SetAllExtensions(&original);
+           auto* parsed = Arena::Create<TestAllExtensions>(&arena);
+           ABSL_CHECK(parsed->ParseFromString(original.SerializeAsString()));
+           return parsed;
+         }},
+        {"TestMap",
+         [](Arena& arena) -> Message* {
+           auto* msg = Arena::Create<TestMap>(&arena);
+           MapTestUtil::SetMapFields(msg);
+           return msg;
+         }},
+        {"TestMessageSet",
+         [](Arena& arena) -> Message* { return CreateTestMessageSet(arena); }},
+        {"TestMessageSetLazy",
+         [](Arena& arena) -> Message* {
+           auto* original = CreateTestMessageSet(arena);
+           auto* parsed = Arena::Create<TestMessageSet>(&arena);
+           ABSL_CHECK(parsed->ParseFromString(original->SerializeAsString()));
+           return parsed;
+         }},
+        {"TestOneof2LazyField",
+         [](Arena& arena) -> Message* {
+           auto* msg = Arena::Create<TestOneof2>(&arena);
+           TestUtil::SetOneof2(msg);
+           msg->mutable_foo_lazy_message()->set_moo_int(0);
+           return msg;
+         }},
+        {"TestPacked",
+         [](Arena& arena) -> Message* {
+           auto* msg = Arena::Create<TestPackedTypes>(&arena);
+           TestUtil::SetPackedFields(msg);
+           return msg;
+         }},
+        {"TestPackedExtensions",
+         [](Arena& arena) -> Message* {
+           auto* msg = Arena::Create<TestPackedExtensions>(&arena);
+           TestUtil::SetPackedExtensions(msg);
+           return msg;
+         }},
+        {"NestedTestAllTypes",
+         [](Arena& arena) -> Message* {
+           return CreateNestedTestAllTypes(arena);
+         }},
+        {"NestedTestAllTypesLazy",
+         [](Arena& arena) -> Message* {
+           auto* original = CreateNestedTestAllTypes(arena);
+           auto* parsed = Arena::Create<NestedTestAllTypes>(&arena);
+           ABSL_CHECK(parsed->ParseFromString(original->SerializeAsString()));
+           return parsed;
+         }},
+    };
+    message_ = PB_TEST_CHOOSE_VALUE(kTestParams).create_message(arena_);
     reflection_ = message_->GetReflection();
   }
 
@@ -54,7 +146,7 @@ class VisitFieldsTest : public testing::TestWithParam<TestParam> {
   const Reflection* reflection_;
 };
 
-TEST_P(VisitFieldsTest, VisitedFieldsCountMatchesListFields) {
+PB_TEST_F(VisitFieldsTest, VisitedFieldsCountMatchesListFields) {
   uint32_t count = 0;
   VisitFields(*message_, [&](auto info) { ++count; });
 
@@ -64,7 +156,7 @@ TEST_P(VisitFieldsTest, VisitedFieldsCountMatchesListFields) {
   EXPECT_EQ(count, fields.size());
 }
 
-TEST_P(VisitFieldsTest, VisitedMessageFieldsCountMatchesListFields) {
+PB_TEST_F(VisitFieldsTest, VisitedMessageFieldsCountMatchesListFields) {
   uint32_t count = 0;
   VisitFields(*message_, [&](auto info) { ++count; }, FieldMask::kMessage);
 
@@ -104,28 +196,28 @@ int CountAllMessageFieldsViaListFields(const Reflection* reflection,
   return message_count;
 }
 
-TEST_P(VisitFieldsTest, VisitMessageFieldsCountIncludesRepeatedElements) {
+PB_TEST_F(VisitFieldsTest, VisitMessageFieldsCountIncludesRepeatedElements) {
   int count = 0;
   VisitMessageFields(*message_, [&](const Message& msg) { ++count; });
 
   EXPECT_EQ(count, CountAllMessageFieldsViaListFields(reflection_, *message_));
 }
 
-TEST_P(VisitFieldsTest,
-       VisitMutableMessageFieldsCountIncludesRepeatedElements) {
+PB_TEST_F(VisitFieldsTest,
+          VisitMutableMessageFieldsCountIncludesRepeatedElements) {
   int count = 0;
   VisitMutableMessageFields(*message_, [&](Message& msg) { ++count; });
 
   EXPECT_EQ(count, CountAllMessageFieldsViaListFields(reflection_, *message_));
 }
 
-TEST_P(VisitFieldsTest, ClearByVisitFieldsMustBeEmpty) {
+PB_TEST_F(VisitFieldsTest, ClearByVisitFieldsMustBeEmpty) {
   VisitFields(*message_, [](auto info) { info.Clear(); });
 
   EXPECT_EQ(message_->ByteSizeLong(), 0);
 }
 
-TEST_P(VisitFieldsTest, ClearByVisitFieldsRevisitNone) {
+PB_TEST_F(VisitFieldsTest, ClearByVisitFieldsRevisitNone) {
   VisitFields(*message_, [](auto info) { info.Clear(); });
 
   uint32_t count = 0;
@@ -191,7 +283,7 @@ void MutateNothingByVisit(Message& message) {
   });
 }
 
-TEST_P(VisitFieldsTest, MutateNothingByVisitIdempotent) {
+PB_TEST_F(VisitFieldsTest, MutateNothingByVisitIdempotent) {
   std::string data;
   ASSERT_TRUE(message_->SerializeToString(&data));
 
@@ -315,105 +407,9 @@ size_t ByteSizeLongByVisit(const Message& message) {
   return byte_size;
 }
 
-TEST_P(VisitFieldsTest, ByteSizeByVisitFieldsMatchesCodegen) {
+PB_TEST_F(VisitFieldsTest, ByteSizeByVisitFieldsMatchesCodegen) {
   EXPECT_EQ(ByteSizeLongByVisit(*message_), message_->ByteSizeLong());
 }
-
-TestMessageSet* CreateTestMessageSet(Arena& arena) {
-  auto* msg = Arena::Create<TestMessageSet>(&arena);
-  auto* ext1 = msg->MutableExtension(
-      unittest::TestMessageSetExtension1::message_set_extension);
-  ext1->set_i(-1);
-  auto* ext3 = ext1->mutable_recursive()->MutableExtension(
-      unittest::TestMessageSetExtension3::message_set_extension);
-  ext3->set_required_int(-1);
-  ext3->mutable_msg()->set_b(0);
-  return msg;
-}
-
-NestedTestAllTypes* CreateNestedTestAllTypes(Arena& arena) {
-  auto* msg = Arena::Create<NestedTestAllTypes>(&arena);
-  TestUtil::SetAllFields(msg->mutable_payload());
-  TestUtil::SetAllFields(msg->mutable_lazy_child()->mutable_payload());
-  return msg;
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ReflectionVisitFieldsTest, VisitFieldsTest,
-    testing::Values(
-        TestParam{"TestAllTypes",
-                  [](Arena& arena) -> Message* {
-                    auto* msg = Arena::Create<TestAllTypes>(&arena);
-                    TestUtil::SetAllFields(msg);
-                    return msg;
-                  }},
-        TestParam{"TestAllExtensions",
-                  [](Arena& arena) -> Message* {
-                    auto* msg = Arena::Create<TestAllExtensions>(&arena);
-                    TestUtil::SetAllExtensions(msg);
-                    return msg;
-                  }},
-        TestParam{"TestAllExtensionsLazy",
-                  [](Arena& arena) -> Message* {
-                    TestAllExtensions original;
-                    TestUtil::SetAllExtensions(&original);
-                    auto* parsed = Arena::Create<TestAllExtensions>(&arena);
-                    ABSL_CHECK(
-                        parsed->ParseFromString(original.SerializeAsString()));
-                    return parsed;
-                  }},
-        TestParam{"TestMap",
-                  [](Arena& arena) -> Message* {
-                    auto* msg = Arena::Create<TestMap>(&arena);
-                    MapTestUtil::SetMapFields(msg);
-                    return msg;
-                  }},
-        TestParam{"TestMessageSet",
-                  [](Arena& arena) -> Message* {
-                    return CreateTestMessageSet(arena);
-                  }},
-        TestParam{"TestMessageSetLazy",
-                  [](Arena& arena) -> Message* {
-                    auto* original = CreateTestMessageSet(arena);
-                    auto* parsed = Arena::Create<TestMessageSet>(&arena);
-                    ABSL_CHECK(
-                        parsed->ParseFromString(original->SerializeAsString()));
-                    return parsed;
-                  }},
-        TestParam{"TestOneof2LazyField",
-                  [](Arena& arena) -> Message* {
-                    auto* msg = Arena::Create<TestOneof2>(&arena);
-                    TestUtil::SetOneof2(msg);
-                    msg->mutable_foo_lazy_message()->set_moo_int(0);
-                    return msg;
-                  }},
-        TestParam{"TestPacked",
-                  [](Arena& arena) -> Message* {
-                    auto* msg = Arena::Create<TestPackedTypes>(&arena);
-                    TestUtil::SetPackedFields(msg);
-                    return msg;
-                  }},
-        TestParam{"TestPackedExtensions",
-                  [](Arena& arena) -> Message* {
-                    auto* msg = Arena::Create<TestPackedExtensions>(&arena);
-                    TestUtil::SetPackedExtensions(msg);
-                    return msg;
-                  }},
-        TestParam{"NestedTestAllTypes",
-                  [](Arena& arena) -> Message* {
-                    return CreateNestedTestAllTypes(arena);
-                  }},
-        TestParam{"NestedTestAllTypesLazy",
-                  [](Arena& arena) -> Message* {
-                    auto* original = CreateNestedTestAllTypes(arena);
-                    auto* parsed = Arena::Create<NestedTestAllTypes>(&arena);
-                    ABSL_CHECK(
-                        parsed->ParseFromString(original->SerializeAsString()));
-                    return parsed;
-                  }}),
-    [](const testing::TestParamInfo<TestParam>& info) {
-      return std::string(info.param.name);
-    });
 
 template <typename T>
 void MutateMapValue(TestMap& message, absl::string_view name, int index,

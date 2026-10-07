@@ -7,11 +7,15 @@
 
 #include "google/protobuf/varint_shuffle.h"
 
+#include <array>
+#include <cstdint>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include "google/protobuf/protobuf_test.h"
 
 // Must be included last.
 #include "google/protobuf/port_def.inc"
@@ -20,7 +24,6 @@ using testing::Eq;
 using testing::IsNull;
 using testing::NotNull;
 using testing::Range;
-using testing::TestWithParam;
 
 namespace google {
 namespace protobuf {
@@ -70,18 +73,6 @@ int NaiveSerialize(char* p, uint64_t value) {
   return n;
 }
 
-class ShiftMixParseVarint32Test : public TestWithParam<int> {
- public:
-  int length() const { return GetParam(); }
-};
-class ShiftMixParseVarint64Test : public TestWithParam<int> {
- public:
-  int length() const { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(Default, ShiftMixParseVarint32Test, Range(1, 11));
-INSTANTIATE_TEST_SUITE_P(Default, ShiftMixParseVarint64Test, Range(1, 11));
-
 template <int limit = 10>
 const char* Parse(const char* data, int32_t& res) {
   int64_t res64;
@@ -95,30 +86,16 @@ const char* Parse(const char* data, int64_t& res) {
   return ShiftMixParseVarint<int64_t, limit>(data, res);
 }
 
-template <int limit = 0>
-const char* ParseWithLimit(int rtlimit, const char* data, int32_t& res) {
-  if (rtlimit > limit) return ParseWithLimit<limit + 1>(rtlimit, data, res);
-  return Parse<limit>(data, res);
+template <int N>
+constexpr auto Limits() {
+  std::array<int, N> res{};
+  for (int i = 0; i < N; ++i) res[i] = i + 1;
+  return res;
 }
 
-template <int limit = 0>
-const char* ParseWithLimit(int rtlimit, const char* data, int64_t& res) {
-  if (rtlimit > limit) return ParseWithLimit<limit + 1>(rtlimit, data, res);
-  return Parse<limit>(data, res);
-}
-
-template <>
-const char* ParseWithLimit<10>(int rtlimit, const char* data, int32_t& res) {
-  return Parse<10>(data, res);
-}
-
-template <>
-const char* ParseWithLimit<10>(int rtlimit, const char* data, int64_t& res) {
-  return Parse<10>(data, res);
-}
-
-template <typename T>
-void TestAllLengths(int len) {
+PB_TEST(ShiftMixParseVarintTest, AllLengths) {
+  using T = PB_TEST_CHOOSE_TYPE((int32_t, int64_t));
+  int len = PB_TEST_CHOOSE_VALUE(Range(1, 11), "len");
   std::vector<char> bytes;
   for (int i = 1; i < len; ++i) {
     bytes.push_back(static_cast<char>(0xC1 + (i << 1)));
@@ -136,16 +113,9 @@ void TestAllLengths(int len) {
   ASSERT_THAT(result, Eq(expected));
 }
 
-TEST_P(ShiftMixParseVarint32Test, AllLengths) {
-  TestAllLengths<int32_t>(length());
-}
-
-TEST_P(ShiftMixParseVarint64Test, AllLengths) {
-  TestAllLengths<int64_t>(length());
-}
-
-template <typename T>
-void TestNonCanonicalValue(int len) {
+PB_TEST(ShiftMixParseVarintTest, NonCanonicalValue) {
+  using T = PB_TEST_CHOOSE_TYPE((int32_t, int64_t));
+  int len = PB_TEST_CHOOSE_VALUE(Range(1, 11), "len");
   char data[] = {'\xc3', '\xc5', '\xc7', '\xc9', '\xcb',
                  '\xcd', '\xcf', '\xd1', '\xd3', '\x7E'};
   if (len < 10) data[len++] = 0;
@@ -160,16 +130,9 @@ void TestNonCanonicalValue(int len) {
   ASSERT_THAT(result, Eq(expected));
 }
 
-TEST_P(ShiftMixParseVarint32Test, NonCanonicalValue) {
-  TestNonCanonicalValue<int32_t>(length());
-}
-
-TEST_P(ShiftMixParseVarint64Test, NonCanonicalValue) {
-  TestNonCanonicalValue<int64_t>(length());
-}
-
-template <typename T>
-void TestNonCanonicalZero(int len) {
+PB_TEST(ShiftMixParseVarintTest, NonCanonicalZero) {
+  using T = PB_TEST_CHOOSE_TYPE((int32_t, int64_t));
+  int len = PB_TEST_CHOOSE_VALUE(Range(1, 11), "len");
   char data[] = {'\x80', '\x80', '\x80', '\x80', '\x80',
                  '\x80', '\x80', '\x80', '\x80', '\x7E'};
   if (len < 10) data[len++] = 0;
@@ -183,121 +146,69 @@ void TestNonCanonicalZero(int len) {
   ASSERT_THAT(p, NotNull());
   ASSERT_THAT(p - data, Eq(len));
   ASSERT_THAT(result, Eq(expected));
-}  // namespace
-
-TEST_P(ShiftMixParseVarint32Test, NonCanonicalZero) {
-  TestNonCanonicalZero<int32_t>(length());
 }
 
-TEST_P(ShiftMixParseVarint64Test, NonCanonicalZero) {
-  TestNonCanonicalZero<int64_t>(length());
-}
+PB_TEST(ShiftMixParseVarintTest, HittingLimit) {
+  using T = PB_TEST_CHOOSE_TYPE((int32_t, int64_t));
+  constexpr int limit = PB_TEST_CHOOSE_CONSTEXPR(Limits<10>(), "limit");
 
-TEST_P(ShiftMixParseVarint32Test, HittingLimit) {
-  const int limit = length();
-
-  int32_t res = 0x94939291L;
+  T res = static_cast<T>(0x9897969594939291ULL);
   char data[10];
   int serialized_len = NaiveSerialize(data, res);
   ASSERT_THAT(serialized_len, Eq(10));
 
-  int32_t result;
-  const char* p = ParseWithLimit(limit, data, result);
+  T result;
+  const char* p = Parse<limit>(data, result);
   ASSERT_THAT(p, testing::NotNull());
   ASSERT_THAT(p - data, Eq(limit));
-  if (limit < 5) {
-    res |= Shl(int32_t{-1}, limit * 7);
+  constexpr int kMaxLimit = std::is_same_v<T, int32_t> ? 5 : 10;
+  if (limit < kMaxLimit) {
+    res |= Shl(T{-1}, limit * 7);
   }
   ASSERT_THAT(result, Eq(res));
 }
 
-TEST_P(ShiftMixParseVarint64Test, HittingLimit) {
-  const int limit = length();
+PB_TEST(ShiftMixParseVarintTest, AtOrBelowLimit) {
+  using T = PB_TEST_CHOOSE_TYPE((int32_t, int64_t));
+  constexpr int kMaxLimit = std::is_same_v<T, int32_t> ? 5 : 10;
+  constexpr int limit = PB_TEST_CHOOSE_CONSTEXPR(Limits<kMaxLimit>(), "limit");
 
-  int64_t res = 0x9897969594939291LL;
+  T res = std::is_same_v<T, int32_t>
+              ? (0x94939291ULL >> (35 - 7 * limit))
+              : (0x9897969594939291ULL >> (70 - 7 * limit));
   char data[10];
   int serialized_len = NaiveSerialize(data, res);
-  ASSERT_THAT(serialized_len, Eq(10));
+  ASSERT_THAT(serialized_len, Eq(limit == kMaxLimit ? 10 : limit));
 
-  int64_t result;
-  const char* p = ParseWithLimit(limit, data, result);
-  ASSERT_THAT(p, testing::NotNull());
-  ASSERT_THAT(p - data, Eq(limit));
-  if (limit != 10) {
-    res |= Shl(int64_t{-1}, limit * 7);
-  }
-  ASSERT_THAT(result, Eq(res));
-}
-
-TEST_P(ShiftMixParseVarint32Test, AtOrBelowLimit) {
-  const int limit = length();
-  if (limit > 5) GTEST_SKIP() << "N/A";
-
-  int32_t res = 0x94939291ULL >> (35 - 7 * limit);
-  char data[10];
-  int serialized_len = NaiveSerialize(data, res);
-  ASSERT_THAT(serialized_len, Eq(limit == 5 ? 10 : limit));
-
-  int32_t result;
-  const char* p = ParseWithLimit(limit, data, result);
+  T result;
+  const char* p = Parse<limit>(data, result);
   ASSERT_THAT(p, testing::NotNull());
   ASSERT_THAT(p - data, Eq(limit));
   ASSERT_THAT(result, Eq(res));
 }
 
-TEST_P(ShiftMixParseVarint64Test, AtOrBelowLimit) {
-  const int limit = length();
-
-  int64_t res = 0x9897969594939291ULL >> (70 - 7 * limit);
-  char data[10];
-  int serialized_len = NaiveSerialize(data, res);
-  ASSERT_THAT(serialized_len, Eq(limit));
-
-  int64_t result;
-  const char* p = ParseWithLimit(limit, data, result);
-  ASSERT_THAT(p, testing::NotNull());
-  ASSERT_THAT(p - data, Eq(limit));
-  ASSERT_THAT(result, Eq(res));
-}
-
-TEST(ShiftMixParseVarint32Test, OverLong) {
+PB_TEST(ShiftMixParseVarintTest, OverLong) {
+  using T = PB_TEST_CHOOSE_TYPE((int32_t, int64_t));
   char data[] = {'\xc3', '\xc5', '\xc7', '\xc9', '\xcb',
                  '\xcd', '\xcf', '\xd1', '\xd3', '\x81'};
-  int32_t result;
+  T result;
   const char* p = Parse(data, result);
   ASSERT_THAT(p, IsNull());
 }
 
-TEST(ShiftMixParseVarint64Test, OverLong) {
-  char data[] = {'\xc3', '\xc5', '\xc7', '\xc9', '\xcb',
-                 '\xcd', '\xcf', '\xd1', '\xd3', '\x81'};
-  int64_t result;
-  const char* p = Parse(data, result);
-  ASSERT_THAT(p, IsNull());
-}
-
-TEST(ShiftMixParseVarint32Test, DroppingOverlongBits) {
-  char data[] = {'\xc3', '\xc5', '\xc7', '\xc9', '\x7F'};
-  int32_t expected;
-  ASSERT_THAT(NaiveParse(data, expected), Eq(5));
-
-  int32_t result;
-  const char* p = Parse(data, result);
-  ASSERT_THAT(p, NotNull());
-  ASSERT_THAT(p - data, Eq(5));
-  ASSERT_THAT(result, Eq(expected));
-}
-
-TEST(ShiftMixParseVarint64Test, DroppingOverlongBits) {
+PB_TEST(ShiftMixParseVarintTest, DroppingOverlongBits) {
+  using T = PB_TEST_CHOOSE_TYPE((int32_t, int64_t));
+  constexpr int kMaxLen = std::is_same_v<T, int32_t> ? 5 : 10;
   char data[] = {'\xc3', '\xc5', '\xc7', '\xc9', '\xcb',
                  '\xcd', '\xcf', '\xd1', '\xd3', '\x7F'};
-  int64_t expected;
-  ASSERT_THAT(NaiveParse(data, expected), Eq(10));
+  data[kMaxLen - 1] = '\x7F';
+  T expected;
+  ASSERT_THAT(NaiveParse(data, expected), Eq(kMaxLen));
 
-  int64_t result;
+  T result;
   const char* p = Parse(data, result);
   ASSERT_THAT(p, NotNull());
-  ASSERT_THAT(p - data, Eq(10));
+  ASSERT_THAT(p - data, Eq(kMaxLen));
   ASSERT_THAT(result, Eq(expected));
 }
 

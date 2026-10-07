@@ -22,6 +22,7 @@
 #include "google/protobuf/map_unittest.pb.h"
 #include "google/protobuf/message.h"
 #include "google/protobuf/port.h"
+#include "google/protobuf/protobuf_test.h"
 #include "google/protobuf/repeated_field.h"
 #include "google/protobuf/repeated_ptr_field.h"
 #include "google/protobuf/unittest.pb.h"
@@ -74,17 +75,11 @@ class HasBitsTestPeer {
 
 namespace {
 
-template <typename HasBitsT>
-class DefaultInitTest : public ::testing::Test {};
-
-using DefaultInitTestTypes =
-    testing::Types<HasBits<1>, HasBits<2>, HasBits<3>, HasBits<4>>;
-TYPED_TEST_SUITE(DefaultInitTest, DefaultInitTestTypes);
-
-TYPED_TEST(DefaultInitTest, DefaultInit) {
-  TypeParam bits;
+PB_TEST(HasBitsTest, DefaultInit) {
+  constexpr int kWords = PB_TEST_CHOOSE_CONSTEXPR((1, 2, 3, 4));
+  HasBits<kWords> bits;
   EXPECT_TRUE(bits.empty());
-  for (int i = 0; i < TypeParam::kNumHasWords; ++i) {
+  for (int i = 0; i < kWords; ++i) {
     EXPECT_THAT(bits[i], Eq(0));
   }
 }

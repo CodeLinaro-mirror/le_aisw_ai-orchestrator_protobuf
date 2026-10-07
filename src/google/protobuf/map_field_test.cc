@@ -24,6 +24,7 @@
 #include "google/protobuf/map_test_util.h"
 #include "google/protobuf/map_unittest.pb.h"
 #include "google/protobuf/message.h"
+#include "google/protobuf/protobuf_test.h"
 #include "google/protobuf/repeated_field.h"
 #include "google/protobuf/unittest.pb.h"
 #include "google/protobuf/wire_format_lite.h"
@@ -53,12 +54,13 @@ constexpr const auto* kEntryGlobals =
 using TestMapField =
     ::google::protobuf::internal::MapField<kEntryGlobals, ::int32_t, ::int32_t>;
 
-class MapFieldBasePrimitiveTest : public testing::TestWithParam<bool> {
+class MapFieldBasePrimitiveTest : public testing::Test {
  protected:
   typedef MapField<kEntryGlobals, int32_t, int32_t> MapFieldType;
 
   MapFieldBasePrimitiveTest()
-      : arena_(GetParam() ? new Arena() : nullptr),
+      : arena_(PB_TEST_CHOOSE_VALUE(testing::Bool(), "arena") ? new Arena()
+                                                              : nullptr),
         map_field_(arena_.get()),
         map_field_base_(map_field_.get()) {
     // Get descriptors
@@ -88,15 +90,11 @@ class MapFieldBasePrimitiveTest : public testing::TestWithParam<bool> {
       initial_value_map_;  // copy of initial values inserted
 };
 
-INSTANTIATE_TEST_SUITE_P(MapFieldBasePrimitiveTestInstance,
-                         MapFieldBasePrimitiveTest,
-                         testing::Values(true, false));
-
-TEST_P(MapFieldBasePrimitiveTest, SpaceUsedExcludingSelf) {
+PB_TEST_F(MapFieldBasePrimitiveTest, SpaceUsedExcludingSelf) {
   EXPECT_LT(0, map_field_base_->SpaceUsedExcludingSelf());
 }
 
-TEST_P(MapFieldBasePrimitiveTest, GetRepeatedField) {
+PB_TEST_F(MapFieldBasePrimitiveTest, GetRepeatedField) {
   const RepeatedPtrField<Message>& repeated =
       reinterpret_cast<const RepeatedPtrField<Message>&>(
           map_field_base_->GetRepeatedField());
@@ -109,7 +107,7 @@ TEST_P(MapFieldBasePrimitiveTest, GetRepeatedField) {
   }
 }
 
-TEST_P(MapFieldBasePrimitiveTest, MutableRepeatedField) {
+PB_TEST_F(MapFieldBasePrimitiveTest, MutableRepeatedField) {
   RepeatedPtrField<Message>* repeated =
       reinterpret_cast<RepeatedPtrField<Message>*>(
           map_field_base_->MutableRepeatedField());
@@ -122,7 +120,7 @@ TEST_P(MapFieldBasePrimitiveTest, MutableRepeatedField) {
   }
 }
 
-TEST_P(MapFieldBasePrimitiveTest, Arena) {
+PB_TEST_F(MapFieldBasePrimitiveTest, Arena) {
   // Allocate a large initial block to avoid mallocs during hooked test.
   std::vector<char> arena_block(128 * 1024);
   ArenaOptions options;
@@ -159,7 +157,7 @@ TEST_P(MapFieldBasePrimitiveTest, Arena) {
   }
 }
 
-TEST_P(MapFieldBasePrimitiveTest, EnforceNoArena) {
+PB_TEST_F(MapFieldBasePrimitiveTest, EnforceNoArena) {
   std::unique_ptr<TestMapField> map_field(Arena::Create<TestMapField>(nullptr));
   EXPECT_EQ(MapFieldTestPeer::GetArena(map_field->GetRepeatedField()), nullptr);
 }
@@ -168,26 +166,46 @@ namespace {
 enum State { CLEAN, MAP_DIRTY, REPEATED_DIRTY };
 }  // anonymous namespace
 
-class MapFieldStateTest
-    : public testing::TestWithParam<std::tuple<State, bool>> {
+class MapFieldStateTest : public testing::Test {
  protected:
   typedef MapField<kEntryGlobals, int32_t, int32_t> MapFieldType;
   MapFieldStateTest()
-      : arena_(std::get<1>(GetParam()) ? new Arena() : nullptr),
+      : arena_(PB_TEST_CHOOSE_VALUE(testing::Bool(), "arena") ? new Arena()
+                                                              : nullptr),
         map_field_(arena_.get()),
         map_field_base_(map_field_.get()),
-        state_(std::get<0>(GetParam())) {
+        state_(PB_TEST_CHOOSE_VALUE((CLEAN, MAP_DIRTY, REPEATED_DIRTY))) {
     // Build map field
     Expect(map_field_.get(), MAP_DIRTY, 0, 0);
-    switch (state_) {
+    SetState(map_field_.get(), state_);
+  }
+
+  void SetState(MapFieldType* map_field, State state) {
+    switch (state) {
       case CLEAN:
-        AddOneStillClean(map_field_.get());
+        AddOneStillClean(map_field);
         break;
       case MAP_DIRTY:
-        MakeMapDirty(map_field_.get());
+        MakeMapDirty(map_field);
         break;
       case REPEATED_DIRTY:
-        MakeRepeatedDirty(map_field_.get());
+        MakeRepeatedDirty(map_field);
+        break;
+      default:
+        break;
+    }
+  }
+
+  void ExpectState(MapFieldType* map_field, State state) {
+    switch (state) {
+      case CLEAN:
+        Expect(map_field, CLEAN, 1, 1);
+        break;
+      case MAP_DIRTY:
+        Expect(map_field, MAP_DIRTY, 1, 0);
+        break;
+      case REPEATED_DIRTY:
+        Expect(map_field, REPEATED_DIRTY, 0, 1);
         break;
       default:
         break;
@@ -256,12 +274,7 @@ class MapFieldStateTest
   State state_;
 };
 
-INSTANTIATE_TEST_SUITE_P(MapFieldStateTestInstance, MapFieldStateTest,
-                         testing::Combine(testing::Values(CLEAN, MAP_DIRTY,
-                                                          REPEATED_DIRTY),
-                                          testing::Values(true, false)));
-
-TEST_P(MapFieldStateTest, GetMap) {
+PB_TEST_F(MapFieldStateTest, GetMap) {
   map_field_->GetMap();
   if (state_ != MAP_DIRTY) {
     Expect(map_field_.get(), CLEAN, 1, 1);
@@ -270,7 +283,7 @@ TEST_P(MapFieldStateTest, GetMap) {
   }
 }
 
-TEST_P(MapFieldStateTest, MutableMap) {
+PB_TEST_F(MapFieldStateTest, MutableMap) {
   map_field_->MutableMap();
   if (state_ != MAP_DIRTY) {
     Expect(map_field_.get(), MAP_DIRTY, 1, 1);
@@ -279,9 +292,11 @@ TEST_P(MapFieldStateTest, MutableMap) {
   }
 }
 
-TEST_P(MapFieldStateTest, MergeFromClean) {
+PB_TEST_F(MapFieldStateTest, MergeFrom) {
+  State other_state =
+      PB_TEST_CHOOSE_VALUE((CLEAN, MAP_DIRTY, REPEATED_DIRTY), "other");
   ArenaHolder<MapFieldType> other(arena_.get());
-  AddOneStillClean(other.get());
+  SetState(other.get(), other_state);
 
   map_field_->MergeFrom(*other);
 
@@ -291,136 +306,35 @@ TEST_P(MapFieldStateTest, MergeFromClean) {
     Expect(map_field_.get(), MAP_DIRTY, 1, 0);
   }
 
-  Expect(other.get(), CLEAN, 1, 1);
+  ExpectState(other.get(), other_state == MAP_DIRTY ? MAP_DIRTY : CLEAN);
 }
 
-TEST_P(MapFieldStateTest, MergeFromMapDirty) {
+PB_TEST_F(MapFieldStateTest, Swap) {
+  State other_state =
+      PB_TEST_CHOOSE_VALUE((CLEAN, MAP_DIRTY, REPEATED_DIRTY), "other");
   ArenaHolder<MapFieldType> other(arena_.get());
-  MakeMapDirty(other.get());
-
-  map_field_->MergeFrom(*other);
-
-  if (state_ != MAP_DIRTY) {
-    Expect(map_field_.get(), MAP_DIRTY, 1, 1);
-  } else {
-    Expect(map_field_.get(), MAP_DIRTY, 1, 0);
-  }
-
-  Expect(other.get(), MAP_DIRTY, 1, 0);
-}
-
-TEST_P(MapFieldStateTest, MergeFromRepeatedDirty) {
-  ArenaHolder<MapFieldType> other(arena_.get());
-  MakeRepeatedDirty(other.get());
-
-  map_field_->MergeFrom(*other);
-
-  if (state_ != MAP_DIRTY) {
-    Expect(map_field_.get(), MAP_DIRTY, 1, 1);
-  } else {
-    Expect(map_field_.get(), MAP_DIRTY, 1, 0);
-  }
-
-  Expect(other.get(), CLEAN, 1, 1);
-}
-
-TEST_P(MapFieldStateTest, SwapClean) {
-  ArenaHolder<MapFieldType> other(arena_.get());
-  AddOneStillClean(other.get());
+  SetState(other.get(), other_state);
 
   map_field_->Swap(/*arena=*/arena_.get(), other.get(),
                    /*other_arena=*/arena_.get());
 
-  Expect(map_field_.get(), CLEAN, 1, 1);
-
-  switch (state_) {
-    case CLEAN:
-      Expect(other.get(), CLEAN, 1, 1);
-      break;
-    case MAP_DIRTY:
-      Expect(other.get(), MAP_DIRTY, 1, 0);
-      break;
-    case REPEATED_DIRTY:
-      Expect(other.get(), REPEATED_DIRTY, 0, 1);
-      break;
-    default:
-      break;
-  }
+  ExpectState(map_field_.get(), other_state);
+  ExpectState(other.get(), state_);
 }
 
-TEST_P(MapFieldStateTest, SwapMapDirty) {
-  ArenaHolder<MapFieldType> other(arena_.get());
-  MakeMapDirty(other.get());
-
-  map_field_->Swap(/*arena=*/arena_.get(), other.get(),
-                   /*other_arena=*/arena_.get());
-
-  Expect(map_field_.get(), MAP_DIRTY, 1, 0);
-
-  switch (state_) {
-    case CLEAN:
-      Expect(other.get(), CLEAN, 1, 1);
-      break;
-    case MAP_DIRTY:
-      Expect(other.get(), MAP_DIRTY, 1, 0);
-      break;
-    case REPEATED_DIRTY:
-      Expect(other.get(), REPEATED_DIRTY, 0, 1);
-      break;
-    default:
-      break;
-  }
-}
-
-TEST_P(MapFieldStateTest, SwapRepeatedDirty) {
-  ArenaHolder<MapFieldType> other(arena_.get());
-  MakeRepeatedDirty(other.get());
-
-  map_field_->Swap(/*arena=*/arena_.get(), other.get(),
-                   /*other_arena=*/arena_.get());
-
-  Expect(map_field_.get(), REPEATED_DIRTY, 0, 1);
-
-  switch (state_) {
-    case CLEAN:
-      Expect(other.get(), CLEAN, 1, 1);
-      break;
-    case MAP_DIRTY:
-      Expect(other.get(), MAP_DIRTY, 1, 0);
-      break;
-    case REPEATED_DIRTY:
-      Expect(other.get(), REPEATED_DIRTY, 0, 1);
-      break;
-    default:
-      break;
-  }
-}
-
-TEST_P(MapFieldStateTest, Clear) {
+PB_TEST_F(MapFieldStateTest, Clear) {
   map_field_->Clear();
 
   Expect(map_field_.get(), MAP_DIRTY, 0, 0);
 }
 
-TEST_P(MapFieldStateTest, SpaceUsedExcludingSelf) {
+PB_TEST_F(MapFieldStateTest, SpaceUsedExcludingSelf) {
   map_field_base_->SpaceUsedExcludingSelf();
 
-  switch (state_) {
-    case CLEAN:
-      Expect(map_field_.get(), CLEAN, 1, 1);
-      break;
-    case MAP_DIRTY:
-      Expect(map_field_.get(), MAP_DIRTY, 1, 0);
-      break;
-    case REPEATED_DIRTY:
-      Expect(map_field_.get(), REPEATED_DIRTY, 0, 1);
-      break;
-    default:
-      break;
-  }
+  ExpectState(map_field_.get(), state_);
 }
 
-TEST_P(MapFieldStateTest, GetMapField) {
+PB_TEST_F(MapFieldStateTest, GetMapField) {
   (void)map_field_base_->GetRepeatedField();
 
   if (state_ != REPEATED_DIRTY) {
@@ -430,7 +344,7 @@ TEST_P(MapFieldStateTest, GetMapField) {
   }
 }
 
-TEST_P(MapFieldStateTest, MutableMapField) {
+PB_TEST_F(MapFieldStateTest, MutableMapField) {
   (void)map_field_base_->MutableRepeatedField();
 
   if (state_ != REPEATED_DIRTY) {

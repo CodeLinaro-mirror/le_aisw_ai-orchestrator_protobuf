@@ -26,6 +26,7 @@
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/io/coded_stream.h"
 #include "google/protobuf/port.h"
+#include "google/protobuf/protobuf_test.h"
 #include "google/protobuf/test_util.h"
 #include "google/protobuf/text_format.h"
 #include "google/protobuf/unittest.pb.h"
@@ -201,57 +202,35 @@ static void PopulateUFS(UnknownFieldSet& set) {
   }
 }
 
-TEST_F(UnknownFieldSetTest, ArenaSupportWorksWithMergeFrom) {
+PB_TEST_F(UnknownFieldSetTest, ArenaSupportWorksWithMergeFrom) {
   Arena arena;
-
-  for (bool lhs_arena : {false, true}) {
-    for (bool rhs_arena : {false, true}) {
-      UnknownFieldSet lhs_stack, rhs_stack;
-      auto& lhs =
-          lhs_arena ? *Arena::Create<UnknownFieldSet>(&arena) : lhs_stack;
-      auto& rhs =
-          rhs_arena ? *Arena::Create<UnknownFieldSet>(&arena) : rhs_stack;
-      PopulateUFS(rhs);
-      lhs.MergeFrom(rhs);
-    }
-  }
+  auto lhs = Arena::MakeUnique<UnknownFieldSet>(
+      PB_TEST_CHOOSE_VALUE((nullptr, &arena), "lhs"));
+  auto rhs = Arena::MakeUnique<UnknownFieldSet>(
+      PB_TEST_CHOOSE_VALUE((nullptr, &arena), "rhs"));
+  PopulateUFS(*rhs);
+  lhs->MergeFrom(*rhs);
 }
 
-TEST_F(UnknownFieldSetTest, ArenaSupportWorksWithMergeAndDestroy) {
+PB_TEST_F(UnknownFieldSetTest, ArenaSupportWorksWithMergeAndDestroy) {
   Arena arena;
-
-  for (bool lhs_arena : {false, true}) {
-    for (bool populate_lhs : {false, true}) {
-      for (bool rhs_arena : {false, true}) {
-        for (bool populate_rhs : {false, true}) {
-          UnknownFieldSet lhs_stack, rhs_stack;
-          auto& lhs =
-              lhs_arena ? *Arena::Create<UnknownFieldSet>(&arena) : lhs_stack;
-          auto& rhs =
-              rhs_arena ? *Arena::Create<UnknownFieldSet>(&arena) : rhs_stack;
-          if (populate_lhs) PopulateUFS(lhs);
-          if (populate_rhs) PopulateUFS(rhs);
-          lhs.MergeFromAndDestroy(&rhs);
-        }
-      }
-    }
-  }
+  auto lhs = Arena::MakeUnique<UnknownFieldSet>(
+      PB_TEST_CHOOSE_VALUE((nullptr, &arena), "lhs"));
+  auto rhs = Arena::MakeUnique<UnknownFieldSet>(
+      PB_TEST_CHOOSE_VALUE((nullptr, &arena), "rhs"));
+  if (PB_TEST_CHOOSE_VALUE(testing::Bool(), "populate_lhs")) PopulateUFS(*lhs);
+  if (PB_TEST_CHOOSE_VALUE(testing::Bool(), "populate_rhs")) PopulateUFS(*rhs);
+  lhs->MergeFromAndDestroy(rhs.get());
 }
 
-TEST_F(UnknownFieldSetTest, ArenaSupportWorksWithSwap) {
+PB_TEST_F(UnknownFieldSetTest, ArenaSupportWorksWithSwap) {
   Arena arena;
-
-  for (bool lhs_arena : {false, true}) {
-    for (bool rhs_arena : {false, true}) {
-      UnknownFieldSet lhs_stack, rhs_stack;
-      auto& lhs =
-          lhs_arena ? *Arena::Create<UnknownFieldSet>(&arena) : lhs_stack;
-      auto& rhs =
-          rhs_arena ? *Arena::Create<UnknownFieldSet>(&arena) : rhs_stack;
-      PopulateUFS(lhs);
-      lhs.Swap(&rhs);
-    }
-  }
+  auto lhs = Arena::MakeUnique<UnknownFieldSet>(
+      PB_TEST_CHOOSE_VALUE((nullptr, &arena), "lhs"));
+  auto rhs = Arena::MakeUnique<UnknownFieldSet>(
+      PB_TEST_CHOOSE_VALUE((nullptr, &arena), "rhs"));
+  PopulateUFS(*lhs);
+  lhs->Swap(rhs.get());
 }
 
 TEST_F(UnknownFieldSetTest, ArenaSupportWorksWithClear) {
@@ -686,77 +665,55 @@ TEST_F(UnknownFieldSetTest, Empty) {
   EXPECT_TRUE(unknown_fields.empty());
 }
 
-TEST_F(UnknownFieldSetTest, DeleteSubrange) {
+PB_TEST_F(UnknownFieldSetTest, DeleteSubrange) {
   // Exhaustively test the deletion of every possible subrange in arrays of all
   // sizes from 0 through 9.
-  for (int size = 0; size < 10; ++size) {
-    for (int num = 0; num <= size; ++num) {
-      for (int start = 0; start < size - num; ++start) {
-        // Create a set with "size" fields.
-        UnknownFieldSet unknown;
-        for (int i = 0; i < size; ++i) {
-          unknown.AddFixed32(i, i);
-        }
-        // Delete the specified subrange.
-        unknown.DeleteSubrange(start, num);
-        // Make sure the resulting field values are still correct.
-        EXPECT_EQ(size - num, unknown.field_count());
-        for (int i = 0; i < unknown.field_count(); ++i) {
-          if (i < start) {
-            EXPECT_EQ(i, unknown.field(i).fixed32());
-          } else {
-            EXPECT_EQ(i + num, unknown.field(i).fixed32());
-          }
+  const int size = PB_TEST_CHOOSE_VALUE(testing::Range(0, 10), "size");
+  for (int num = 0; num <= size; ++num) {
+    for (int start = 0; start < size - num; ++start) {
+      // Create a set with "size" fields.
+      UnknownFieldSet unknown;
+      for (int i = 0; i < size; ++i) {
+        unknown.AddFixed32(i, static_cast<uint32_t>(i));
+      }
+      // Delete the specified subrange.
+      unknown.DeleteSubrange(start, num);
+      // Make sure the resulting field values are still correct.
+      EXPECT_EQ(size - num, unknown.field_count());
+      for (int i = 0; i < unknown.field_count(); ++i) {
+        if (i < start) {
+          EXPECT_EQ(static_cast<uint32_t>(i), unknown.field(i).fixed32());
+        } else {
+          EXPECT_EQ(static_cast<uint32_t>(i + num), unknown.field(i).fixed32());
         }
       }
     }
   }
 }
 
-void CheckDeleteByNumber(const std::vector<int>& field_numbers,
-                         int deleted_number,
-                         const std::vector<int>& expected_field_numbers) {
+PB_TEST_F(UnknownFieldSetTest, DeleteByNumber) {
+  struct TestCase {
+    std::vector<int> field_numbers;
+    int deleted_number;
+    std::vector<int> expected_field_numbers;
+  };
+  const auto tc = PB_TEST_CHOOSE_VALUE(
+      (TestCase{{}, 1, {}}, TestCase{{1, 2, 3}, 1, {2, 3}},
+       TestCase{{1, 2, 3}, 2, {1, 3}}, TestCase{{1, 2, 3}, 3, {1, 2}},
+       TestCase{{1, 2, 1, 4, 1}, 1, {2, 4}},
+       TestCase{{1, 2, 3, 4, 5}, 6, {1, 2, 3, 4, 5}}));
   UnknownFieldSet unknown_fields;
-  for (int i = 0; i < field_numbers.size(); ++i) {
-    unknown_fields.AddFixed32(field_numbers[i], i);
+  for (size_t i = 0; i < tc.field_numbers.size(); ++i) {
+    unknown_fields.AddFixed32(tc.field_numbers[i], static_cast<uint32_t>(i));
   }
-  unknown_fields.DeleteByNumber(deleted_number);
-  ASSERT_EQ(expected_field_numbers.size(), unknown_fields.field_count());
-  for (int i = 0; i < expected_field_numbers.size(); ++i) {
-    EXPECT_EQ(expected_field_numbers[i], unknown_fields.field(i).number());
+  unknown_fields.DeleteByNumber(tc.deleted_number);
+  ASSERT_EQ(tc.expected_field_numbers.size(),
+            static_cast<size_t>(unknown_fields.field_count()));
+  for (size_t i = 0; i < tc.expected_field_numbers.size(); ++i) {
+    EXPECT_EQ(tc.expected_field_numbers[i],
+              unknown_fields.field(static_cast<int>(i)).number());
   }
 }
-
-#define MAKE_VECTOR(x) std::vector<int>(x, x + std::size(x))
-TEST_F(UnknownFieldSetTest, DeleteByNumber) {
-  CheckDeleteByNumber(std::vector<int>(), 1, std::vector<int>());
-  static const int kTestFieldNumbers1[] = {1, 2, 3};
-  static const int kFieldNumberToDelete1 = 1;
-  static const int kExpectedFieldNumbers1[] = {2, 3};
-  CheckDeleteByNumber(MAKE_VECTOR(kTestFieldNumbers1), kFieldNumberToDelete1,
-                      MAKE_VECTOR(kExpectedFieldNumbers1));
-  static const int kTestFieldNumbers2[] = {1, 2, 3};
-  static const int kFieldNumberToDelete2 = 2;
-  static const int kExpectedFieldNumbers2[] = {1, 3};
-  CheckDeleteByNumber(MAKE_VECTOR(kTestFieldNumbers2), kFieldNumberToDelete2,
-                      MAKE_VECTOR(kExpectedFieldNumbers2));
-  static const int kTestFieldNumbers3[] = {1, 2, 3};
-  static const int kFieldNumberToDelete3 = 3;
-  static const int kExpectedFieldNumbers3[] = {1, 2};
-  CheckDeleteByNumber(MAKE_VECTOR(kTestFieldNumbers3), kFieldNumberToDelete3,
-                      MAKE_VECTOR(kExpectedFieldNumbers3));
-  static const int kTestFieldNumbers4[] = {1, 2, 1, 4, 1};
-  static const int kFieldNumberToDelete4 = 1;
-  static const int kExpectedFieldNumbers4[] = {2, 4};
-  CheckDeleteByNumber(MAKE_VECTOR(kTestFieldNumbers4), kFieldNumberToDelete4,
-                      MAKE_VECTOR(kExpectedFieldNumbers4));
-  static const int kTestFieldNumbers5[] = {1, 2, 3, 4, 5};
-  static const int kFieldNumberToDelete5 = 6;
-  static const int kExpectedFieldNumbers5[] = {1, 2, 3, 4, 5};
-  CheckDeleteByNumber(MAKE_VECTOR(kTestFieldNumbers5), kFieldNumberToDelete5,
-                      MAKE_VECTOR(kExpectedFieldNumbers5));
-}
-#undef MAKE_VECTOR
 
 TEST_F(UnknownFieldSetTest, SerializeToString) {
   UnknownFieldSet field_set;

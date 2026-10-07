@@ -19,6 +19,7 @@
 #include "absl/strings/cord.h"
 #include "absl/strings/string_view.h"
 #include "google/protobuf/descriptor.h"
+#include "google/protobuf/protobuf_test.h"
 #include "google/protobuf/unittest.pb.h"
 #include "google/protobuf/unittest_no_field_presence.pb.h"
 
@@ -265,83 +266,39 @@ TEST(NoFieldPresenceTest, MessageFieldPresenceTest) {
             TestAllTypes::default_instance().has_optional_nested_message());
 }
 
-TEST(NoFieldPresenceTest, MergeFromDefaultStringFieldTest) {
-  // As an optimization, we maintain a default string in memory and messages
-  // with uninitialized fields will be constructed with a pointer to this
-  // default string object. The destructor should clear the field only when it
-  // is "set" to a nondefault object.
-  TestAllTypes src, dst;
-  dst.MergeFrom(src);
+// As an optimization, we maintain a default string in memory and messages
+// with uninitialized fields will be constructed with a pointer to this
+// default string object. The destructor should clear the field only when it
+// is "set" to a nondefault object.
+class NoFieldPresenceStringFieldTest : public testing::Test {
+ protected:
+  NoFieldPresenceStringFieldTest() {
+    enum class State { kDefault, kAllocated, kEmpty };
+    switch (PB_TEST_CHOOSE_VALUE(
+        (State::kDefault, State::kAllocated, State::kEmpty))) {
+      case State::kDefault:
+        break;
+      case State::kAllocated:
+        src_.mutable_optional_string();  // this causes a memory allocation.
+        break;
+      case State::kEmpty:
+        src_.set_optional_string("");
+        break;
+    }
+  }
 
-  dst.Clear();
+  TestAllTypes src_;
+  TestAllTypes dst_;
+};
+
+PB_TEST_F(NoFieldPresenceStringFieldTest, MergeFrom) {
+  dst_.MergeFrom(src_);
+  dst_.Clear();
 }
 
-TEST(NoFieldPresenceTest, MergeFromAllocatedStringFieldTest) {
-  // As an optimization, we maintain a default string in memory and messages
-  // with uninitialized fields will be constructed with a pointer to this
-  // default string object. The destructor should clear the field only when it
-  // is "set" to a nondefault object.
-  TestAllTypes src, dst;
-
-  src.mutable_optional_string();  // this causes a memory allocation.
-  dst.MergeFrom(src);
-
-  dst.Clear();
-}
-
-TEST(NoFieldPresenceTest, MergeFromEmptyStringFieldTest) {
-  // As an optimization, we maintain a default string in memory and messages
-  // with uninitialized fields will be constructed with a pointer to this
-  // default string object. The destructor should clear the field only when it
-  // is "set" to a nondefault object.
-  TestAllTypes src, dst;
-
-  // set one field to zero.
-  src.set_optional_string("");
-  dst.MergeFrom(src);
-
-  dst.Clear();
-}
-
-TEST(NoFieldPresenceTest, CopyTwiceDefaultStringFieldTest) {
-  // As an optimization, we maintain a default string in memory and messages
-  // with uninitialized fields will be constructed with a pointer to this
-  // default string object. The destructor should clear the field only when it
-  // is "set" to a nondefault object.
-  TestAllTypes src, dst;
-
-  dst = src;
-  dst = src;
-  (void)dst;
-}
-
-TEST(NoFieldPresenceTest, CopyTwiceAllocatedStringFieldTest) {
-  // As an optimization, we maintain a default string in memory and messages
-  // with uninitialized fields will be constructed with a pointer to this
-  // default string object. The destructor should clear the field only when it
-  // is "set" to a nondefault object.
-  TestAllTypes src, dst;
-
-  src.mutable_optional_string();  // this causes a memory allocation.
-
-  dst = src;
-  dst = src;
-  (void)dst;
-}
-
-TEST(NoFieldPresenceTest, CopyTwiceEmptyStringFieldTest) {
-  // As an optimization, we maintain a default string in memory and messages
-  // with uninitialized fields will be constructed with a pointer to this
-  // default string object. The destructor should clear the field only when it
-  // is "set" to a nondefault object.
-  TestAllTypes src, dst;
-
-  // set one field to zero.
-  src.set_optional_string("");
-
-  dst = src;
-  dst = src;
-  (void)dst;
+PB_TEST_F(NoFieldPresenceStringFieldTest, CopyTwice) {
+  dst_ = src_;
+  dst_ = src_;
 }
 
 class NoFieldPresenceSwapFieldTest : public testing::Test {
@@ -1044,66 +1001,16 @@ TEST(NoFieldPresenceTest, IsInitializedTest) {
   EXPECT_EQ(true, message.IsInitialized());
 }
 
-// TODO: b/358616816 - `if constexpr` can be used here once C++17 is baseline.
-template <typename T>
-bool TestSerialize(const MessageLite& message, T* output);
-
-template <>
-bool TestSerialize<std::string>(const MessageLite& message,
-                                std::string* output) {
-  return message.SerializeToString(output);
-}
-
-template <>
-bool TestSerialize<absl::Cord>(const MessageLite& message, absl::Cord* output) {
-  return message.SerializeToString(output);
-}
-
-template <typename T>
-class NoFieldPresenceSerializeTest : public testing::Test {
- public:
-  T& GetOutputSinkRef() { return value_; }
-  std::string GetOutput() { return std::string{value_}; }
-
- protected:
-  // Cargo-culted from:
-  // https://google.github.io/googletest/reference/testing.html#TYPED_TEST_SUITE
-  T value_;
-};
-
-using SerializableOutputTypes = ::testing::Types<std::string, absl::Cord>;
-
-// https://google.github.io/googletest/reference/testing.html#TYPED_TEST_SUITE
-// Providing the NameGenerator produces slightly more readable output in the
-// test invocation summary (type names are displayed instead of numbers).
-class NameGenerator {
- public:
-  template <typename T>
-  static std::string GetName(int) {
-    if constexpr (std::is_same_v<T, std::string>) {
-      return "string";
-    } else if constexpr (std::is_same_v<T, absl::Cord>) {
-      return "Cord";
-    } else {
-      static_assert(
-          std::is_same_v<T, std::string> || std::is_same_v<T, absl::Cord>,
-          "unsupported type");
-    }
-  }
-};
-
-TYPED_TEST_SUITE(NoFieldPresenceSerializeTest, SerializableOutputTypes,
-                 NameGenerator);
-
-TYPED_TEST(NoFieldPresenceSerializeTest, DontSerializeDefaultValuesTest) {
+PB_TEST(NoFieldPresenceSerializeTest, DontSerializeDefaultValuesTest) {
   // check that serialized data contains only non-zero numeric fields/non-empty
   // string/byte fields.
+  using OutputType = PB_TEST_CHOOSE_TYPE((std::string, absl::Cord));
   TestAllTypes message;
-  TypeParam& output_sink = this->GetOutputSinkRef();
+  OutputType output;
 
   // All default values -> no output.
-  ASSERT_TRUE(TestSerialize(message, &output_sink));
-  EXPECT_EQ(0, this->GetOutput().size());
+  ASSERT_TRUE(message.SerializeToString(&output));
+  EXPECT_EQ(0, output.size());
 
   // Zero values -> still no output.
   message.set_optional_int32(0);
@@ -1125,75 +1032,77 @@ TYPED_TEST(NoFieldPresenceSerializeTest, DontSerializeDefaultValuesTest) {
   message.set_optional_foreign_enum(FOREIGN_FOO);       // first enum entry
   message.set_optional_string_piece("");
 
-  ASSERT_TRUE(TestSerialize(message, &output_sink));
-  EXPECT_EQ(0, this->GetOutput().size());
+  ASSERT_TRUE(message.SerializeToString(&output));
+  EXPECT_EQ(0, output.size());
 
   message.set_optional_int32(1);
-  ASSERT_TRUE(TestSerialize(message, &output_sink));
-  EXPECT_EQ(2, this->GetOutput().size());
-  EXPECT_EQ("\x08\x01", this->GetOutput());
+  ASSERT_TRUE(message.SerializeToString(&output));
+  EXPECT_EQ(2, output.size());
+  EXPECT_EQ("\x08\x01", output);
 
   message.set_optional_int32(0);
-  ASSERT_TRUE(TestSerialize(message, &output_sink));
-  EXPECT_EQ(0, this->GetOutput().size());
+  ASSERT_TRUE(message.SerializeToString(&output));
+  EXPECT_EQ(0, output.size());
 }
 
-TYPED_TEST(NoFieldPresenceSerializeTest, NullMutableSerializesEmpty) {
+PB_TEST(NoFieldPresenceSerializeTest, NullMutableSerializesEmpty) {
   // Check that, if mutable_foo() was called, but fields were not modified,
   // nothing is serialized on the wire.
+  using OutputType = PB_TEST_CHOOSE_TYPE((std::string, absl::Cord));
   TestAllTypes message;
-  TypeParam& output_sink = this->GetOutputSinkRef();
+  OutputType output;
 
   // All default values -> no output.
-  ASSERT_TRUE(TestSerialize(message, &output_sink));
-  EXPECT_TRUE(this->GetOutput().empty());
+  ASSERT_TRUE(message.SerializeToString(&output));
+  EXPECT_TRUE(output.empty());
 
   // No-op mutable calls -> no output.
   message.mutable_optional_string();
   message.mutable_optional_bytes();
-  ASSERT_TRUE(TestSerialize(message, &output_sink));
-  EXPECT_TRUE(this->GetOutput().empty());
+  ASSERT_TRUE(message.SerializeToString(&output));
+  EXPECT_TRUE(output.empty());
 
   // Assign to nonempty string -> some output.
   *message.mutable_optional_bytes() = "bar";
-  ASSERT_TRUE(TestSerialize(message, &output_sink));
-  EXPECT_THAT(this->GetOutput().size(),
+  ASSERT_TRUE(message.SerializeToString(&output));
+  EXPECT_THAT(output.size(),
               Gt(3));  // 3-byte-long string + tag/value + len
 }
 
-TYPED_TEST(NoFieldPresenceSerializeTest, SetAllocatedAndReleaseTest) {
+PB_TEST(NoFieldPresenceSerializeTest, SetAllocatedAndReleaseTest) {
   // Check that setting an empty string via set_allocated_foo behaves properly;
   // Check that serializing after release_foo does not generate output for foo.
+  using OutputType = PB_TEST_CHOOSE_TYPE((std::string, absl::Cord));
   TestAllTypes message;
-  TypeParam& output_sink = this->GetOutputSinkRef();
+  OutputType output;
 
   // All default values -> no output.
-  ASSERT_TRUE(TestSerialize(message, &output_sink));
-  EXPECT_TRUE(this->GetOutput().empty());
+  ASSERT_TRUE(message.SerializeToString(&output));
+  EXPECT_TRUE(output.empty());
 
   auto allocated_bytes = std::make_unique<std::string>("test");
   message.set_allocated_optional_bytes(allocated_bytes.release());
-  ASSERT_TRUE(TestSerialize(message, &output_sink));
-  EXPECT_THAT(this->GetOutput().size(),
+  ASSERT_TRUE(message.SerializeToString(&output));
+  EXPECT_THAT(output.size(),
               Gt(4));  // 4-byte-long string + tag/value + len
 
-  size_t former_output_size = this->GetOutput().size();
+  size_t former_output_size = output.size();
 
   auto allocated_string = std::make_unique<std::string>("");
   message.set_allocated_optional_string(allocated_string.release());
-  ASSERT_TRUE(TestSerialize(message, &output_sink));
+  ASSERT_TRUE(message.SerializeToString(&output));
   // empty string not serialized.
-  EXPECT_EQ(former_output_size, this->GetOutput().size());
+  EXPECT_EQ(former_output_size, output.size());
 
   auto bytes_ptr = absl::WrapUnique(message.release_optional_bytes());
-  ASSERT_TRUE(TestSerialize(message, &output_sink));
-  EXPECT_TRUE(
-      this->GetOutput().empty());  // released fields are not serialized.
+  ASSERT_TRUE(message.SerializeToString(&output));
+  EXPECT_TRUE(output.empty());  // released fields are not serialized.
 }
 
-TYPED_TEST(NoFieldPresenceSerializeTest, LazyMessageFieldHasBit) {
+PB_TEST(NoFieldPresenceSerializeTest, LazyMessageFieldHasBit) {
   // Check that has-bit interaction with lazy message works (has-bit before and
   // after lazy decode).
+  using OutputType = PB_TEST_CHOOSE_TYPE((std::string, absl::Cord));
   TestAllTypes message;
   const Reflection* r = message.GetReflection();
   const Descriptor* desc = message.GetDescriptor();
@@ -1209,10 +1118,10 @@ TYPED_TEST(NoFieldPresenceSerializeTest, LazyMessageFieldHasBit) {
 
   // Serialize and parse with a new message object so that lazy field on new
   // object is in unparsed state.
-  TypeParam& output_sink = this->GetOutputSinkRef();
-  ASSERT_TRUE(TestSerialize(message, &output_sink));
+  OutputType output;
+  ASSERT_TRUE(message.SerializeToString(&output));
   TestAllTypes message2;
-  ABSL_CHECK(message2.ParseFromString(this->GetOutput()));
+  ABSL_CHECK(message2.ParseFromString(std::string(output)));
 
   EXPECT_EQ(true, message2.has_optional_lazy_message());
   EXPECT_EQ(true, r->HasField(message2, field));
@@ -1223,38 +1132,36 @@ TYPED_TEST(NoFieldPresenceSerializeTest, LazyMessageFieldHasBit) {
   EXPECT_EQ(true, r->HasField(message2, field));
 }
 
-TYPED_TEST(NoFieldPresenceSerializeTest, OneofPresence) {
+PB_TEST(NoFieldPresenceSerializeTest, OneofPresence) {
+  using OutputType = PB_TEST_CHOOSE_TYPE((std::string, absl::Cord));
   TestAllTypes message;
   // oneof fields still have field presence -- ensure that this goes on the wire
   // even though its value is the empty string.
   message.set_oneof_string("");
-  TypeParam& output_sink = this->GetOutputSinkRef();
-  ASSERT_TRUE(TestSerialize(message, &output_sink));
+  OutputType output;
+  ASSERT_TRUE(message.SerializeToString(&output));
   // Tag: 113 --> tag is (113 << 3) | 2 (length delimited) = 906
   // varint: 0x8a 0x07
   // Length: 0x00
-  EXPECT_EQ(3, this->GetOutput().size());
-  EXPECT_EQ(static_cast<char>(0x8a), this->GetOutput().at(0));
-  EXPECT_EQ(static_cast<char>(0x07), this->GetOutput().at(1));
-  EXPECT_EQ(static_cast<char>(0x00), this->GetOutput().at(2));
+  EXPECT_EQ(output, absl::string_view("\x8a\x07\x00", 3));
 
   message.Clear();
-  EXPECT_TRUE(message.ParseFromString(this->GetOutput()));
+  EXPECT_TRUE(message.ParseFromString(std::string(output)));
   EXPECT_EQ(TestAllTypes::kOneofString, message.oneof_field_case());
 
   // Also test int32 and enum fields.
   message.Clear();
   message.set_oneof_uint32(0);  // would not go on wire if ordinary field.
-  ASSERT_TRUE(TestSerialize(message, &output_sink));
-  EXPECT_EQ(3, this->GetOutput().size());
-  EXPECT_TRUE(message.ParseFromString(this->GetOutput()));
+  ASSERT_TRUE(message.SerializeToString(&output));
+  EXPECT_EQ(3, output.size());
+  EXPECT_TRUE(message.ParseFromString(std::string(output)));
   EXPECT_EQ(TestAllTypes::kOneofUint32, message.oneof_field_case());
 
   message.Clear();
   message.set_oneof_enum(TestAllTypes::FOO);  // FOO is the default value.
-  ASSERT_TRUE(TestSerialize(message, &output_sink));
-  EXPECT_EQ(3, this->GetOutput().size());
-  EXPECT_TRUE(message.ParseFromString(this->GetOutput()));
+  ASSERT_TRUE(message.SerializeToString(&output));
+  EXPECT_EQ(3, output.size());
+  EXPECT_TRUE(message.ParseFromString(std::string(output)));
   EXPECT_EQ(TestAllTypes::kOneofEnum, message.oneof_field_case());
 
   message.Clear();
