@@ -9,16 +9,18 @@
 #define GOOGLE_PROTOBUF_ARENASTRING_H__
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <string>
 #include <type_traits>
 #include <utility>
 
+#include "absl/base/attributes.h"
 #include "absl/log/absl_check.h"
 #include "absl/strings/cord.h"
 #include "absl/strings/string_view.h"
 #include "google/protobuf/arena.h"
-#include "google/protobuf/explicitly_constructed.h"
 #include "google/protobuf/port.h"
 
 // must be last:
@@ -242,7 +244,7 @@ struct PROTOBUF_EXPORT ArenaStringPtr {
   explicit ArenaStringPtr(Arena* arena)
       : tagged_ptr_(&fixed_address_empty_string) {
     if (DebugHardenForceCopyDefaultString()) {
-      Set(absl::string_view(""), arena);
+      SetFromDefault(absl::string_view(""), arena);
     }
   }
 
@@ -253,7 +255,7 @@ struct PROTOBUF_EXPORT ArenaStringPtr {
   ArenaStringPtr(Arena* arena, const LazyString& default_value)
       : tagged_ptr_(&fixed_address_empty_string) {
     if (DebugHardenForceCopyDefaultString()) {
-      Set(absl::string_view(default_value.get()), arena);
+      SetFromDefault(absl::string_view(default_value.get()), arena);
     }
   }
 
@@ -294,36 +296,42 @@ struct PROTOBUF_EXPORT ArenaStringPtr {
   // `arena` is not null, else, `str` will be owned by ArenaStringPtr. This
   // function should only be used to initialize a ArenaStringPtr or on an
   // instance known to not carry any heap allocated value.
-  inline void InitAllocated(std::string* str, Arena* arena);
+  template <typename = void>
+  inline void InitAllocated(std::string* str, const MessageLite& parent);
+
+  void SetFromDefault(absl::string_view value, Arena* arena);
 
   void Set(absl::string_view value, Arena* arena);
-  void Set(std::string&& value, Arena* arena);
-  void Set(const absl::Cord& value, Arena* arena);
-  template <typename... OverloadDisambiguator>
-  void Set(const std::string& value, Arena* arena);
-  void Set(const char* s, Arena* arena);
-  void Set(const char* s, size_t n, Arena* arena);
 
-  void SetBytes(absl::string_view value, Arena* arena);
-  void SetBytes(std::string&& value, Arena* arena);
+  void Set(absl::string_view value, const MessageLite& parent);
+  void Set(std::string&& value, const MessageLite& parent);
+  void Set(const absl::Cord& value, const MessageLite& parent);
   template <typename... OverloadDisambiguator>
-  void SetBytes(const std::string& value, Arena* arena);
-  void SetBytes(const absl::Cord& value, Arena* arena);
-  void SetBytes(const char* s, Arena* arena);
-  void SetBytes(const void* p, size_t n, Arena* arena);
+  void Set(const std::string& value, const MessageLite& parent);
+  void Set(const char* s, const MessageLite& parent);
+  void Set(const char* s, size_t n, const MessageLite& parent);
+
+  void SetBytes(absl::string_view value, const MessageLite& parent);
+  void SetBytes(std::string&& value, const MessageLite& parent);
+  template <typename... OverloadDisambiguator>
+  void SetBytes(const std::string& value, const MessageLite& parent);
+  void SetBytes(const absl::Cord& value, const MessageLite& parent);
+  void SetBytes(const char* s, const MessageLite& parent);
+  void SetBytes(const void* p, size_t n, const MessageLite& parent);
 
   template <typename RefWrappedType>
   void Set(std::reference_wrapper<RefWrappedType> const_string_ref,
-           ::google::protobuf::Arena* arena) {
-    Set(const_string_ref.get(), arena);
+           const MessageLite& parent) {
+    Set(const_string_ref.get(), parent);
   }
 
   // Returns a mutable std::string reference.
   // The version accepting a `LazyString` value is used in the generated code to
   // initialize mutable copies for fields with a non-empty default where the
   // default value is lazily initialized.
-  std::string* Mutable(Arena* arena);
-  std::string* Mutable(const LazyString& default_value, Arena* arena);
+  std::string* Mutable(const MessageLite& parent);
+  std::string* Mutable(const LazyString& default_value,
+                       const MessageLite& parent);
 
   // Gets a mutable pointer with unspecified contents.
   // This function is identical to Mutable(), except it is optimized for the
@@ -332,7 +340,7 @@ struct PROTOBUF_EXPORT ArenaStringPtr {
   // value with an empty string rather than a (non-empty) default value.
   // Likewise, if the current value is a fixed size arena string with contents,
   // it will be initialized into an empty mutable arena string.
-  std::string* MutableNoCopy(Arena* arena);
+  std::string* MutableNoCopy(const MessageLite& parent);
 
   // Basic accessors.
   PROTOBUF_NDEBUG_INLINE const std::string& Get() const {
@@ -356,7 +364,7 @@ struct PROTOBUF_EXPORT ArenaStringPtr {
   // Takes a std::string that is heap-allocated, and takes ownership. The
   // std::string's destructor is registered with the arena. Used to implement
   // set_allocated_<field> in generated classes.
-  void SetAllocated(std::string* value, Arena* arena);
+  void SetAllocated(std::string* value, const MessageLite& parent);
 
   // Frees storage (if not on an arena).
   void Destroy();
@@ -374,7 +382,8 @@ struct PROTOBUF_EXPORT ArenaStringPtr {
   // Clears content, but keeps allocated std::string if arena != nullptr, to
   // avoid the overhead of heap operations. After this returns, the content
   // (as seen by the user) will always be equal to |default_value|.
-  void ClearToDefault(const LazyString& default_value, ::google::protobuf::Arena* arena);
+  void ClearToDefault(const LazyString& default_value,
+                      const MessageLite& parent);
 
   // Swaps internal pointers. Arena-safety semantics: this is guarded by the
   // logic in Swap()/UnsafeArenaSwap() at the message level, so this method is
@@ -425,7 +434,8 @@ struct PROTOBUF_EXPORT ArenaStringPtr {
   // MutableSlow requires that !IsString() || IsDefault
   // Variadic to support 0 args for empty default and 1 arg for LazyString.
   template <typename... Lazy>
-  std::string* MutableSlow(::google::protobuf::Arena* arena, const Lazy&... lazy_default);
+  std::string* MutableSlow(const MessageLite& parent,
+                           const Lazy&... lazy_default);
 
   friend class EpsCopyInputStream;
 };
@@ -459,7 +469,10 @@ inline void ArenaStringPtr::InitExternal(const std::string* str) {
   tagged_ptr_.SetDefault(str);
 }
 
-inline void ArenaStringPtr::InitAllocated(std::string* str, Arena* arena) {
+template <typename T>
+inline void ArenaStringPtr::InitAllocated(std::string* str,
+                                          const MessageLite& parent) {
+  Arena* arena = TypeDependent<T>(parent).GetArena();
   if (arena != nullptr) {
     tagged_ptr_.SetMutableArena(str);
     arena->Own(str);
@@ -468,50 +481,57 @@ inline void ArenaStringPtr::InitAllocated(std::string* str, Arena* arena) {
   }
 }
 
-inline void ArenaStringPtr::Set(const absl::Cord& value, Arena* arena) {
+inline void ArenaStringPtr::Set(const absl::Cord& value,
+                                const MessageLite& parent) {
   if (auto flat = value.TryFlat(); flat.has_value()) {
-    Set(*flat, arena);
+    Set(*flat, parent);
   } else {
-    absl::CopyCordToString(value, MutableNoCopy(arena));
+    absl::CopyCordToString(value, MutableNoCopy(parent));
   }
 }
 
-inline void ArenaStringPtr::Set(const char* s, Arena* arena) {
+inline void ArenaStringPtr::Set(const char* s, const MessageLite& parent) {
   ABSL_DCHECK(s != nullptr);
-  Set(absl::string_view{s}, arena);
+  Set(absl::string_view{s}, parent);
 }
 
-inline void ArenaStringPtr::Set(const char* s, size_t n, Arena* arena) {
-  Set(absl::string_view{s, n}, arena);
+inline void ArenaStringPtr::Set(const char* s, size_t n,
+                                const MessageLite& parent) {
+  Set(absl::string_view{s, n}, parent);
 }
 
-inline void ArenaStringPtr::SetBytes(absl::string_view value, Arena* arena) {
-  Set(value, arena);
+inline void ArenaStringPtr::SetBytes(absl::string_view value,
+                                     const MessageLite& parent) {
+  Set(value, parent);
 }
 
 template <>
 PROTOBUF_EXPORT void ArenaStringPtr::Set(const std::string& value,
-                                         Arena* arena);
+                                         const MessageLite& parent);
 
 template <>
-inline void ArenaStringPtr::SetBytes(const std::string& value, Arena* arena) {
-  Set(value, arena);
+inline void ArenaStringPtr::SetBytes(const std::string& value,
+                                     const MessageLite& parent) {
+  Set(value, parent);
 }
 
-inline void ArenaStringPtr::SetBytes(std::string&& value, Arena* arena) {
-  Set(std::move(value), arena);
+inline void ArenaStringPtr::SetBytes(std::string&& value,
+                                     const MessageLite& parent) {
+  Set(std::move(value), parent);
 }
 
-inline void ArenaStringPtr::SetBytes(const absl::Cord& value, Arena* arena) {
-  Set(value, arena);
+inline void ArenaStringPtr::SetBytes(const absl::Cord& value,
+                                     const MessageLite& parent) {
+  Set(value, parent);
 }
 
-inline void ArenaStringPtr::SetBytes(const char* s, Arena* arena) {
-  Set(s, arena);
+inline void ArenaStringPtr::SetBytes(const char* s, const MessageLite& parent) {
+  Set(s, parent);
 }
 
-inline void ArenaStringPtr::SetBytes(const void* p, size_t n, Arena* arena) {
-  Set(absl::string_view{static_cast<const char*>(p), n}, arena);
+inline void ArenaStringPtr::SetBytes(const void* p, size_t n,
+                                     const MessageLite& parent) {
+  Set(absl::string_view{static_cast<const char*>(p), n}, parent);
 }
 
 PROTOBUF_NDEBUG_INLINE void ArenaStringPtr::InternalSwap(ArenaStringPtr* rhs,
