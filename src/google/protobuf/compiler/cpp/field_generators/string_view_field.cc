@@ -193,6 +193,7 @@ class SingularStringView : public FieldGeneratorBase {
 
   void GenerateStaticMembers(io::Printer* p) const override;
   void GenerateAccessorDeclarations(io::Printer* p) const override;
+  void GeneratePrivateAccessorDeclarations(io::Printer* p) const override;
   void GenerateInlineAccessorDefinitions(io::Printer* p) const override;
   void GenerateClearingCode(io::Printer* p) const override;
   void GenerateMessageClearingCode(io::Printer* p) const override;
@@ -237,12 +238,14 @@ void SingularStringView::GenerateAccessorDeclarations(io::Printer* p) const {
     [[nodiscard]] $DEPRECATED$ ::absl::string_view $name$() const;
     template <typename Arg_ = ::std::string&&>
     $DEPRECATED$ void $set_name$(Arg_&& arg);
+  )cc");
+}
 
-    private:
+void SingularStringView::GeneratePrivateAccessorDeclarations(
+    io::Printer* p) const {
+  p->Emit(R"cc(
     ::absl::string_view _internal_$name$() const;
     PROTOBUF_ALWAYS_INLINE void _internal_set_$name$(::absl::string_view value);
-
-    public:
   )cc");
 }
 
@@ -303,7 +306,7 @@ void SingularStringView::GenerateInlineAccessorDefinitions(
           $TsanDetectConcurrentMutation$;
           $PrepareSplitMessageForWrite$;
           $update_hasbit$;
-          $field_$.Set(static_cast<Arg_&&>(arg), GetArena());
+          $field_$.Set(static_cast<Arg_&&>(arg), *this);
           $annotate_set$;
           // @@protoc_insertion_point(field_set:$pkg.Msg.field$)
         }
@@ -314,7 +317,7 @@ void SingularStringView::GenerateInlineAccessorDefinitions(
         }
         inline void $Msg$::_internal_set_$name_internal$(::absl::string_view value) {
           $TsanDetectConcurrentMutation$;
-          $field_$.Set(value, GetArena());
+          $field_$.Set(value, *this);
         }
       )cc");
 }
@@ -348,7 +351,7 @@ void SingularStringView::GenerateClearingCode(io::Printer* p) const {
 
   ABSL_DCHECK(!is_inlined());
   p->Emit(R"cc(
-    $field_$.ClearToDefault($lazy_var$, GetArena());
+    $field_$.ClearToDefault($lazy_var$, *this);
   )cc");
 }
 
@@ -379,7 +382,7 @@ void SingularStringView::GenerateMessageClearingCode(io::Printer* p) const {
     // Clear to a non-empty default is more involved, as we try to use the
     // Arena if one is present and may need to reallocate the string.
     p->Emit(R"cc(
-      $this_mutable_field$.ClearToDefault($lazy_var$, this_.GetArena());
+      $this_mutable_field$.ClearToDefault($lazy_var$, this_);
     )cc");
     return;
   }
@@ -435,7 +438,7 @@ void SingularStringView::GenerateCopyConstructorCode(io::Printer* p) const {
     if (EmptyDefault()) {
       p->Emit(R"cc(
         if ($pbi$::DebugHardenForceCopyDefaultString()) {
-          $field_$.Set("", GetArena());
+          $field_$.Set("", *this);
         }
       )cc");
     }
@@ -458,7 +461,7 @@ void SingularStringView::GenerateCopyConstructorCode(io::Printer* p) const {
         }}},
       R"cc(
         if ($hazzer$) {
-          $this_mutable_field$.Set(from._internal_$name$(), this_.GetArena());
+          $this_mutable_field$.Set(from._internal_$name$(), this_);
         }
       )cc");
 }
@@ -646,6 +649,7 @@ class RepeatedStringView : public FieldGeneratorBase {
   }
 
   void GenerateAccessorDeclarations(io::Printer* p) const override;
+  void GeneratePrivateAccessorDeclarations(io::Printer* p) const override;
   void GenerateInlineAccessorDefinitions(io::Printer* p) const override;
   void GenerateSerializeWithCachedSizesToArray(io::Printer* p) const override;
 
@@ -657,7 +661,7 @@ class RepeatedStringView : public FieldGeneratorBase {
 void RepeatedStringView::GenerateAccessorDeclarations(io::Printer* p) const {
   ABSL_DCHECK(GetDeclaredStringType() == pb::CppFeatures::VIEW);
 
-  auto v1 = p->WithVars(AnnotatedAccessors(field_, {"", "_internal_"}));
+  auto v1 = p->WithVars(AnnotatedAccessors(field_, {""}));
   auto v2 = p->WithVars(
       AnnotatedAccessors(field_, {"set_", "add_"}, AnnotationCollector::kSet));
   auto v3 = p->WithVars(
@@ -695,12 +699,17 @@ void RepeatedStringView::GenerateAccessorDeclarations(io::Printer* p) const {
     template <typename Arg_ = ::std::string&&>
     $DEPRECATED$ void add_$name$(Arg_&& value);
     $decl_field_accessors$;
+  )cc");
+}
 
-    private:
+void RepeatedStringView::GeneratePrivateAccessorDeclarations(
+    io::Printer* p) const {
+  ABSL_DCHECK(GetDeclaredStringType() == pb::CppFeatures::VIEW);
+
+  auto v1 = p->WithVars(AnnotatedAccessors(field_, {"_internal_"}));
+  p->Emit(R"cc(
     const $pb$::RepeatedPtrField<::std::string>& _internal_$name$() const;
     $pb$::RepeatedPtrField<::std::string>* $nonnull$ _internal_mutable_$name$();
-
-    public:
   )cc");
 }
 

@@ -216,18 +216,17 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CppFileOptions fina
   enum : int {
     kNamespaceFieldNumber = 1,
   };
+  private:
+  // string namespace = 1;
+  ::absl::string_view _internal_namespace_() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_namespace_(::absl::string_view value);
+  public:
   // string namespace = 1;
   [[nodiscard]] bool has_namespace_() const;
   void clear_namespace_() ;
   [[nodiscard]] ::absl::string_view namespace_() const;
   template <typename Arg_ = ::std::string&&>
   void set_namespace_(Arg_&& arg);
-
-  private:
-  ::absl::string_view _internal_namespace_() const;
-  PROTOBUF_ALWAYS_INLINE void _internal_set_namespace_(::absl::string_view value);
-
-  public:
   // @@protoc_insertion_point(class_scope:pb.file.CppFileOptions)
  private:
   class _Internal;
@@ -300,7 +299,7 @@ template <typename Arg_>
 PROTOBUF_ALWAYS_INLINE void CppFileOptions::set_namespace_(Arg_&& arg) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  _impl_.namespace__.Set(static_cast<Arg_&&>(arg), GetArena());
+  _impl_.namespace__.Set(static_cast<Arg_&&>(arg), *this);
   // @@protoc_insertion_point(field_set:pb.file.CppFileOptions.namespace)
 }
 inline ::absl::string_view CppFileOptions::_internal_namespace_() const {
@@ -309,7 +308,7 @@ inline ::absl::string_view CppFileOptions::_internal_namespace_() const {
 }
 inline void CppFileOptions::_internal_set_namespace_(::absl::string_view value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.namespace__.Set(value, GetArena());
+  _impl_.namespace__.Set(value, *this);
 }
 
 #ifdef __GNUC__

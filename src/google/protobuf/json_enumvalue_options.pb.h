@@ -216,18 +216,17 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED JsonEnumValueOption
   enum : int {
     kStringFieldNumber = 1,
   };
+  private:
+  // string string = 1;
+  ::absl::string_view _internal_string() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_string(::absl::string_view value);
+  public:
   // string string = 1;
   [[nodiscard]] bool has_string() const;
   void clear_string() ;
   [[nodiscard]] ::absl::string_view string() const;
   template <typename Arg_ = ::std::string&&>
   void set_string(Arg_&& arg);
-
-  private:
-  ::absl::string_view _internal_string() const;
-  PROTOBUF_ALWAYS_INLINE void _internal_set_string(::absl::string_view value);
-
-  public:
   // @@protoc_insertion_point(class_scope:pb.enumvalue.JsonEnumValueOptions)
  private:
   class _Internal;
@@ -300,7 +299,7 @@ template <typename Arg_>
 PROTOBUF_ALWAYS_INLINE void JsonEnumValueOptions::set_string(Arg_&& arg) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  _impl_.string_.Set(static_cast<Arg_&&>(arg), GetArena());
+  _impl_.string_.Set(static_cast<Arg_&&>(arg), *this);
   // @@protoc_insertion_point(field_set:pb.enumvalue.JsonEnumValueOptions.string)
 }
 inline ::absl::string_view JsonEnumValueOptions::_internal_string() const {
@@ -309,7 +308,7 @@ inline ::absl::string_view JsonEnumValueOptions::_internal_string() const {
 }
 inline void JsonEnumValueOptions::_internal_set_string(::absl::string_view value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.string_.Set(value, GetArena());
+  _impl_.string_.Set(value, *this);
 }
 
 #ifdef __GNUC__
