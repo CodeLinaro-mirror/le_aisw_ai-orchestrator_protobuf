@@ -65,6 +65,24 @@ __attribute__((objc_subclassing_restricted))
  **/
 - (void)addExtensions:(GPBExtensionRegistry *)registry;
 
+/**
+ * Returns the process-wide registry of the extensions that are linked into the
+ * process and were generated with the experimental
+ * `experimental_global_extension_registry` generator option (C function
+ * extensions only).
+ *
+ * The returned object is immutable and can be used from any thread. It is not
+ * a `GPBExtensionRegistry` instance, but it can be passed to any API that takes
+ * an `id<GPBExtensionRegistry>`.
+ *
+ * Extensions in an image that is loaded with dlopen() after data was parsed
+ * are not applied to that already parsed data (the fields stay unknown fields).
+ * If the same extension is linked into more than one image, lookups return the
+ * descriptor of the image that was loaded first; it is `-isEqual:` to the
+ * descriptors of the other images.
+ **/
++ (id<GPBExtensionRegistry>)globalExtensionRegistry;
+
 @end
 
 NS_ASSUME_NONNULL_END
