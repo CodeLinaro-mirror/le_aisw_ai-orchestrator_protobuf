@@ -827,16 +827,14 @@ void Version::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  ::memset(
+      &this_._impl_.major_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.patch_) -
+                            reinterpret_cast<char*>(&this_._impl_.major_)) +
+          sizeof(_impl_.patch_));
   cached_has_bits = this_._impl_._has_bits_[0];
   if (CheckHasBit(cached_has_bits, 0x00000001U)) {
     this_._impl_.suffix_.ClearNonDefaultToEmpty();
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x0000000eU)) {
-    ::memset(&this_._impl_.major_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.patch_) -
-                 reinterpret_cast<char*>(&this_._impl_.major_)) +
-                 sizeof(_impl_.patch_));
   }
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -1728,6 +1726,11 @@ void CodeGeneratorResponse::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  ::memset(
+      &this_._impl_.supported_features_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.maximum_edition_) -
+                            reinterpret_cast<char*>(&this_._impl_.supported_features_)) +
+          sizeof(_impl_.maximum_edition_));
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
@@ -1736,13 +1739,6 @@ void CodeGeneratorResponse::Clear(MessageLite& base) {
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       this_._impl_.error_.ClearNonDefaultToEmpty();
     }
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x0000001cU)) {
-    ::memset(&this_._impl_.supported_features_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.maximum_edition_) -
-                 reinterpret_cast<char*>(&this_._impl_.supported_features_)) +
-                 sizeof(_impl_.maximum_edition_));
   }
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();

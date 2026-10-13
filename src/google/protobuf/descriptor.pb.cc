@@ -7066,6 +7066,7 @@ void FileDescriptorProto::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  this_._impl_.edition_ = 0;
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x00001fffU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
@@ -7110,7 +7111,6 @@ void FileDescriptorProto::Clear(MessageLite& base) {
       this_._impl_.source_code_info_->Clear();
     }
   }
-  this_._impl_.edition_ = 0;
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -7604,17 +7604,15 @@ void DescriptorProto_ExtensionRange::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  ::memset(
+      &this_._impl_.start_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.end_) -
+                            reinterpret_cast<char*>(&this_._impl_.start_)) +
+          sizeof(_impl_.end_));
   cached_has_bits = this_._impl_._has_bits_[0];
   if (CheckHasBit(cached_has_bits, 0x00000001U)) {
     ABSL_DCHECK(this_._impl_.options_ != nullptr);
     this_._impl_.options_->Clear();
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x00000006U)) {
-    ::memset(&this_._impl_.start_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.end_) -
-                 reinterpret_cast<char*>(&this_._impl_.start_)) +
-                 sizeof(_impl_.end_));
   }
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -7846,14 +7844,11 @@ void DescriptorProto_ReservedRange::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
-  cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0xffffffffU)) {
-    ::memset(&this_._impl_.start_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.end_) -
-                 reinterpret_cast<char*>(&this_._impl_.start_)) +
-                 sizeof(_impl_.end_));
-  }
+  ::memset(
+      &this_._impl_.start_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.end_) -
+                            reinterpret_cast<char*>(&this_._impl_.start_)) +
+          sizeof(_impl_.end_));
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -8165,6 +8160,7 @@ void DescriptorProto::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  this_._impl_.visibility_ = 0;
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x000003ffU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
@@ -8199,7 +8195,6 @@ void DescriptorProto::Clear(MessageLite& base) {
       this_._impl_.options_->Clear();
     }
   }
-  this_._impl_.visibility_ = 0;
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -8637,6 +8632,11 @@ void ExtensionRangeOptions_Declaration::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  ::memset(
+      &this_._impl_.number_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.repeated_) -
+                            reinterpret_cast<char*>(&this_._impl_.number_)) +
+          sizeof(_impl_.repeated_));
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
@@ -8645,13 +8645,6 @@ void ExtensionRangeOptions_Declaration::Clear(MessageLite& base) {
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       this_._impl_.type_.ClearNonDefaultToEmpty();
     }
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x0000001cU)) {
-    ::memset(&this_._impl_.number_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.repeated_) -
-                 reinterpret_cast<char*>(&this_._impl_.number_)) +
-                 sizeof(_impl_.repeated_));
   }
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -8930,8 +8923,9 @@ void ExtensionRangeOptions::Clear(MessageLite& base) {
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
   this_._impl_._extensions_.Clear();
+  this_._impl_.verification_ = 1;
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0xffffffffU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       this_._impl_.declaration_.Clear();
     }
@@ -8942,7 +8936,6 @@ void ExtensionRangeOptions::Clear(MessageLite& base) {
       ABSL_DCHECK(this_._impl_.features_ != nullptr);
       this_._impl_.features_->Clear();
     }
-    this_._impl_.verification_ = 1;
   }
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -9256,6 +9249,13 @@ void FieldDescriptorProto::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  ::memset(
+      &this_._impl_.number_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.proto3_optional_) -
+                            reinterpret_cast<char*>(&this_._impl_.number_)) +
+          sizeof(_impl_.proto3_optional_));
+  this_._impl_.label_ = 1;
+  this_._impl_.type_ = 1;
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
@@ -9277,15 +9277,6 @@ void FieldDescriptorProto::Clear(MessageLite& base) {
       ABSL_DCHECK(this_._impl_.options_ != nullptr);
       this_._impl_.options_->Clear();
     }
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x000007c0U)) {
-    ::memset(&this_._impl_.number_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.proto3_optional_) -
-                 reinterpret_cast<char*>(&this_._impl_.number_)) +
-                 sizeof(_impl_.proto3_optional_));
-    this_._impl_.label_ = 1;
-    this_._impl_.type_ = 1;
   }
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -9870,14 +9861,11 @@ void EnumDescriptorProto_EnumReservedRange::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
-  cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0xffffffffU)) {
-    ::memset(&this_._impl_.start_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.end_) -
-                 reinterpret_cast<char*>(&this_._impl_.start_)) +
-                 sizeof(_impl_.end_));
-  }
+  ::memset(
+      &this_._impl_.start_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.end_) -
+                            reinterpret_cast<char*>(&this_._impl_.start_)) +
+          sizeof(_impl_.end_));
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -10129,6 +10117,7 @@ void EnumDescriptorProto::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  this_._impl_.visibility_ = 0;
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
@@ -10148,7 +10137,6 @@ void EnumDescriptorProto::Clear(MessageLite& base) {
       this_._impl_.options_->Clear();
     }
   }
-  this_._impl_.visibility_ = 0;
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -10467,6 +10455,7 @@ void EnumValueDescriptorProto::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  this_._impl_.number_ = 0;
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
@@ -10477,7 +10466,6 @@ void EnumValueDescriptorProto::Clear(MessageLite& base) {
       this_._impl_.options_->Clear();
     }
   }
-  this_._impl_.number_ = 0;
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -11014,6 +11002,11 @@ void MethodDescriptorProto::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  ::memset(
+      &this_._impl_.client_streaming_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.server_streaming_) -
+                            reinterpret_cast<char*>(&this_._impl_.client_streaming_)) +
+          sizeof(_impl_.server_streaming_));
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
@@ -11030,11 +11023,6 @@ void MethodDescriptorProto::Clear(MessageLite& base) {
       this_._impl_.options_->Clear();
     }
   }
-  ::memset(&this_._impl_.client_streaming_, 0,
-           static_cast<::size_t>(
-               reinterpret_cast<char*>(&this_._impl_.server_streaming_) -
-               reinterpret_cast<char*>(&this_._impl_.client_streaming_)) +
-               sizeof(_impl_.server_streaming_));
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -11376,8 +11364,15 @@ void FileOptions::Clear(MessageLite& base) {
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
   this_._impl_._extensions_.Clear();
+  ::memset(
+      &this_._impl_.java_multiple_files_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.java_string_check_utf8_) -
+                            reinterpret_cast<char*>(&this_._impl_.java_multiple_files_)) +
+          sizeof(_impl_.java_string_check_utf8_));
+  this_._impl_.optimize_for_ = 1;
+  this_._impl_.cc_enable_arenas_ = true;
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x000007ffU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x001007ffU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       this_._impl_.java_package_.ClearNonDefaultToEmpty();
     }
@@ -11412,15 +11407,6 @@ void FileOptions::Clear(MessageLite& base) {
       ABSL_DCHECK(this_._impl_.features_ != nullptr);
       this_._impl_.features_->Clear();
     }
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x001ff800U)) {
-    ::memset(&this_._impl_.java_multiple_files_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.java_string_check_utf8_) -
-                 reinterpret_cast<char*>(&this_._impl_.java_multiple_files_)) +
-                 sizeof(_impl_.java_string_check_utf8_));
-    this_._impl_.optimize_for_ = 1;
-    this_._impl_.cc_enable_arenas_ = true;
     if (CheckHasBit(cached_has_bits, 0x00100000U)) {
       this_._impl_.uninterpreted_option_.Clear();
     }
@@ -11952,17 +11938,17 @@ void MessageOptions::Clear(MessageLite& base) {
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
   this_._impl_._extensions_.Clear();
+  ::memset(
+      &this_._impl_.message_set_wire_format_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.deprecated_legacy_json_field_conflicts_) -
+                            reinterpret_cast<char*>(&this_._impl_.message_set_wire_format_)) +
+          sizeof(_impl_.deprecated_legacy_json_field_conflicts_));
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-    ABSL_DCHECK(this_._impl_.features_ != nullptr);
-    this_._impl_.features_->Clear();
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x0000007eU)) {
-    ::memset(&this_._impl_.message_set_wire_format_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.deprecated_legacy_json_field_conflicts_) -
-                 reinterpret_cast<char*>(&this_._impl_.message_set_wire_format_)) +
-                 sizeof(_impl_.deprecated_legacy_json_field_conflicts_));
+  if (BatchCheckHasBit(cached_has_bits, 0x00000041U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      ABSL_DCHECK(this_._impl_.features_ != nullptr);
+      this_._impl_.features_->Clear();
+    }
     if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       this_._impl_.uninterpreted_option_.Clear();
     }
@@ -12264,11 +12250,11 @@ void FieldOptions_EditionDefault::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  this_._impl_.edition_ = 0;
   cached_has_bits = this_._impl_._has_bits_[0];
   if (CheckHasBit(cached_has_bits, 0x00000001U)) {
     this_._impl_.value_.ClearNonDefaultToEmpty();
   }
-  this_._impl_.edition_ = 0;
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -12485,6 +12471,11 @@ void FieldOptions_FeatureSupport::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  ::memset(
+      &this_._impl_.edition_introduced_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.edition_removed_) -
+                            reinterpret_cast<char*>(&this_._impl_.edition_introduced_)) +
+          sizeof(_impl_.edition_removed_));
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
@@ -12493,13 +12484,6 @@ void FieldOptions_FeatureSupport::Clear(MessageLite& base) {
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       this_._impl_.removal_error_.ClearNonDefaultToEmpty();
     }
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x0000001cU)) {
-    ::memset(&this_._impl_.edition_introduced_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.edition_removed_) -
-                 reinterpret_cast<char*>(&this_._impl_.edition_introduced_)) +
-                 sizeof(_impl_.edition_removed_));
   }
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -12813,8 +12797,13 @@ void FieldOptions::Clear(MessageLite& base) {
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
   this_._impl_._extensions_.Clear();
+  ::memset(
+      &this_._impl_.ctype_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.retention_) -
+                            reinterpret_cast<char*>(&this_._impl_.ctype_)) +
+          sizeof(_impl_.retention_));
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000200fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       this_._impl_.edition_defaults_.Clear();
     }
@@ -12829,13 +12818,6 @@ void FieldOptions::Clear(MessageLite& base) {
       ABSL_DCHECK(this_._impl_.feature_support_ != nullptr);
       this_._impl_.feature_support_->Clear();
     }
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x00003ff0U)) {
-    ::memset(&this_._impl_.ctype_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.retention_) -
-                 reinterpret_cast<char*>(&this_._impl_.ctype_)) +
-                 sizeof(_impl_.retention_));
     if (CheckHasBit(cached_has_bits, 0x00002000U)) {
       this_._impl_.targets_.Clear();
     }
@@ -13560,18 +13542,20 @@ void EnumOptions::Clear(MessageLite& base) {
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
   this_._impl_._extensions_.Clear();
+  ::memset(
+      &this_._impl_.allow_alias_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.deprecated_legacy_json_field_conflicts_) -
+                            reinterpret_cast<char*>(&this_._impl_.allow_alias_)) +
+          sizeof(_impl_.deprecated_legacy_json_field_conflicts_));
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-    ABSL_DCHECK(this_._impl_.features_ != nullptr);
-    this_._impl_.features_->Clear();
-  }
-  ::memset(&this_._impl_.allow_alias_, 0,
-           static_cast<::size_t>(
-               reinterpret_cast<char*>(&this_._impl_.deprecated_legacy_json_field_conflicts_) -
-               reinterpret_cast<char*>(&this_._impl_.allow_alias_)) +
-               sizeof(_impl_.deprecated_legacy_json_field_conflicts_));
-  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
-    this_._impl_.uninterpreted_option_.Clear();
+  if (BatchCheckHasBit(cached_has_bits, 0x00000011U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      ABSL_DCHECK(this_._impl_.features_ != nullptr);
+      this_._impl_.features_->Clear();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      this_._impl_.uninterpreted_option_.Clear();
+    }
   }
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -13886,6 +13870,11 @@ void EnumValueOptions::Clear(MessageLite& base) {
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
   this_._impl_._extensions_.Clear();
+  ::memset(
+      &this_._impl_.deprecated_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.debug_redact_) -
+                            reinterpret_cast<char*>(&this_._impl_.deprecated_)) +
+          sizeof(_impl_.debug_redact_));
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
@@ -13900,11 +13889,6 @@ void EnumValueOptions::Clear(MessageLite& base) {
       this_._impl_.feature_support_->Clear();
     }
   }
-  ::memset(&this_._impl_.deprecated_, 0,
-           static_cast<::size_t>(
-               reinterpret_cast<char*>(&this_._impl_.debug_redact_) -
-               reinterpret_cast<char*>(&this_._impl_.deprecated_)) +
-               sizeof(_impl_.debug_redact_));
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -14223,6 +14207,7 @@ void ServiceOptions::Clear(MessageLite& base) {
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
   this_._impl_._extensions_.Clear();
+  this_._impl_.deprecated_ = false;
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
@@ -14233,7 +14218,6 @@ void ServiceOptions::Clear(MessageLite& base) {
       this_._impl_.features_->Clear();
     }
   }
-  this_._impl_.deprecated_ = false;
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -14523,6 +14507,11 @@ void MethodOptions::Clear(MessageLite& base) {
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
   this_._impl_._extensions_.Clear();
+  ::memset(
+      &this_._impl_.deprecated_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.idempotency_level_) -
+                            reinterpret_cast<char*>(&this_._impl_.deprecated_)) +
+          sizeof(_impl_.idempotency_level_));
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
@@ -14532,13 +14521,6 @@ void MethodOptions::Clear(MessageLite& base) {
       ABSL_DCHECK(this_._impl_.features_ != nullptr);
       this_._impl_.features_->Clear();
     }
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x0000000cU)) {
-    ::memset(&this_._impl_.deprecated_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.idempotency_level_) -
-                 reinterpret_cast<char*>(&this_._impl_.deprecated_)) +
-                 sizeof(_impl_.idempotency_level_));
   }
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -14812,11 +14794,11 @@ void UninterpretedOption_NamePart::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  this_._impl_.is_extension_ = false;
   cached_has_bits = this_._impl_._has_bits_[0];
   if (CheckHasBit(cached_has_bits, 0x00000001U)) {
     this_._impl_.name_part_.ClearNonDefaultToEmpty();
   }
-  this_._impl_.is_extension_ = false;
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -15052,6 +15034,11 @@ void UninterpretedOption::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  ::memset(
+      &this_._impl_.positive_int_value_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.double_value_) -
+                            reinterpret_cast<char*>(&this_._impl_.positive_int_value_)) +
+          sizeof(_impl_.double_value_));
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
@@ -15066,13 +15053,6 @@ void UninterpretedOption::Clear(MessageLite& base) {
     if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       this_._impl_.aggregate_value_.ClearNonDefaultToEmpty();
     }
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x00000070U)) {
-    ::memset(&this_._impl_.positive_int_value_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.double_value_) -
-                 reinterpret_cast<char*>(&this_._impl_.positive_int_value_)) +
-                 sizeof(_impl_.double_value_));
   }
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -15467,14 +15447,11 @@ void FeatureSet::Clear(MessageLite& base) {
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
   this_._impl_._extensions_.Clear();
-  cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0xffffffffU)) {
-    ::memset(&this_._impl_.field_presence_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.enforce_proto_limits_) -
-                 reinterpret_cast<char*>(&this_._impl_.field_presence_)) +
-                 sizeof(_impl_.enforce_proto_limits_));
-  }
+  ::memset(
+      &this_._impl_.field_presence_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.enforce_proto_limits_) -
+                            reinterpret_cast<char*>(&this_._impl_.field_presence_)) +
+          sizeof(_impl_.enforce_proto_limits_));
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -15814,6 +15791,7 @@ void FeatureSetDefaults_FeatureSetEditionDefault::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  this_._impl_.edition_ = 0;
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
@@ -15825,7 +15803,6 @@ void FeatureSetDefaults_FeatureSetEditionDefault::Clear(MessageLite& base) {
       this_._impl_.fixed_features_->Clear();
     }
   }
-  this_._impl_.edition_ = 0;
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -16098,16 +16075,14 @@ void FeatureSetDefaults::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  ::memset(
+      &this_._impl_.minimum_edition_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.maximum_edition_) -
+                            reinterpret_cast<char*>(&this_._impl_.minimum_edition_)) +
+          sizeof(_impl_.maximum_edition_));
   cached_has_bits = this_._impl_._has_bits_[0];
   if (CheckHasBit(cached_has_bits, 0x00000001U)) {
     this_._impl_.defaults_.Clear();
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x00000006U)) {
-    ::memset(&this_._impl_.minimum_edition_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.maximum_edition_) -
-                 reinterpret_cast<char*>(&this_._impl_.minimum_edition_)) +
-                 sizeof(_impl_.maximum_edition_));
   }
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -16911,6 +16886,11 @@ void GeneratedCodeInfo_Annotation::Clear(MessageLite& base) {
   ::google::protobuf::internal::TSanWrite(&this_._impl_);
   ::uint32_t cached_has_bits [[maybe_unused]] = 0;
 
+  ::memset(
+      &this_._impl_.begin_, 0,
+      static_cast<::size_t>(reinterpret_cast<char*>(&this_._impl_.semantic_) -
+                            reinterpret_cast<char*>(&this_._impl_.begin_)) +
+          sizeof(_impl_.semantic_));
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
@@ -16919,13 +16899,6 @@ void GeneratedCodeInfo_Annotation::Clear(MessageLite& base) {
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       this_._impl_.source_file_.ClearNonDefaultToEmpty();
     }
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x0000001cU)) {
-    ::memset(&this_._impl_.begin_, 0,
-             static_cast<::size_t>(
-                 reinterpret_cast<char*>(&this_._impl_.semantic_) -
-                 reinterpret_cast<char*>(&this_._impl_.begin_)) +
-                 sizeof(_impl_.semantic_));
   }
   this_._impl_._has_bits_.Clear();
   this_._internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
