@@ -13,7 +13,6 @@ import unittest
 from google.protobuf import unknown_fields
 from google.protobuf.internal.import_test_package import outer_pb2
 
-from google.protobuf import unittest_custom_options_pb2
 from google.protobuf import unittest_import_option_pb2
 
 
@@ -26,6 +25,10 @@ class ImportTest(unittest.TestCase):
     self.assertEqual(58, msg.import_public_nested.value)
 
   def testImportOptionKnown(self):
+    # pylint: disable=g-import-not-at-top
+    from google.protobuf import unittest_custom_options_pb2
+    # pylint: enable=g-import-not-at-top
+
     file_descriptor = unittest_import_option_pb2.DESCRIPTOR
     message_descriptor = unittest_import_option_pb2.TestMessage.DESCRIPTOR
     field_descriptor = message_descriptor.fields_by_name['field1']
