@@ -1043,7 +1043,7 @@ void MessageGenerator::GenerateSingularFieldHasBits(
         {Sub{"ASSUME",
              [&] {
                if (field->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE &&
-                   !IsLazy(field, options_)) {
+                   !ShouldSplit(field, options_) && !IsLazy(field, options_)) {
                  // We maintain the invariant that for a submessage x, has_x()
                  // returning true implies that x_ is not null. By giving this
                  // information to the compiler, we allow it to eliminate
@@ -1137,13 +1137,6 @@ void MessageGenerator::GenerateFieldClear(const FieldDescriptor* field,
                       }
                     )cc");
               } else {
-                // TODO: figure out if early return breaks tracking
-                if (ShouldSplit(field, options_)) {
-                  p->Emit(R"cc(
-                    if (ABSL_PREDICT_TRUE(IsSplitMessageDefault()))
-                      return;
-                  )cc");
-                }
                 field_generators_.get(field).GenerateClearingCode(p);
                 if (HasHasbit(field, options_)) {
                   auto v = p->WithVars(HasBitVars(field));
@@ -1771,6 +1764,24 @@ void MessageGenerator::GeneratePrivateHelpers(io::Printer* p) {
                          return $split$ == reinterpret_cast<const Impl_::Split*>(&$split_default$);
                        }
                        PROTOBUF_NOINLINE void PrepareSplitMessageForWrite();
+
+                       template <typename Address>
+                       PROTOBUF_ALWAYS_INLINE decltype(auto) GetSplitField_(
+                           Address address) const {
+                         return Super_::GetSplitField(*this, address);
+                       }
+
+                       template <typename Address>
+                       PROTOBUF_ALWAYS_INLINE auto* PROTOBUF_NULLABLE
+                       TryMutableSplitField_(Address address) {
+                         return Super_::TryMutableSplitField(*this, address);
+                       }
+
+                       template <typename Address>
+                       PROTOBUF_ALWAYS_INLINE auto& MutableSplitField_(
+                           Address address) {
+                         return Super_::MutableSplitField(*this, address);
+                       }
                      )cc");
            }},
           {"decl_field_accessors_private_helpers",
@@ -3887,13 +3898,6 @@ bool MessageGenerator::RequiresArena(GeneratorFunction function,
 }
 
 bool MessageGenerator::EmitMergeChunks(io::Printer* p, bool is_split) {
-  const auto prepare_split = [&] {
-    if (is_split) {
-      p->Emit(R"cc(
-        this_.PrepareSplitMessageForWrite();
-      )cc");
-    }
-  };
   // cached_has_word_index maintains that:
   //   cached_has_bits = from._has_bits_[cached_has_word_index]
   // for cached_has_word_index >= 0
@@ -3939,10 +3943,7 @@ bool MessageGenerator::EmitMergeChunks(io::Printer* p, bool is_split) {
         MayEmitMutableIfNonDefaultCheck(
             p, "from.", field, is_split, options_,
             /*emit_body=*/
-            [&]() {
-              prepare_split();
-              generator.GenerateMergingCode(p);
-            },
+            [&]() { generator.GenerateMergingCode(p); },
             /*with_enclosing_braces_always=*/true);
       } else {
         // Check hasbit, using cached bits.
@@ -3955,7 +3956,6 @@ bool MessageGenerator::EmitMergeChunks(io::Printer* p, bool is_split) {
                                has_bit_index, field, options_)},
              {"merge_field",
               [&] {
-                prepare_split();
                 if (GetFieldHasbitMode(field, options_) ==
                     HasbitMode::kHintHasbit) {
                   // Merge semantics without true field presence: primitive
