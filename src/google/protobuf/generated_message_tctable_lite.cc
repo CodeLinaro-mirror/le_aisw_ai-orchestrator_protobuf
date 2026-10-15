@@ -117,19 +117,28 @@ absl::Status TcParser::VerifyHasBitConsistency(const MessageLite* msg,
       continue;
     }
     const bool has_bit = ReadHas(entry, msg);
-    const void* base = msg;
-    const void* default_base = table->default_instance();
+    const void* field;
+    const void* default_field;
+
     const bool is_split = (entry.type_card & field_layout::kSplitMask) ==
                           field_layout::kSplitTrue;
+
     if (is_split) {
       const size_t offset = table->field_aux(kSplitOffsetAuxIdx)->offset;
-      base = TcParser::RefAt<const void*>(base, offset);
-      default_base = TcParser::RefAt<const void*>(default_base, offset);
+      field = &RefAt<const char>(TcParser::RefAt<const void*>(msg, offset),
+                                 entry.offset);
+      default_field = &RefAt<const char>(
+          TcParser::RefAt<const void*>(table->default_instance(), offset),
+          entry.offset);
+    } else {
+      field = &RefAt<const char>(msg, entry.offset);
+      default_field =
+          &RefAt<const char>(table->default_instance(), entry.offset);
     }
 
     if (cardinality == fl::kFcRepeated) {
       if (!has_bit &&
-          !RepeatedFieldIsEmptySlow(msg, table, entry, base, is_split)) {
+          !RepeatedFieldIsEmptySlow(field, table, entry, is_split)) {
         return make_error_status();
       }
       continue;
@@ -142,20 +151,20 @@ absl::Status TcParser::VerifyHasBitConsistency(const MessageLite* msg,
         if (has_bit) break;
         switch (entry.type_card & fl::kRepMask) {
           case fl::kRep8Bits:
-            if (RefAt<bool>(base, entry.offset) !=
-                RefAt<bool>(default_base, entry.offset)) {
+            if (*static_cast<const bool*>(field) !=
+                *static_cast<const bool*>(default_field)) {
               return make_error_status();
             }
             break;
           case fl::kRep32Bits:
-            if (RefAt<uint32_t>(base, entry.offset) !=
-                RefAt<uint32_t>(default_base, entry.offset)) {
+            if (*static_cast<const uint32_t*>(field) !=
+                *static_cast<const uint32_t*>(default_field)) {
               return make_error_status();
             }
             break;
           case fl::kRep64Bits:
-            if (RefAt<uint64_t>(base, entry.offset) !=
-                RefAt<uint64_t>(default_base, entry.offset)) {
+            if (*static_cast<const uint64_t*>(field) !=
+                *static_cast<const uint64_t*>(default_field)) {
               return make_error_status();
             }
             break;
@@ -167,7 +176,7 @@ absl::Status TcParser::VerifyHasBitConsistency(const MessageLite* msg,
           case field_layout::kRepAString:
             // Must not point to the default if the has bit is on.
             if (has_bit &&
-                RefAt<ArenaStringPtr>(base, entry.offset).IsDefault()) {
+                static_cast<const ArenaStringPtr*>(field)->IsDefault()) {
               return make_error_status();
             } else {
               // We should technically check that the value matches the default
@@ -177,16 +186,18 @@ absl::Status TcParser::VerifyHasBitConsistency(const MessageLite* msg,
             break;
           case field_layout::kRepCord:
             // If the has bit is off, it must match the default.
-            if (!has_bit && (RefAt<absl::Cord>(base, entry.offset) !=
-                             RefAt<absl::Cord>(default_base, entry.offset))) {
+            if (!has_bit && (*static_cast<const absl::Cord*>(field) !=
+                             *static_cast<const absl::Cord*>(default_field))) {
               return make_error_status();
             }
             break;
           case field_layout::kRepIString:
             // If the has bit is off, it must match the default.
             if (!has_bit &&
-                (RefAt<InlinedStringField>(base, entry.offset).Get() !=
-                 RefAt<InlinedStringField>(default_base, entry.offset).Get())) {
+                (RefAt<InlinedStringField>(msg, entry.offset).Get() !=
+                 RefAt<InlinedStringField>(table->default_instance(),
+                                           entry.offset)
+                     .Get())) {
               return make_error_status();
             }
             break;
@@ -201,7 +212,7 @@ absl::Status TcParser::VerifyHasBitConsistency(const MessageLite* msg,
             // Note: An off has_bit does not imply a null pointer. We might have
             // a previous instance that we cached.
             if (has_bit &&
-                RefAt<const MessageLite*>(base, entry.offset) == nullptr) {
+                *static_cast<const MessageLite* const*>(field) == nullptr) {
               return make_error_status();
             }
             break;
@@ -224,39 +235,23 @@ void TcParser::CheckHasBitConsistency(const MessageLite* msg,
   ABSL_CHECK_OK(VerifyHasBitConsistency(msg, table));
 }
 
-bool TcParser::RepeatedFieldIsEmptySlow(const MessageLite* msg,
+bool TcParser::RepeatedFieldIsEmptySlow(const void* ptr,
                                         const TcParseTableBase* table,
                                         const FieldEntry& entry,
-                                        const void* base, bool is_split) {
+                                        bool is_split) {
   namespace fl = internal::field_layout;
+
+  if (is_split) {
+    // On split sections the repeated field is a RawPtr<T>, so deref that.
+    ptr = *static_cast<const void* const*>(ptr);
+  }
 
   switch (entry.type_card & fl::kFkMask) {
     case fl::kFkVarint:
     case fl::kFkPackedVarint:
     case fl::kFkFixed:
     case fl::kFkPackedFixed:
-      switch (entry.type_card & fl::kRepMask) {
-        case fl::kRep8Bits: {
-          const auto& repeated_field =
-              GetRepeatedFieldAt<RepeatedField<uint8_t>>(base, entry.offset,
-                                                         msg, is_split);
-          return repeated_field.empty();
-        }
-        case fl::kRep32Bits: {
-          const auto& repeated_field =
-              GetRepeatedFieldAt<RepeatedField<uint32_t>>(base, entry.offset,
-                                                          msg, is_split);
-          return repeated_field.empty();
-        }
-        case fl::kRep64Bits: {
-          const auto& repeated_field =
-              GetRepeatedFieldAt<RepeatedField<uint64_t>>(base, entry.offset,
-                                                          msg, is_split);
-          return repeated_field.empty();
-        }
-        default:
-          Unreachable();
-      }
+      return static_cast<const RepeatedFieldBase*>(ptr)->empty();
       break;
     case fl::kFkString: {
       switch (entry.type_card & fl::kRepMask) {
@@ -264,33 +259,25 @@ bool TcParser::RepeatedFieldIsEmptySlow(const MessageLite* msg,
         case fl::kRepSString:
           // Fall through to the RepeatedPtrFieldBase case.
           break;
-        case fl::kRepIString: {
+        case fl::kRepIString:
           // Inline strings cannot be repeated.
           Unreachable();
-        }
-        case fl::kRepCord: {
-          const auto& repeated_field =
-              GetRepeatedFieldAt<RepeatedField<absl::Cord>>(base, entry.offset,
-                                                            msg, is_split);
-          return repeated_field.empty();
-        }
+        case fl::kRepCord:
+          return static_cast<const RepeatedFieldBase*>(ptr)->empty();
         default:
           Unreachable();
       }
       [[fallthrough]];
     }
-    case fl::kFkMessage: {
-      const auto& repeated_field = GetRepeatedFieldAt<RepeatedPtrFieldBase>(
-          base, entry.offset, msg, is_split);
-      return repeated_field.empty();
-    }
+    case fl::kFkMessage:
+      return static_cast<const RepeatedPtrFieldBase*>(ptr)->empty();
     case fl::kFkMap: {
       const auto* aux = table->field_aux(&entry);
       const auto map_info = aux[0].map_info;
       const UntypedMapBase& map_field =
           map_info.use_lite
-              ? RefAt<const UntypedMapBase>(base, entry.offset)
-              : RefAt<const MapFieldBaseForParse>(base, entry.offset).GetMap();
+              ? *static_cast<const UntypedMapBase*>(ptr)
+              : static_cast<const MapFieldBaseForParse*>(ptr)->GetMap();
       return map_field.empty();
     }
     default:
@@ -512,7 +499,7 @@ constexpr TailCallParseFunc TcParser::kMiniParseTable[] = {
     &MpPackedFixed<true>,    // kSplitMask | FieldKind::kFkPackedFixed
     &MpString<true>,         // kSplitMask | FieldKind::kFkString
     &MpMessage<true>,        // kSplitMask | FieldKind::kFkMessage
-    &MpMap<true>,            // kSplitMask | FieldKind::kFkMap
+    &Error,                  // kSplitMask | FieldKind::kFkMap
 };
 
 // We have a constexpr variable for this to workaround issues with ASSUME and
@@ -2033,10 +2020,12 @@ uint32_t GetSizeofSplit(const TcParseTableBase* table) {
 }
 }  // namespace
 
-void* TcParser::MaybeGetSplitBase(MessageLite* msg, const bool is_split,
-                                  const TcParseTableBase* table) {
-  void* out = msg;
-  if (is_split) {
+template <bool is_split>
+PROTOBUF_ALWAYS_INLINE void* TcParser::MutableMaybeSplit(
+    MessageLite* msg, const TcParseTableBase* table,
+    const TcParseTableBase::FieldEntry& entry) {
+  void* base = msg;
+  if constexpr (is_split) {
     const uint32_t split_offset = GetSplitOffset(table);
     void* default_split =
         TcParser::RefAt<void*>(table->default_instance(), split_offset);
@@ -2049,9 +2038,9 @@ void* TcParser::MaybeGetSplitBase(MessageLite* msg, const bool is_split,
           (arena == nullptr) ? Allocate(size) : arena->AllocateAligned(size);
       memcpy(split, default_split, size);
     }
-    out = split;
+    base = split;
   }
-  return out;
+  return &RefAt<char>(base, entry.offset);
 }
 
 template <bool is_split>
@@ -2084,13 +2073,13 @@ PROTOBUF_NOINLINE const char* TcParser::MpFixed(PROTOBUF_TC_PARAM_DECL) {
     ChangeOneof(table, /*class_data=*/nullptr, entry, data.tag() >> 3, ctx,
                 msg);
   }
-  void* const base = MaybeGetSplitBase(msg, is_split, table);
+  void* void_field = MutableMaybeSplit<is_split>(msg, table, entry);
   // Copy the value:
   if (rep == field_layout::kRep64Bits) {
-    RefAt<uint64_t>(base, entry.offset) = UnalignedLoad<uint64_t>(ptr);
+    *static_cast<uint64_t*>(void_field) = UnalignedLoad<uint64_t>(ptr);
     ptr += sizeof(uint64_t);
   } else {
-    RefAt<uint32_t>(base, entry.offset) = UnalignedLoad<uint32_t>(ptr);
+    *static_cast<uint32_t*>(void_field) = UnalignedLoad<uint32_t>(ptr);
     ptr += sizeof(uint32_t);
   }
   PROTOBUF_MUSTTAIL return ToTagDispatch(PROTOBUF_TC_PARAM_NO_DATA_PASS);
@@ -2110,7 +2099,6 @@ PROTOBUF_NOINLINE const char* TcParser::MpRepeatedFixed(
 
   SetHasForRepeated(entry, msg);
 
-  void* const base = MaybeGetSplitBase(msg, is_split, table);
   const uint16_t type_card = entry.type_card;
   const uint16_t rep = type_card & field_layout::kRepMask;
   Arena* arena = msg->GetArena();
@@ -2118,8 +2106,8 @@ PROTOBUF_NOINLINE const char* TcParser::MpRepeatedFixed(
     if (decoded_wiretype != WireFormatLite::WIRETYPE_FIXED64) {
       PROTOBUF_MUSTTAIL return table->fallback(PROTOBUF_TC_PARAM_PASS);
     }
-    auto& field = MaybeCreateRepeatedFieldRefAt<uint64_t, is_split>(
-        base, entry.offset, msg);
+    auto& field =
+        MaybeCreateRepeatedFieldRefAt<uint64_t, is_split>(msg, table, entry);
     constexpr auto size = sizeof(uint64_t);
     const char* ptr2 = ptr;
     uint32_t next_tag;
@@ -2136,8 +2124,8 @@ PROTOBUF_NOINLINE const char* TcParser::MpRepeatedFixed(
     if (decoded_wiretype != WireFormatLite::WIRETYPE_FIXED32) {
       PROTOBUF_MUSTTAIL return table->fallback(PROTOBUF_TC_PARAM_PASS);
     }
-    auto& field = MaybeCreateRepeatedFieldRefAt<uint32_t, is_split>(
-        base, entry.offset, msg);
+    auto& field =
+        MaybeCreateRepeatedFieldRefAt<uint32_t, is_split>(msg, table, entry);
     constexpr auto size = sizeof(uint32_t);
     const char* ptr2 = ptr;
     uint32_t next_tag;
@@ -2171,17 +2159,16 @@ PROTOBUF_NOINLINE const char* TcParser::MpPackedFixed(PROTOBUF_TC_PARAM_DECL) {
 
   SetHasForRepeated(entry, msg);
 
-  void* const base = MaybeGetSplitBase(msg, is_split, table);
   int size = ReadSize(&ptr);
   uint16_t rep = type_card & field_layout::kRepMask;
   if (rep == field_layout::kRep64Bits) {
-    auto& field = MaybeCreateRepeatedFieldRefAt<uint64_t, is_split>(
-        base, entry.offset, msg);
+    auto& field =
+        MaybeCreateRepeatedFieldRefAt<uint64_t, is_split>(msg, table, entry);
     ptr = ctx->ReadPackedFixed(*msg, ptr, size, &field);
   } else {
     ABSL_DCHECK_EQ(rep, static_cast<uint16_t>(field_layout::kRep32Bits));
-    auto& field = MaybeCreateRepeatedFieldRefAt<uint32_t, is_split>(
-        base, entry.offset, msg);
+    auto& field =
+        MaybeCreateRepeatedFieldRefAt<uint32_t, is_split>(msg, table, entry);
     ptr = ctx->ReadPackedFixed(*msg, ptr, size, &field);
   }
 
@@ -2243,14 +2230,14 @@ PROTOBUF_NOINLINE const char* TcParser::MpVarint(PROTOBUF_TC_PARAM_DECL) {
                 msg);
   }
 
-  void* const base = MaybeGetSplitBase(msg, is_split, table);
+  void* void_field = MutableMaybeSplit<is_split>(msg, table, entry);
   if (rep == field_layout::kRep64Bits) {
-    RefAt<uint64_t>(base, entry.offset) = tmp;
+    *static_cast<uint64_t*>(void_field) = tmp;
   } else if (rep == field_layout::kRep32Bits) {
-    RefAt<uint32_t>(base, entry.offset) = static_cast<uint32_t>(tmp);
+    *static_cast<uint32_t*>(void_field) = static_cast<uint32_t>(tmp);
   } else {
     ABSL_DCHECK_EQ(rep, static_cast<uint16_t>(field_layout::kRep8Bits));
-    RefAt<bool>(base, entry.offset) = static_cast<bool>(tmp);
+    *static_cast<bool*>(void_field) = static_cast<bool>(tmp);
   }
 
   PROTOBUF_MUSTTAIL return ToTagDispatch(PROTOBUF_TC_PARAM_NO_DATA_PASS);
@@ -2269,9 +2256,8 @@ const char* TcParser::MpRepeatedVarintT(PROTOBUF_TC_PARAM_DECL) {
 
   const char* ptr2 = ptr;
   uint32_t next_tag;
-  void* const base = MaybeGetSplitBase(msg, is_split, table);
-  auto& field = MaybeCreateRepeatedFieldRefAt<FieldType, is_split>(
-      base, entry.offset, msg);
+  auto& field =
+      MaybeCreateRepeatedFieldRefAt<FieldType, is_split>(msg, table, entry);
   Arena* arena = msg->GetArena();
 
   TcParseTableBase::FieldAux aux;
@@ -2379,9 +2365,8 @@ const char* TcParser::MpPackedVarintT(PROTOBUF_TC_PARAM_DECL) {
   const bool is_zigzag = xform_val == field_layout::kTvZigZag;
   const bool is_validated_enum = xform_val & field_layout::kTvEnum;
 
-  void* const base = MaybeGetSplitBase(msg, is_split, table);
-  auto* field = &MaybeCreateRepeatedFieldRefAt<FieldType, is_split>(
-      base, entry.offset, msg);
+  auto* field =
+      &MaybeCreateRepeatedFieldRefAt<FieldType, is_split>(msg, table, entry);
   Arena* arena = msg->GetArena();
 
   if (is_validated_enum) {
@@ -2518,10 +2503,10 @@ PROTOBUF_NOINLINE const char* TcParser::MpString(PROTOBUF_TC_PARAM_DECL) {
   }
 
   bool is_valid = false;
-  void* const base = MaybeGetSplitBase(msg, is_split, table);
+  void* void_field = MutableMaybeSplit<is_split>(msg, table, entry);
   switch (rep) {
     case field_layout::kRepAString: {
-      auto& field = RefAt<ArenaStringPtr>(base, entry.offset);
+      auto& field = *static_cast<ArenaStringPtr*>(void_field);
       Arena* arena = msg->GetArena();
       if (arena) {
         ptr = ctx->ReadArenaString(ptr, &field, arena);
@@ -2538,7 +2523,7 @@ PROTOBUF_NOINLINE const char* TcParser::MpString(PROTOBUF_TC_PARAM_DECL) {
     }
 
     case field_layout::kRepMString: {
-      auto& field = RefAt<MicroString>(base, entry.offset);
+      auto& field = *static_cast<MicroString*>(void_field);
       ptr = ctx->ReadMicroString(ptr, field, entry.aux_idx, *msg);
       is_valid = MpVerifyUtf8(field.Get(), table, entry, xform_val);
       break;
@@ -2548,9 +2533,9 @@ PROTOBUF_NOINLINE const char* TcParser::MpString(PROTOBUF_TC_PARAM_DECL) {
     case field_layout::kRepCord: {
       absl::Cord* field;
       if (is_oneof) {
-        field = RefAt<absl::Cord*>(msg, entry.offset);
+        field = *static_cast<absl::Cord**>(void_field);
       } else {
-        field = &RefAt<absl::Cord>(base, entry.offset);
+        field = static_cast<absl::Cord*>(void_field);
       }
       ptr = InlineCordParser(field, ptr, ctx);
       if (!ptr) break;
@@ -2624,12 +2609,11 @@ PROTOBUF_NOINLINE const char* TcParser::MpRepeatedString(
 
   const uint16_t rep = type_card & field_layout::kRepMask;
   const uint16_t xform_val = type_card & field_layout::kTvMask;
-  void* const base = MaybeGetSplitBase(msg, is_split, table);
   auto* arena = msg->GetArena();
   switch (rep) {
     case field_layout::kRepSString: {
       auto& field = MaybeCreateRepeatedPtrFieldRefAt<std::string, is_split>(
-          base, entry.offset, msg);
+          msg, table, entry);
       const char* ptr2 = ptr;
       uint32_t next_tag;
       SerialArena* serial_arena = GetSerialArena(arena);
@@ -2722,8 +2706,8 @@ PROTOBUF_NOINLINE const char* TcParser::MpMessage(PROTOBUF_TC_PARAM_DECL) {
 
   SyncHasbits(msg, hasbits, table);
 
-  void* const base = MaybeGetSplitBase(msg, is_split, table);
-  MessageLite*& field = RefAt<MessageLite*>(base, entry.offset);
+  void* void_field = MutableMaybeSplit<is_split>(msg, table, entry);
+  MessageLite*& field = *static_cast<MessageLite**>(void_field);
 
   // Keep `inner_msg` in a local variable to avoid a second read in the
   // ParseLoop call.
@@ -2763,10 +2747,9 @@ const char* TcParser::MpRepeatedMessageOrGroup(PROTOBUF_TC_PARAM_DECL) {
     }
   }
 
-  void* const base = MaybeGetSplitBase(msg, is_split, table);
   RepeatedPtrFieldBase& field =
-      MaybeCreateRepeatedRefAt<RepeatedPtrFieldBase, is_split>(
-          base, entry.offset, msg);
+      MaybeCreateRepeatedRefAt<RepeatedPtrFieldBase, is_split>(msg, table,
+                                                               entry);
   ABSL_DCHECK_EQ(field.GetArena(), msg->GetArena());
   const auto aux = *table->field_aux(&entry);
   const ClassData* class_data = GetClassDataFromAux(type_card, aux);
@@ -3004,11 +2987,11 @@ PROTOBUF_NOINLINE const char* TcParser::MpMap(PROTOBUF_TC_PARAM_DECL) {
   // Otherwise, it points into a MapField and we must synchronize with
   // reflection. It is done by calling the MutableMap() virtual function on the
   // field's base class.
-  void* const base = MaybeGetSplitBase(msg, is_split, table);
+  static_assert(!is_split);
   UntypedMapBase& map =
       map_info.use_lite
-          ? RefAt<UntypedMapBase>(base, entry.offset)
-          : *RefAt<MapFieldBaseForParse>(base, entry.offset).MutableMap();
+          ? RefAt<UntypedMapBase>(msg, entry.offset)
+          : *RefAt<MapFieldBaseForParse>(msg, entry.offset).MutableMap();
 
   SetHasForRepeated(entry, msg);
 
