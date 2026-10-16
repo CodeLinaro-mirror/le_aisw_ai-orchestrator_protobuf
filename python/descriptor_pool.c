@@ -79,7 +79,7 @@ static PyObject* PyUpb_DescriptorPool_DoCreateWithCache(
   }
   return self_obj;
 err:
-  Py_XDECREF(pool);
+  Py_XDECREF((PyObject*)pool);
   return NULL;
 }
 

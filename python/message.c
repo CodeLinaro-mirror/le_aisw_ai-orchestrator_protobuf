@@ -166,7 +166,7 @@ static bool PyUpb_CPythonBits_Init(PyUpb_CPythonBits* bits) {
 
 err:
   Py_XDECREF(bases);
-  Py_XDECREF(type);
+  Py_XDECREF((PyObject*)type);
   Py_XDECREF(size);
   Py_XDECREF(sys);
   Py_XDECREF(hex_version);
@@ -740,7 +740,8 @@ bool PyUpb_Message_AssureWritable(PyUpb_Message* self) {
   PyUpb_Message* parent = self->ptr.parent;
   const upb_FieldDef* child_f = PyUpb_Message_InitAsMsg(child, arena);
   if (!child_f) return false;
-  Py_INCREF(child);  // To avoid a special-case in PyUpb_Message_SetField().
+  // To avoid a special-case in PyUpb_Message_SetField().
+  Py_INCREF((PyObject*)child);
 
   do {
     PyUpb_Message* next_parent = parent->ptr.parent;
@@ -972,7 +973,7 @@ static PyObject* PyUpb_Message_RichCompare(PyObject* _self, PyObject* other,
     return PyObject_CallMethod(_self, "_internal_compare", "O", other);
   }
 
-  if (!PyObject_TypeCheck(other, Py_TYPE(self))) {
+  if (!PyObject_TypeCheck(other, Py_TYPE(_self))) {
     Py_INCREF(Py_NotImplemented);
     return Py_NotImplemented;
   }

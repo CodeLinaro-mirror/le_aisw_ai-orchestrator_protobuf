@@ -287,7 +287,7 @@ static void PyUpb_DescriptorBase_Dealloc(PyUpb_DescriptorBase* base) {
   // methods) at any time. This also means we *must* stop GC from tracking
   // instances of them before we start destructing the object. In Python
   // 3.11, failing to do so would raise a runtime warning.
-  if (PyType_HasFeature(Py_TYPE(base), Py_TPFLAGS_HAVE_GC)) {
+  if (PyType_HasFeature(Py_TYPE((PyObject*)base), Py_TPFLAGS_HAVE_GC)) {
     PyObject_GC_UnTrack(base);
   }
   PyUpb_DescriptorPool_CacheEraseIfEqual(base->pool, base->def,

@@ -552,7 +552,7 @@ static PyObject* PyUpb_MapIterator_New(PyUpb_MapContainer* map) {
   iter->map = map;
   iter->iter = kUpb_Map_Begin;
   iter->version = map->version;
-  Py_INCREF(map);
+  Py_INCREF(&map->ob_base);
   return &iter->ob_base;
 }
 
