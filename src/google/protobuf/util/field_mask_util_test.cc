@@ -122,6 +122,10 @@ TEST(FieldMaskUtilTest, StringFormat) {
   EXPECT_EQ(2, mask.paths_size());
   EXPECT_EQ("fooBar", mask.paths(0));
   EXPECT_EQ("bazQuz", mask.paths(1));
+  FieldMaskUtil::FromString(",fooBar,,bazQuz,", &mask);
+  EXPECT_EQ(2, mask.paths_size());
+  EXPECT_EQ("fooBar", mask.paths(0));
+  EXPECT_EQ("bazQuz", mask.paths(1));
 }
 
 TEST(FieldMaskUtilTest, JsonStringFormat) {
@@ -142,6 +146,10 @@ TEST(FieldMaskUtilTest, JsonStringFormat) {
   EXPECT_EQ(1, mask.paths_size());
   EXPECT_EQ("foo_bar", mask.paths(0));
   FieldMaskUtil::FromJsonString("fooBar,bazQuz", &mask);
+  EXPECT_EQ(2, mask.paths_size());
+  EXPECT_EQ("foo_bar", mask.paths(0));
+  EXPECT_EQ("baz_quz", mask.paths(1));
+  EXPECT_TRUE(FieldMaskUtil::FromJsonString(",fooBar,,bazQuz,", &mask));
   EXPECT_EQ(2, mask.paths_size());
   EXPECT_EQ("foo_bar", mask.paths(0));
   EXPECT_EQ("baz_quz", mask.paths(1));
