@@ -11,8 +11,9 @@ unsafe extern "C" {
 }
 
 /// A trait implemented by types which are allowed as keys in maps.
-/// This is all types for fields except for repeated, maps, bytes, messages, enums and floating point types.
-/// This trait is defined separately in cpp.rs and upb.rs to be able to set better subtrait bounds.
+/// This is all types for fields except for repeated, maps, bytes, messages, enums and floating
+/// point types. This trait is defined separately in cpp.rs and upb.rs to be able to set better
+/// subtrait bounds.
 #[doc(hidden)]
 pub trait MapKey: Proxied + FfiMapKey + CppMapTypeConversions + SealedInternal {}
 
@@ -78,10 +79,8 @@ impl UntypedMapIterator {
     ///
     /// # Safety
     /// - The backing map must be valid and not be mutated for `'a`.
-    /// - The thunk must be safe to call if the iterator is not at the end of
-    ///   the map.
-    /// - The thunk must always write to the `key` and `value` fields, but not
-    ///   read from them.
+    /// - The thunk must be safe to call if the iterator is not at the end of the map.
+    /// - The thunk must always write to the `key` and `value` fields, but not read from them.
     /// - The get thunk must not move the iterator forward or backward.
     #[inline(always)]
     pub unsafe fn next_unchecked<'a, K, V, FfiKey, FfiValue>(
@@ -107,15 +106,14 @@ impl UntypedMapIterator {
         // SAFETY:
         // - The backing map outlives `'a`.
         // - The iterator is not at the end (node is non-null).
-        // - `ffi_key` and `ffi_value` are not read (as uninit) as promised by the
-        //   caller.
+        // - `ffi_key` and `ffi_value` are not read (as uninit) as promised by the caller.
         unsafe { (iter_get_thunk)(self, ffi_key.as_mut_ptr(), ffi_value.as_mut_ptr()) }
 
         // SAFETY:
         // - The backing map is alive as promised by the caller.
         // - `self.at_end()` is false and the `get` does not change that.
-        // - `UntypedMapIterator` has the same ABI as
-        //   `proto2::internal::UntypedMapIterator`. It is statically checked to be:
+        // - `UntypedMapIterator` has the same ABI as `proto2::internal::UntypedMapIterator`. It is
+        //   statically checked to be:
         //   - Trivially copyable.
         //   - Trivially destructible.
         //   - Standard layout.
@@ -124,8 +122,8 @@ impl UntypedMapIterator {
         unsafe { proto2_rust_thunk_UntypedMapIterator_increment(self) }
 
         // SAFETY:
-        // - The `get` function always writes valid values to `ffi_key` and `ffi_value`
-        //   as promised by the caller.
+        // - The `get` function always writes valid values to `ffi_key` and `ffi_value` as promised
+        //   by the caller.
         unsafe {
             Some((from_ffi_key(ffi_key.assume_init()), from_ffi_value(ffi_value.assume_init())))
         }
@@ -217,10 +215,9 @@ pub trait CppMapTypeConversions: Proxied {
     fn to_map_value(self) -> FfiMapValue;
 
     /// # Safety
-    /// - `value` must store the correct type for `Self`. If it is a string or
-    ///   bytes, then it must not be None. If `Self` is a closed enum, then
-    ///   `value` must store a valid value for that enum. If `Self` is a
-    ///   message, then `value` must store a message of the same type.
+    /// - `value` must store the correct type for `Self`. If it is a string or bytes, then it must
+    ///   not be None. If `Self` is a closed enum, then `value` must store a valid value for that
+    ///   enum. If `Self` is a message, then `value` must store a message of the same type.
     /// - The value must be valid for `'a` lifetime.
     unsafe fn from_map_value<'a>(value: FfiMapValue) -> View<'a, Self>;
 
@@ -228,12 +225,20 @@ pub trait CppMapTypeConversions: Proxied {
     /// - `value` must store a message of the same type as `Self`.
     /// - `value` must be valid and have exclusive mutable access for `'a` lifetime.
     #[allow(unused_variables)]
+    #[track_caller]
     unsafe fn mut_from_map_value<'a>(value: FfiMapValue) -> Mut<'a, Self>
     where
         Self: Message,
     {
-        panic!("mut_from_map_value is only implemented for messages")
+        mut_from_map_value_unimplemented()
     }
+}
+
+#[cold]
+#[inline(never)]
+#[track_caller]
+fn mut_from_map_value_unimplemented() -> ! {
+    panic!("mut_from_map_value is only implemented for messages")
 }
 
 impl CppMapTypeConversions for u32 {
@@ -525,8 +530,8 @@ where
         // SAFETY:
         // - The backing map for `map.as_raw` is valid for at least '_.
         // - A View that is live for '_ guarantees the backing map is unmodified for '_.
-        // - The `iter` function initializes an iterator that is valid for the key and
-        //   value types, and live for at least '_.
+        // - The `iter` function initializes an iterator that is valid for the key and value types,
+        //   and live for at least '_.
         unsafe {
             proto2_rust_map_iter(map.as_raw(Private), iter.as_mut_ptr().cast());
             MapIter::from_raw(Private, iter.assume_init())
@@ -538,8 +543,8 @@ where
         iter: &mut MapIter<'a, Key, Self>,
     ) -> Option<(View<'a, Key>, View<'a, Self>)> {
         // SAFETY:
-        // - The `MapIter` API forbids the backing map from being mutated for 'a, and
-        //   guarantees that it's the correct key and value types.
+        // - The `MapIter` API forbids the backing map from being mutated for 'a, and guarantees
+        //   that it's the correct key and value types.
         // - The thunk is safe to call as long as the iterator isn't at the end.
         // - The thunk always writes to key and value fields and does not read.
         // - The thunk does not increment the iterator.
