@@ -340,20 +340,28 @@ void FileGenerator::GenerateHeader(io::Printer* p,
     }
 
     if (generation_options_.EmitCFunctionExtensions()) {
-      // For extensions to chain together, the Root gets created even if there
-      // are no extensions.
-      p->Emit(R"objc(
-      #pragma mark - $file_unique_symbol_name$ extension registry
+      if (!generation_options_.experimental_disable_file_extension_registry) {
+        // For extensions to chain together, the Root gets created even if there
+        // are no extensions.
+        p->Emit(R"objc(
+        #pragma mark - $file_unique_symbol_name$ extension registry
 
-      /**
-       * An @c GPBExtensionRegistry that includes all the extensions defined by
-       * this file and all files that it depends on.
-       **/
-      GPBExtensionRegistry *$file_registry_function_name$(void);
-    )objc");
-      p->Emit("\n");
+        /**
+         * An @c GPBExtensionRegistry that includes all the extensions defined by
+         * this file and all files that it depends on.
+         **/
+        GPBExtensionRegistry *$file_registry_function_name$(void);
+      )objc");
+        p->Emit("\n");
+      }
 
       if (file_scoped_extension_count_) {
+        if (generation_options_.experimental_disable_file_extension_registry) {
+          p->Emit(R"objc(
+          #pragma mark - $file_unique_symbol_name$ Extensions
+        )objc");
+          p->Emit("\n");
+        }
         for (size_t i = 0; i < file_scoped_extension_count_; i++) {
           extension_generators_[i]->GenerateFunctionsHeader(p);
         }
@@ -422,7 +430,8 @@ void FileGenerator::GenerateSourceImpl(io::Printer* p,
                                        bool include_root_and_extensions) const {
   std::vector<const FileDescriptor*> deps_with_extensions;
   GeneratedFileOptions file_options;
-  if (include_root_and_extensions) {
+  if (include_root_and_extensions &&
+      !generation_options_.experimental_disable_file_extension_registry) {
     deps_with_extensions =
         common_state_->CollectMinimalFileDepsContainingExtensions(file_);
     file_options.forced_files_to_import = deps_with_extensions;
@@ -482,6 +491,7 @@ void FileGenerator::GenerateGlobalSource(io::Printer* p) const {
       << "Bundled protos aren't expected to use multi source generation.";
   ABSL_CHECK(generation_options_.extension_generation_mode ==
              ExtensionGenerationMode::kCFunction);
+  ABSL_CHECK(!generation_options_.experimental_disable_file_extension_registry);
   std::vector<const FileDescriptor*> deps_with_extensions =
       common_state_->CollectMinimalFileDepsContainingExtensions(file_);
   GeneratedFileOptions file_options;
@@ -760,15 +770,26 @@ void FileGenerator::EmitRootImplementation(
     io::Printer* p,
     const std::vector<const FileDescriptor*>& deps_with_extensions) const {
   if (generation_options_.EmitCFunctionExtensions()) {
-    p->Emit(
-        R"objc(
-        #pragma mark - $file_unique_symbol_name$ extension registry
-      )objc");
+    if (!generation_options_.experimental_disable_file_extension_registry) {
+      p->Emit(
+          R"objc(
+          #pragma mark - $file_unique_symbol_name$ extension registry
+        )objc");
 
-    p->Emit("\n");
+      p->Emit("\n");
 
-    EmitExtensionRegistryAndDescriptorFunctions(p, deps_with_extensions);
-    p->Emit("\n");
+      EmitExtensionRegistryAndDescriptorFunctions(p, deps_with_extensions);
+      p->Emit("\n");
+    } else {
+      if (!generation_options_.IsMultiSourceGeneration() &&
+          !extension_generators_.empty()) {
+        for (const auto& generator : extension_generators_) {
+          generator->GenerateDescriptorFunction(p);
+        }
+        p->Emit("\n");
+      }
+      return;
+    }
   }
 
   if (generation_options_.EmitClassBasedExtensions()) {
