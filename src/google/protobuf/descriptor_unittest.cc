@@ -341,6 +341,107 @@ void AddEmptyEnum(FileDescriptorProto* file, absl::string_view name) {
 
 // ===================================================================
 
+TEST(DescriptorPoolTest, OptionsConstructor) {
+  // 1. Default options: pool can build files directly.
+  {
+    DescriptorPool pool((DescriptorPool::Options()));
+    FileDescriptorProto proto;
+    proto.set_name("default.proto");
+    AddMessage(&proto, "DefaultMsg");
+    const FileDescriptor* file = pool.BuildFile(proto);
+    ASSERT_NE(file, nullptr);
+    EXPECT_EQ(pool.FindFileByName("default.proto"), file);
+    EXPECT_NE(pool.FindMessageTypeByName("DefaultMsg"), nullptr);
+  }
+
+  // 2. Underlay option: lookups find types from the underlay pool.
+  {
+    DescriptorPool underlay;
+    FileDescriptorProto proto;
+    proto.set_name("underlay.proto");
+    AddMessage(&proto, "UnderlayMsg");
+    ASSERT_NE(underlay.BuildFile(proto), nullptr);
+
+    DescriptorPool::Options options;
+    options.underlay = &underlay;
+    DescriptorPool pool(options);
+
+    const Descriptor* desc = pool.FindMessageTypeByName("UnderlayMsg");
+    ASSERT_NE(desc, nullptr);
+    EXPECT_EQ(desc->name(), "UnderlayMsg");
+    EXPECT_EQ(desc->file()->pool(), &underlay);
+    EXPECT_EQ(pool.FindFileByName("underlay.proto"), desc->file());
+  }
+
+  // 3. Fallback database option: loads files on demand from the database.
+  {
+    SimpleDescriptorDatabase db;
+    FileDescriptorProto proto;
+    proto.set_name("db.proto");
+    AddMessage(&proto, "DbMsg");
+    db.Add(proto);
+
+    DescriptorPool::Options options;
+    options.fallback_database = &db;
+    DescriptorPool pool(options);
+
+    const Descriptor* desc = pool.FindMessageTypeByName("DbMsg");
+    ASSERT_NE(desc, nullptr);
+    EXPECT_EQ(desc->name(), "DbMsg");
+    EXPECT_EQ(pool.FindFileByName("db.proto"), desc->file());
+  }
+
+  // 4. Error collector option: captures errors when building from database.
+  {
+    SimpleDescriptorDatabase db;
+    FileDescriptorProto proto;
+    proto.set_name("invalid.proto");
+    DescriptorProto* msg = AddMessage(&proto, "InvalidMsg");
+    AddField(msg, "field1", 1, FieldDescriptorProto::LABEL_OPTIONAL,
+             FieldDescriptorProto::TYPE_INT32);
+    AddField(msg, "field2", 1, FieldDescriptorProto::LABEL_OPTIONAL,
+             FieldDescriptorProto::TYPE_INT32);
+    db.Add(proto);
+
+    MockErrorCollector error_collector;
+    DescriptorPool::Options options;
+    options.fallback_database = &db;
+    options.error_collector = &error_collector;
+    DescriptorPool pool(options);
+
+    EXPECT_EQ(pool.FindFileByName("invalid.proto"), nullptr);
+    EXPECT_FALSE(error_collector.text_.empty());
+  }
+
+  // 5. Combined underlay and fallback database.
+  {
+    DescriptorPool underlay;
+    FileDescriptorProto underlay_proto;
+    underlay_proto.set_name("underlay_combo.proto");
+    AddMessage(&underlay_proto, "UnderlayComboMsg");
+    ASSERT_NE(underlay.BuildFile(underlay_proto), nullptr);
+
+    SimpleDescriptorDatabase db;
+    FileDescriptorProto db_proto;
+    db_proto.set_name("db_combo.proto");
+    AddMessage(&db_proto, "DbComboMsg");
+    db.Add(db_proto);
+
+    DescriptorPool::Options options;
+    options.underlay = &underlay;
+    options.fallback_database = &db;
+    DescriptorPool pool(options);
+
+    const Descriptor* u_desc = pool.FindMessageTypeByName("UnderlayComboMsg");
+    ASSERT_NE(u_desc, nullptr);
+    EXPECT_EQ(u_desc->file()->pool(), &underlay);
+
+    const Descriptor* db_desc = pool.FindMessageTypeByName("DbComboMsg");
+    ASSERT_NE(db_desc, nullptr);
+    EXPECT_EQ(db_desc->file()->pool(), &pool);
+  }
+}
+
 // Test simple files.
 class FileDescriptorTest : public testing::Test {
  protected:
