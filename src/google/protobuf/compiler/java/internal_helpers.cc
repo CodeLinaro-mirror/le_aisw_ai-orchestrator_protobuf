@@ -171,6 +171,13 @@ void GenerateLarge(io::Printer* printer, const EnumDescriptor* descriptor,
   // by a number), then using an underscore separator cannot create conflicts.
   absl::string_view count_sep = has_conflict ? "_" : "";
 
+  // Pick the largest negative integer not used by any enum entry so that
+  // UNRECOGNIZED has a unique `value` field even when an enum defines -1.
+  int unrecognized_value = -1;
+  while (descriptor->FindValueByNumber(unrecognized_value) != nullptr) {
+    unrecognized_value--;
+  }
+
   printer->Emit(
 
       {io::Printer::Sub("classname", descriptor->name())
@@ -178,6 +185,7 @@ void GenerateLarge(io::Printer* printer, const EnumDescriptor* descriptor,
        {"static", IsOwnFile(descriptor, immutable_api) ? " " : " static "},
        {"deprecation",
         descriptor->options().deprecated() ? "@java.lang.Deprecated" : ""},
+       {"unrecognized_value", unrecognized_value},
        {"unrecognized_index", descriptor->value_count()},
        {"proto_enum_class", context->EnforceLite()
                                 ? "com.google.protobuf.Internal.EnumLite"
@@ -428,7 +436,7 @@ void GenerateLarge(io::Printer* printer, const EnumDescriptor* descriptor,
             $gen_code_version_validator$
           }
 
-          public static final $classname$ UNRECOGNIZED = new $classname$(-1, $unrecognized_index$, "UNRECOGNIZED");
+          public static final $classname$ UNRECOGNIZED = new $classname$($unrecognized_value$, $unrecognized_index$, "UNRECOGNIZED");
 
           $deprecated_value_of_func$
 

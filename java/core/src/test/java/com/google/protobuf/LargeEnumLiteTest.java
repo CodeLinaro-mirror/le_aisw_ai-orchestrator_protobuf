@@ -13,6 +13,7 @@ import static org.junit.Assert.assertThrows;
 import com.google.protobuf.large.openaliasingenum.edition.LargeOpenAliasingEnum;
 import com.google.protobuf.large.openaliasingenum.edition.LargeOpenAliasingEnumParent;
 import com.google.protobuf.large.openenum.edition.LargeOpenEnum;
+import java.lang.reflect.Field;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -38,6 +39,19 @@ public class LargeEnumLiteTest {
   @Test
   public void testUnrecognizedGetNumberThrows() throws Exception {
     assertThrows(IllegalArgumentException.class, LargeOpenEnum.UNRECOGNIZED::getNumber);
+  }
+
+  @Test
+  public void testUnrecognizedValueDoesNotCollideWithNegativeOne() throws Exception {
+    Field openEnumValueField = LargeOpenEnum.class.getDeclaredField("value");
+    openEnumValueField.setAccessible(true);
+    assertThat(openEnumValueField.getInt(LargeOpenEnum.UNRECOGNIZED)).isEqualTo(-1);
+
+    Field aliasingEnumValueField = LargeOpenAliasingEnum.class.getDeclaredField("value");
+    aliasingEnumValueField.setAccessible(true);
+    assertThat(aliasingEnumValueField.getInt(LargeOpenAliasingEnum.LARGE_ENUM_NEGATIVE_ONE))
+        .isEqualTo(-1);
+    assertThat(aliasingEnumValueField.getInt(LargeOpenAliasingEnum.UNRECOGNIZED)).isEqualTo(-2);
   }
 
   @Test
