@@ -5424,7 +5424,7 @@ void MessageGenerator::GenerateSourceDefaultInstance(io::Printer* p) {
 
         PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT$ dllexport_decl$
             PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 $const $$globals_type$ $globals$
-                $SECTION$;
+                PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) $SECTION$;
       )cc");
 
   if (options_.lite_implicit_weak_fields) {
