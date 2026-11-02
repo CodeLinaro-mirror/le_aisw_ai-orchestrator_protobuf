@@ -2666,6 +2666,7 @@ cc_test(
     name = "parse_context_test",
     srcs = ["parse_context_test.cc"],
     deps = [
+        ":arena",
         ":cc_test_protos",
         ":protobuf",
         ":protobuf_lite",
@@ -2675,6 +2676,7 @@ cc_test(
         "@abseil-cpp//absl/log:absl_check",
         "@abseil-cpp//absl/strings",
         "@abseil-cpp//absl/strings:cord",
+        "@abseil-cpp//absl/strings:cord_test_helpers",
         "@abseil-cpp//absl/strings:string_view",
         "@googletest//:gtest",
         "@googletest//:gtest_main",

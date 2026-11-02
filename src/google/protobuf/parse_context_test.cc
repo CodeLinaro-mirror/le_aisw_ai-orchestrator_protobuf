@@ -17,9 +17,11 @@
 #include <gtest/gtest.h>
 #include "absl/log/absl_check.h"
 #include "absl/strings/cord.h"
+#include "absl/strings/cord_test_helpers.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/string_view.h"
+#include "google/protobuf/arena.h"
 #include "google/protobuf/io/test_zero_copy_stream.h"
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
 #include "google/protobuf/unittest.pb.h"
@@ -392,6 +394,7 @@ TEST(VerifyUTF8AndFlush, InvalidSeparatelyButValidTogether) {
   ASSERT_TRUE(utf8_range::IsStructurallyValid("\xf0\x9f\x98\x80"));
   VerifyUTF8AndCopy({std::string("\xf0"), std::string("\x9f\x98\x80")});
 }
+
 
 
 }  // namespace
