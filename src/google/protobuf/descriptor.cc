@@ -4327,6 +4327,7 @@ const FileDescriptor* DescriptorPool::BuildFileFromDatabase(
 }
 
 absl::Status DescriptorPool::SetFeatureSetDefaults(FeatureSetDefaults spec) {
+  absl::MutexLockMaybe lock(mutex_);
   if (build_started_) {
     return absl::FailedPreconditionError(
         "Feature set defaults can't be changed once the pool has started "
@@ -4387,6 +4388,7 @@ const FeatureSetDefaults& DescriptorPool::GetFeatureSetDefaults() const {
 }
 
 bool DescriptorPool::ResolvesFeaturesForImpl(int extension_number) const {
+  ReaderMutexLockMaybe lock(mutex_);
   for (const auto& edition_default : GetFeatureSetDefaults().defaults()) {
     std::vector<const FieldDescriptor*> fields;
     auto features = edition_default.fixed_features();
