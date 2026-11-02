@@ -88,7 +88,7 @@ constexpr ImplicitWeakMessage::ImplicitWeakMessage(ConstantInitialized)
     : MessageLite(&implicit_weak_message_globals.class_data), data_(nullptr) {}
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ImplicitWeakMessageDefaultType
-    implicit_weak_message_globals;
+    implicit_weak_message_globals PROTOBUF_ALIGNAS(kClassDataAlignment);
 
 const ImplicitWeakMessage& ImplicitWeakMessage::default_instance() {
   return implicit_weak_message_globals._default;

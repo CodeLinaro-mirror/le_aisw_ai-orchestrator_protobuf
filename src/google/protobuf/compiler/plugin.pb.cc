@@ -180,7 +180,7 @@ static_assert(alignof(VersionGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const VersionGlobalsTypeInternal Version_globals_
-        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
 class CodeGeneratorResponse_File::_Internal {
  public:
   using HasBits = decltype(::std::declval<CodeGeneratorResponse_File>()._impl_._has_bits_);
@@ -317,7 +317,7 @@ static_assert(alignof(CodeGeneratorResponse_FileGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const CodeGeneratorResponse_FileGlobalsTypeInternal CodeGeneratorResponse_File_globals_
-        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
 class CodeGeneratorResponse::_Internal {
  public:
   using HasBits = decltype(::std::declval<CodeGeneratorResponse>()._impl_._has_bits_);
@@ -464,7 +464,7 @@ static_assert(alignof(CodeGeneratorResponseGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const CodeGeneratorResponseGlobalsTypeInternal CodeGeneratorResponse_globals_
-        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
 class CodeGeneratorRequest::_Internal {
  public:
   using HasBits = decltype(::std::declval<CodeGeneratorRequest>()._impl_._has_bits_);
@@ -618,7 +618,7 @@ static_assert(alignof(CodeGeneratorRequestGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOC_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const CodeGeneratorRequestGlobalsTypeInternal CodeGeneratorRequest_globals_
-        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
 }  // namespace compiler
 }  // namespace protobuf
 }  // namespace google

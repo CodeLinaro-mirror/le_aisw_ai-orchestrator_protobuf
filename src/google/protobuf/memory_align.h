@@ -5,9 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-// This file provides alignment utilities for use in arenas.
-//
-// `ArenaAlign` contains a single `align` data member and provides
+// `MemoryAlign` contains a single `align` data member and provides
 // the below functions which operate on the given alignment.
 //
 //   Ceil(size_t n)      - rounds `n` up to the nearest `align` boundary.
@@ -25,8 +23,8 @@
 //    bytes for any 8 byte boundary.
 //
 // 2) There is an optimized `CeilDefaultAligned(T*)` method which is equivalent
-//    to `Ceil(ArenaAlignDefault::CheckAlign(p))` but more efficiently
-//    implemented as a 'check only' for ArenaAlignDefault.
+//    to `Ceil(ArenaAlignDefault{}.CheckAlign(p))` but more efficiently
+//    implemented as a 'check only' for MemoryAlign.
 //
 // These classes allow for generic arena logic using 'alignment policies'.
 //
@@ -34,7 +32,7 @@
 //
 //  template <Align>
 //  void* NaiveAlloc(size_t n, Align align) {
-//    ABSL_ASSERT(align.IsAligned(n));
+//    ABSL_DCHECK(align.IsAligned(n));
 //    const size_t required = align.Padded(n);
 //    if (required <= static_cast<size_t>(ptr_ - limit_)) {
 //      uint8_t* ptr = align.CeilDefaultAligned(ptr_);
@@ -46,16 +44,15 @@
 //
 //  void CallSites() {
 //    void *p1 = NaiveAlloc(n, ArenaAlignDefault());
-//    void *p2 = NaiveAlloc(n, ArenaAlignAs(32));
+//    void *p2 = NaiveAlloc(n, MemoryAlignAs(32));
 //  }
 //
-#ifndef GOOGLE_PROTOBUF_ARENA_ALIGN_H__
-#define GOOGLE_PROTOBUF_ARENA_ALIGN_H__
+#ifndef GOOGLE_PROTOBUF_MEMORY_ALIGN_H__
+#define GOOGLE_PROTOBUF_MEMORY_ALIGN_H__
 
 #include <cstddef>
 #include <cstdint>
 
-#include "absl/base/macros.h"
 #include "absl/log/absl_check.h"
 #include "absl/numeric/bits.h"
 
@@ -66,50 +63,8 @@ namespace google {
 namespace protobuf {
 namespace internal {
 
-struct ArenaAlignDefault {
-  PROTOBUF_EXPORT static constexpr size_t align = 8;  // NOLINT
-
-  static constexpr bool IsAligned(size_t n) { return (n & (align - 1)) == 0U; }
-
-  template <typename T>
-  static PROTOBUF_ALWAYS_INLINE bool IsAligned(T* ptr) {
-    return (reinterpret_cast<uintptr_t>(ptr) & (align - 1)) == 0U;
-  }
-
-  static PROTOBUF_ALWAYS_INLINE constexpr size_t Ceil(size_t n) {
-    return (n + align - 1) & ~(align - 1);
-  }
-  static PROTOBUF_ALWAYS_INLINE constexpr size_t Floor(size_t n) {
-    return (n & ~(align - 1));
-  }
-
-  static PROTOBUF_ALWAYS_INLINE size_t Padded(size_t n) {
-    ABSL_ASSERT(IsAligned(n));
-    return n;
-  }
-
-  template <typename T>
-  static PROTOBUF_ALWAYS_INLINE T* Ceil(T* ptr) {
-    uintptr_t intptr = reinterpret_cast<uintptr_t>(ptr);
-    return reinterpret_cast<T*>((intptr + align - 1) & ~(align - 1));
-  }
-
-  template <typename T>
-  static PROTOBUF_ALWAYS_INLINE T* CeilDefaultAligned(T* ptr) {
-    ABSL_ASSERT(IsAligned(ptr));
-    return ptr;
-  }
-
-  // Address sanitizer enabled alignment check
-  template <typename T>
-  static PROTOBUF_ALWAYS_INLINE T* CheckAligned(T* ptr) {
-    ABSL_ASSERT(IsAligned(ptr));
-    return ptr;
-  }
-};
-
-struct ArenaAlign {
-  static constexpr bool IsDefault() { return false; };
+struct MemoryAlign {
+  static constexpr size_t kMinAlignment = 8;
 
   size_t align;
 
@@ -125,13 +80,7 @@ struct ArenaAlign {
   }
   constexpr size_t Floor(size_t n) const { return (n & ~(align - 1)); }
 
-  constexpr size_t Padded(size_t n) const {
-    // TODO: there are direct callers of AllocateAligned() that violate
-    // `size` being a multiple of `align`: that should be an error / assert.
-    //  ABSL_ASSERT(IsAligned(n));
-    ABSL_ASSERT(ArenaAlignDefault::IsAligned(align));
-    return n + align - ArenaAlignDefault::align;
-  }
+  constexpr size_t Padded(size_t n) const;
 
   template <typename T>
   T* Ceil(T* ptr) const {
@@ -140,37 +89,40 @@ struct ArenaAlign {
   }
 
   template <typename T>
-  T* CeilDefaultAligned(T* ptr) const {
-    ABSL_ASSERT(ArenaAlignDefault::IsAligned(ptr));
-    return Ceil(ptr);
-  }
+  T* CeilDefaultAligned(T* ptr) const;
 
   // Address sanitizer enabled alignment check
   template <typename T>
   T* CheckAligned(T* ptr) const {
-    ABSL_ASSERT(IsAligned(ptr));
+    ABSL_DCHECK(IsAligned(ptr));
     return ptr;
   }
 };
 
-inline ArenaAlign ArenaAlignAs(size_t align) {
-  // align must be a non zero power of 2 >= 8
-  ABSL_DCHECK_NE(align, 0U);
-  ABSL_DCHECK(absl::has_single_bit(align)) << "Invalid alignment " << align;
-  return ArenaAlign{align};
+struct ArenaAlignDefault : MemoryAlign {
+  static constexpr size_t align = 8;  // NOLINT
+
+  constexpr ArenaAlignDefault() : MemoryAlign{align} {}
+};
+
+constexpr MemoryAlign MemoryAlignAs(size_t align) {
+  ABSL_DCHECK_GE(align, MemoryAlign::kMinAlignment)
+      << "Alignment less than minimum of " << MemoryAlign::kMinAlignment << ": "
+      << align;
+  ABSL_DCHECK(absl::has_single_bit(align))
+      << "Alignment not a power of 2: " << align;
+  return MemoryAlign{align};
 }
 
 template <bool, size_t align>
 struct AlignFactory {
-  static_assert(align > ArenaAlignDefault::align, "Not over-aligned");
   static_assert((align & (align - 1)) == 0U, "Not power of 2");
-  static constexpr ArenaAlign Create() { return ArenaAlign{align}; }
+  static constexpr MemoryAlign Create() { return MemoryAlign{align}; }
 };
 
 template <size_t align>
 struct AlignFactory<true, align> {
-  static_assert(align <= ArenaAlignDefault::align, "Over-aligned");
-  static_assert((align & (align - 1)) == 0U, "Not power of 2");
+  static_assert(absl::has_single_bit(align), "Not power of 2");
   static constexpr ArenaAlignDefault Create() { return ArenaAlignDefault{}; }
 };
 
@@ -180,14 +132,28 @@ struct AlignFactory<true, align> {
 // overloaded 'Align align` argument reducing the alignment operations on
 // `ArenaAlignDefault` implementations to no-ops.
 template <size_t align>
-inline constexpr auto ArenaAlignAs() {
-  return AlignFactory<align <= ArenaAlignDefault::align, align>::Create();
+constexpr auto MemoryAlignAs() {
+  return AlignFactory<(align <= MemoryAlign::kMinAlignment), align>::Create();
 }
 
-// Returns ArenaAlignAs<alignof(T)>
+// Returns MemoryAlignAs<alignof(T)>
 template <typename T>
-inline constexpr auto ArenaAlignOf() {
-  return ArenaAlignAs<alignof(T)>();
+constexpr auto MemoryAlignOf() {
+  return MemoryAlignAs<alignof(T)>();
+}
+
+constexpr size_t MemoryAlign::Padded(size_t n) const {
+  // TODO: there are direct callers of AllocateAligned() that violate
+  // `size` being a multiple of `align`: that should be an error / assert.
+  //  ABSL_DCHECK(IsAligned(n));
+  ABSL_DCHECK(MemoryAlignAs<kMinAlignment>().IsAligned(n));
+  return n + align - ArenaAlignDefault{}.align;
+}
+
+template <typename T>
+inline T* MemoryAlign::CeilDefaultAligned(T* ptr) const {
+  ABSL_DCHECK(ArenaAlignDefault{}.IsAligned(ptr));
+  return Ceil(ptr);
 }
 
 }  // namespace internal
@@ -196,4 +162,4 @@ inline constexpr auto ArenaAlignOf() {
 
 #include "google/protobuf/port_undef.inc"
 
-#endif  // GOOGLE_PROTOBUF_ARENA_ALIGN_H__
+#endif  // GOOGLE_PROTOBUF_MEMORY_ALIGN_H__

@@ -22,9 +22,9 @@
 #include "absl/base/prefetch.h"
 #include "absl/log/absl_check.h"
 #include "absl/numeric/bits.h"
-#include "google/protobuf/arena_align.h"
 #include "google/protobuf/arena_allocation_policy.h"
 #include "google/protobuf/arena_cleanup.h"
+#include "google/protobuf/memory_align.h"
 #include "google/protobuf/port.h"
 #include "google/protobuf/string_block.h"
 
@@ -37,7 +37,7 @@ namespace internal {
 
 // Arena blocks are variable length malloc-ed objects.  The following structure
 // describes the common header for all blocks.
-struct alignas(ArenaAlignDefault::align) ArenaBlock {
+struct alignas(ArenaAlignDefault{}.align) ArenaBlock {
   // For the sentry block with zero-size where ptr_/limit_ both point to `this`.
   constexpr ArenaBlock() : next(nullptr), size(0) {}
 
@@ -81,7 +81,7 @@ struct FirstSerialArena {
 class PROTOBUF_EXPORT SerialArena {
  public:
   static constexpr size_t kBlockHeaderSize =
-      ArenaAlignDefault::Ceil(sizeof(ArenaBlock));
+      ArenaAlignDefault{}.Ceil(sizeof(ArenaBlock));
 
   void CleanupList() { cleanup_list_.Cleanup(*this); }
   uint64_t SpaceAllocated() const {
@@ -115,7 +115,7 @@ class PROTOBUF_EXPORT SerialArena {
   // from it.
   template <AllocationClient alloc_client = AllocationClient::kDefault>
   void* AllocateAligned(size_t n) {
-    ABSL_DCHECK(internal::ArenaAlignDefault::IsAligned(n));
+    ABSL_DCHECK(internal::ArenaAlignDefault{}.IsAligned(n));
     ABSL_DCHECK_GE(limit_, ptr());
 
     if (alloc_client == AllocationClient::kArray) {
@@ -138,13 +138,13 @@ class PROTOBUF_EXPORT SerialArena {
     // scheme would only waste (align - 8)/2 bytes on average, but requires a
     // dedicated function in the outline arena allocation functions. Possibly
     // re-evaluate tradeoffs later.
-    return a <= 8 ? ArenaAlignDefault::Ceil(n) : ArenaAlignAs(a).Padded(n);
+    return a <= 8 ? ArenaAlignDefault{}.Ceil(n) : MemoryAlignAs(a).Padded(n);
   }
 
   static PROTOBUF_ALWAYS_INLINE void* AlignTo(void* p, size_t a) {
-    return (a <= ArenaAlignDefault::align)
-               ? ArenaAlignDefault::CeilDefaultAligned(p)
-               : ArenaAlignAs(a).CeilDefaultAligned(p);
+    return (a <= ArenaAlignDefault{}.align)
+               ? ArenaAlignDefault{}.CeilDefaultAligned(p)
+               : MemoryAlignAs(a).CeilDefaultAligned(p);
   }
 
  public:
@@ -202,7 +202,7 @@ class PROTOBUF_EXPORT SerialArena {
 
   // Allocate space if the current region provides enough space.
   bool MaybeAllocateAligned(size_t n, void** out) {
-    ABSL_DCHECK(internal::ArenaAlignDefault::IsAligned(n));
+    ABSL_DCHECK(internal::ArenaAlignDefault{}.IsAligned(n));
     ABSL_DCHECK_GE(limit_, ptr());
     char* ret = ptr();
     if (ABSL_PREDICT_FALSE(static_cast<size_t>(limit_ - ret) < n)) {
@@ -227,8 +227,8 @@ class PROTOBUF_EXPORT SerialArena {
   PROTOBUF_ALWAYS_INLINE
   void* AllocateAlignedWithCleanup(size_t n, size_t align,
                                    void (*destructor)(void*)) {
-    n = ArenaAlignDefault::Ceil(n);
-    char* ret = ArenaAlignAs(align).CeilDefaultAligned(ptr());
+    n = ArenaAlignDefault{}.Ceil(n);
+    char* ret = MemoryAlignAs(align).CeilDefaultAligned(ptr());
     // See the comment in MaybeAllocateAligned re uintptr_t.
     if (ABSL_PREDICT_FALSE(reinterpret_cast<uintptr_t>(ret) + n >
                            reinterpret_cast<uintptr_t>(limit_))) {
@@ -277,7 +277,7 @@ class PROTOBUF_EXPORT SerialArena {
   // REQUIRES: desired_end is an aligned pointer within a previous allocation.
   bool TryTrimTail(void* alloc_end, void* desired_end) {
     ABSL_DCHECK_LE(desired_end, alloc_end);
-    ABSL_DCHECK(ArenaAlignDefault::IsAligned(desired_end));
+    ABSL_DCHECK(ArenaAlignDefault{}.IsAligned(desired_end));
 
     char* tail = ptr();
     if (static_cast<char*>(alloc_end) != tail) {

@@ -241,7 +241,7 @@ static_assert(alignof(UninterpretedOption_NamePartGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 UninterpretedOption_NamePartGlobalsTypeInternal UninterpretedOption_NamePart_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class SourceCodeInfo_Location::_Internal {
  public:
   using HasBits = decltype(::std::declval<SourceCodeInfo_Location>()._impl_._has_bits_);
@@ -409,7 +409,7 @@ static_assert(alignof(SourceCodeInfo_LocationGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SourceCodeInfo_LocationGlobalsTypeInternal SourceCodeInfo_Location_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class GeneratedCodeInfo_Annotation::_Internal {
  public:
   using HasBits = decltype(::std::declval<GeneratedCodeInfo_Annotation>()._impl_._has_bits_);
@@ -567,7 +567,7 @@ static_assert(alignof(GeneratedCodeInfo_AnnotationGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 GeneratedCodeInfo_AnnotationGlobalsTypeInternal GeneratedCodeInfo_Annotation_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class FieldOptions_FeatureSupport::_Internal {
  public:
   using HasBits = decltype(::std::declval<FieldOptions_FeatureSupport>()._impl_._has_bits_);
@@ -725,7 +725,7 @@ static_assert(alignof(FieldOptions_FeatureSupportGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FieldOptions_FeatureSupportGlobalsTypeInternal FieldOptions_FeatureSupport_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class FieldOptions_EditionDefault::_Internal {
  public:
   using HasBits = decltype(::std::declval<FieldOptions_EditionDefault>()._impl_._has_bits_);
@@ -855,7 +855,7 @@ static_assert(alignof(FieldOptions_EditionDefaultGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FieldOptions_EditionDefaultGlobalsTypeInternal FieldOptions_EditionDefault_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class FeatureSet_VisibilityFeature::_Internal {
  public:
 
@@ -963,7 +963,7 @@ static_assert(alignof(FeatureSet_VisibilityFeatureGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FeatureSet_VisibilityFeatureGlobalsTypeInternal FeatureSet_VisibilityFeature_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class FeatureSet_ProtoLimitsFeature::_Internal {
  public:
 
@@ -1071,7 +1071,7 @@ static_assert(alignof(FeatureSet_ProtoLimitsFeatureGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FeatureSet_ProtoLimitsFeatureGlobalsTypeInternal FeatureSet_ProtoLimitsFeature_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class FeatureSet::_Internal {
  public:
   using HasBits = decltype(::std::declval<FeatureSet>()._impl_._has_bits_);
@@ -1263,7 +1263,7 @@ static_assert(alignof(FeatureSetGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FeatureSetGlobalsTypeInternal FeatureSet_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class ExtensionRangeOptions_Declaration::_Internal {
  public:
   using HasBits = decltype(::std::declval<ExtensionRangeOptions_Declaration>()._impl_._has_bits_);
@@ -1419,7 +1419,7 @@ static_assert(alignof(ExtensionRangeOptions_DeclarationGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ExtensionRangeOptions_DeclarationGlobalsTypeInternal ExtensionRangeOptions_Declaration_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class EnumDescriptorProto_EnumReservedRange::_Internal {
  public:
   using HasBits = decltype(::std::declval<EnumDescriptorProto_EnumReservedRange>()._impl_._has_bits_);
@@ -1547,7 +1547,7 @@ static_assert(alignof(EnumDescriptorProto_EnumReservedRangeGlobalsTypeInternal) 
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EnumDescriptorProto_EnumReservedRangeGlobalsTypeInternal EnumDescriptorProto_EnumReservedRange_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class DescriptorProto_ReservedRange::_Internal {
  public:
   using HasBits = decltype(::std::declval<DescriptorProto_ReservedRange>()._impl_._has_bits_);
@@ -1675,7 +1675,7 @@ static_assert(alignof(DescriptorProto_ReservedRangeGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 DescriptorProto_ReservedRangeGlobalsTypeInternal DescriptorProto_ReservedRange_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class UninterpretedOption::_Internal {
  public:
   using HasBits = decltype(::std::declval<UninterpretedOption>()._impl_._has_bits_);
@@ -1849,7 +1849,7 @@ static_assert(alignof(UninterpretedOptionGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 UninterpretedOptionGlobalsTypeInternal UninterpretedOption_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class SourceCodeInfo::_Internal {
  public:
   using HasBits = decltype(::std::declval<SourceCodeInfo>()._impl_._has_bits_);
@@ -1974,7 +1974,7 @@ static_assert(alignof(SourceCodeInfoGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SourceCodeInfoGlobalsTypeInternal SourceCodeInfo_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class GeneratedCodeInfo::_Internal {
  public:
   using HasBits = decltype(::std::declval<GeneratedCodeInfo>()._impl_._has_bits_);
@@ -2099,7 +2099,7 @@ static_assert(alignof(GeneratedCodeInfoGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 GeneratedCodeInfoGlobalsTypeInternal GeneratedCodeInfo_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class FeatureSetDefaults_FeatureSetEditionDefault::_Internal {
  public:
   using HasBits = decltype(::std::declval<FeatureSetDefaults_FeatureSetEditionDefault>()._impl_._has_bits_);
@@ -2237,7 +2237,7 @@ static_assert(alignof(FeatureSetDefaults_FeatureSetEditionDefaultGlobalsTypeInte
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FeatureSetDefaults_FeatureSetEditionDefaultGlobalsTypeInternal FeatureSetDefaults_FeatureSetEditionDefault_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class ServiceOptions::_Internal {
  public:
   using HasBits = decltype(::std::declval<ServiceOptions>()._impl_._has_bits_);
@@ -2382,7 +2382,7 @@ static_assert(alignof(ServiceOptionsGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ServiceOptionsGlobalsTypeInternal ServiceOptions_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class OneofOptions::_Internal {
  public:
   using HasBits = decltype(::std::declval<OneofOptions>()._impl_._has_bits_);
@@ -2519,7 +2519,7 @@ static_assert(alignof(OneofOptionsGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 OneofOptionsGlobalsTypeInternal OneofOptions_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class MethodOptions::_Internal {
  public:
   using HasBits = decltype(::std::declval<MethodOptions>()._impl_._has_bits_);
@@ -2675,7 +2675,7 @@ static_assert(alignof(MethodOptionsGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 MethodOptionsGlobalsTypeInternal MethodOptions_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class MessageOptions::_Internal {
  public:
   using HasBits = decltype(::std::declval<MessageOptions>()._impl_._has_bits_);
@@ -2840,7 +2840,7 @@ static_assert(alignof(MessageOptionsGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 MessageOptionsGlobalsTypeInternal MessageOptions_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class FileOptions::_Internal {
  public:
   using HasBits = decltype(::std::declval<FileOptions>()._impl_._has_bits_);
@@ -3130,7 +3130,7 @@ static_assert(alignof(FileOptionsGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FileOptionsGlobalsTypeInternal FileOptions_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class FieldOptions::_Internal {
  public:
   using HasBits = decltype(::std::declval<FieldOptions>()._impl_._has_bits_);
@@ -3353,7 +3353,7 @@ static_assert(alignof(FieldOptionsGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FieldOptionsGlobalsTypeInternal FieldOptions_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class FeatureSetDefaults::_Internal {
  public:
   using HasBits = decltype(::std::declval<FeatureSetDefaults>()._impl_._has_bits_);
@@ -3490,7 +3490,7 @@ static_assert(alignof(FeatureSetDefaultsGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FeatureSetDefaultsGlobalsTypeInternal FeatureSetDefaults_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class ExtensionRangeOptions::_Internal {
  public:
   using HasBits = decltype(::std::declval<ExtensionRangeOptions>()._impl_._has_bits_);
@@ -3648,7 +3648,7 @@ static_assert(alignof(ExtensionRangeOptionsGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ExtensionRangeOptionsGlobalsTypeInternal ExtensionRangeOptions_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class EnumValueOptions::_Internal {
  public:
   using HasBits = decltype(::std::declval<EnumValueOptions>()._impl_._has_bits_);
@@ -3808,7 +3808,7 @@ static_assert(alignof(EnumValueOptionsGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EnumValueOptionsGlobalsTypeInternal EnumValueOptions_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class EnumOptions::_Internal {
  public:
   using HasBits = decltype(::std::declval<EnumOptions>()._impl_._has_bits_);
@@ -3964,7 +3964,7 @@ static_assert(alignof(EnumOptionsGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EnumOptionsGlobalsTypeInternal EnumOptions_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class OneofDescriptorProto::_Internal {
  public:
   using HasBits = decltype(::std::declval<OneofDescriptorProto>()._impl_._has_bits_);
@@ -4094,7 +4094,7 @@ static_assert(alignof(OneofDescriptorProtoGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 OneofDescriptorProtoGlobalsTypeInternal OneofDescriptorProto_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class MethodDescriptorProto::_Internal {
  public:
   using HasBits = decltype(::std::declval<MethodDescriptorProto>()._impl_._has_bits_);
@@ -4258,7 +4258,7 @@ static_assert(alignof(MethodDescriptorProtoGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 MethodDescriptorProtoGlobalsTypeInternal MethodDescriptorProto_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class FieldDescriptorProto::_Internal {
  public:
   using HasBits = decltype(::std::declval<FieldDescriptorProto>()._impl_._has_bits_);
@@ -4463,7 +4463,7 @@ static_assert(alignof(FieldDescriptorProtoGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FieldDescriptorProtoGlobalsTypeInternal FieldDescriptorProto_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class EnumValueDescriptorProto::_Internal {
  public:
   using HasBits = decltype(::std::declval<EnumValueDescriptorProto>()._impl_._has_bits_);
@@ -4601,7 +4601,7 @@ static_assert(alignof(EnumValueDescriptorProtoGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EnumValueDescriptorProtoGlobalsTypeInternal EnumValueDescriptorProto_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class DescriptorProto_ExtensionRange::_Internal {
  public:
   using HasBits = decltype(::std::declval<DescriptorProto_ExtensionRange>()._impl_._has_bits_);
@@ -4737,7 +4737,7 @@ static_assert(alignof(DescriptorProto_ExtensionRangeGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 DescriptorProto_ExtensionRangeGlobalsTypeInternal DescriptorProto_ExtensionRange_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class ServiceDescriptorProto::_Internal {
  public:
   using HasBits = decltype(::std::declval<ServiceDescriptorProto>()._impl_._has_bits_);
@@ -4880,7 +4880,7 @@ static_assert(alignof(ServiceDescriptorProtoGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ServiceDescriptorProtoGlobalsTypeInternal ServiceDescriptorProto_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class EnumDescriptorProto::_Internal {
  public:
   using HasBits = decltype(::std::declval<EnumDescriptorProto>()._impl_._has_bits_);
@@ -5055,7 +5055,7 @@ static_assert(alignof(EnumDescriptorProtoGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EnumDescriptorProtoGlobalsTypeInternal EnumDescriptorProto_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class DescriptorProto::_Internal {
  public:
   using HasBits = decltype(::std::declval<DescriptorProto>()._impl_._has_bits_);
@@ -5293,7 +5293,7 @@ static_assert(alignof(DescriptorProtoGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 DescriptorProtoGlobalsTypeInternal DescriptorProto_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class FileDescriptorProto::_Internal {
  public:
   using HasBits = decltype(::std::declval<FileDescriptorProto>()._impl_._has_bits_);
@@ -5551,7 +5551,7 @@ static_assert(alignof(FileDescriptorProtoGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FileDescriptorProtoGlobalsTypeInternal FileDescriptorProto_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 class FileDescriptorSet::_Internal {
  public:
   using HasBits = decltype(::std::declval<FileDescriptorSet>()._impl_._has_bits_);
@@ -5676,7 +5676,7 @@ static_assert(alignof(FileDescriptorSetGlobalsTypeInternal) ==
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_EXPORT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FileDescriptorSetGlobalsTypeInternal FileDescriptorSet_globals_
-        ;
+        PROTOBUF_ALIGNAS(::_pbi::kClassDataAlignment) ;
 }  // namespace protobuf
 }  // namespace google
 static const ::_pb::EnumDescriptor* PROTOBUF_NONNULL
