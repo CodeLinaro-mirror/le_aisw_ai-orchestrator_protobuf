@@ -25,7 +25,6 @@
 #include "google/protobuf/map.h"
 #include "google/protobuf/memory_align.h"
 #include "google/protobuf/message_lite.h"
-#include "google/protobuf/metadata_lite.h"
 #include "google/protobuf/parse_context.h"
 #include "google/protobuf/port.h"
 #include "google/protobuf/raw_ptr.h"
@@ -44,6 +43,8 @@ class Message;
 class UnknownFieldSet;
 
 namespace internal {
+
+struct ClassData;
 
 enum {
   kSplitOffsetAuxIdx = 0,
@@ -725,7 +726,8 @@ class PROTOBUF_EXPORT TcParser final {
 
   static MessageLite* NewMessage(const ClassData* class_data, Arena* arena);
   static MessageLite* AddMessage(const ClassData* class_data,
-                                 RepeatedPtrFieldBase& field, Arena* arena);
+                                 RepeatedPtrFieldBase& field,
+                                 SerialArena* arena);
 
   static void* MutableSplitField(MessageLite* msg,
                                  const TcParseTableBase* table,
