@@ -47,7 +47,8 @@ typedef struct upb_TaggedAuxPtr {
   // Three lowest bits form a tag:
   // 000 - non-aliased unknown data (upb_StringView*)
   // 100 - aliased unknown data (upb_StringView*)
-  // 001 - non-canonical extension (upb_AuxField*)
+  // 001 - unknown aux field, i.e. a non-canonical extension or field
+  //       (upb_AuxField*)
   // 011 - canonical extension (upb_AuxField*)
   //
   // Bit 0 (lowest bit): Represents the data format in memory (1 for parsed
@@ -107,12 +108,12 @@ UPB_INLINE bool upb_TaggedAuxPtr_IsCanonicalExtension(upb_TaggedAuxPtr ptr) {
   return !upb_TaggedAuxPtr_IsNull(ptr) && ((ptr.ptr & 3) == 3);
 }
 
-UPB_INLINE bool upb_TaggedAuxPtr_IsNonCanonicalExtension(upb_TaggedAuxPtr ptr) {
+UPB_INLINE bool upb_TaggedAuxPtr_IsUnknownAuxField(upb_TaggedAuxPtr ptr) {
   return !upb_TaggedAuxPtr_IsNull(ptr) && ((ptr.ptr & 3) == 1);
 }
 
-// Returns true if the entry is a canonical or non-canonical extension.
-UPB_INLINE bool upb_TaggedAuxPtr_IsExtension(upb_TaggedAuxPtr ptr) {
+// Returns true if the entry is a canonical extension or an unknown aux field.
+UPB_INLINE bool upb_TaggedAuxPtr_IsAuxField(upb_TaggedAuxPtr ptr) {
   return !upb_TaggedAuxPtr_IsNull(ptr) && ((ptr.ptr & 1) != 0);
 }
 
@@ -131,23 +132,22 @@ UPB_INLINE upb_AuxField* upb_TaggedAuxPtr_CanonicalExtension(
   return (upb_AuxField*)(ptr.ptr & ~7ULL);
 }
 
-UPB_INLINE upb_AuxField* upb_TaggedAuxPtr_NonCanonicalExtension(
+UPB_INLINE upb_AuxField* upb_TaggedAuxPtr_UnknownAuxField(
     upb_TaggedAuxPtr ptr) {
-  UPB_ASSERT(upb_TaggedAuxPtr_IsNonCanonicalExtension(ptr));
+  UPB_ASSERT(upb_TaggedAuxPtr_IsUnknownAuxField(ptr));
   return (upb_AuxField*)(ptr.ptr & ~7ULL);
 }
 
-UPB_INLINE upb_AuxField* upb_TaggedAuxPtr_Extension(upb_TaggedAuxPtr ptr) {
-  UPB_ASSERT(upb_TaggedAuxPtr_IsExtension(ptr));
+UPB_INLINE upb_AuxField* upb_TaggedAuxPtr_AuxField(upb_TaggedAuxPtr ptr) {
+  UPB_ASSERT(upb_TaggedAuxPtr_IsAuxField(ptr));
   return (upb_AuxField*)(ptr.ptr & ~7ULL);
 }
 
-// Returns the extension pointer if the tagged pointer is a canonical or
-// non-canonical extension, otherwise returns NULL.
-UPB_INLINE upb_AuxField* upb_TaggedAuxPtr_TryGetExtension(
-    upb_TaggedAuxPtr ptr) {
+// Returns the aux field pointer if the tagged pointer is a canonical extension
+// or an unknown aux field, otherwise returns NULL.
+UPB_INLINE upb_AuxField* upb_TaggedAuxPtr_TryGetAuxField(upb_TaggedAuxPtr ptr) {
   if (upb_TaggedAuxPtr_IsCanonicalExtension(ptr) ||
-      upb_TaggedAuxPtr_IsNonCanonicalExtension(ptr)) {
+      upb_TaggedAuxPtr_IsUnknownAuxField(ptr)) {
     return (upb_AuxField*)(ptr.ptr & ~7ULL);
   }
   return NULL;
@@ -162,20 +162,6 @@ UPB_INLINE upb_StringView* upb_TaggedPtrAux_StringViewRepr(
 
 // LINT.ThenChange(//depot/google3/third_party/upb/bits/golang/message.go:tagged_aux_type)
 
-typedef union {
-  upb_AuxField* extension;
-  const upb_StringView* unknown_data;
-} upb_TaggedAux;
-
-UPB_INLINE upb_TaggedAuxType upb_TaggedAux_Get(upb_TaggedAuxPtr ptr,
-                                               upb_TaggedAux* data) {
-  UPB_ASSERT(!upb_TaggedAuxPtr_IsNull(ptr));
-  uintptr_t untagged = ptr.ptr & ~7ULL;
-  UPB_ASSERT((untagged & 7) == 0);
-  memcpy(data, &untagged, sizeof(*data));
-  return upb_TaggedAuxPtr_Type(ptr);
-}
-
 UPB_INLINE upb_TaggedAuxPtr upb_TaggedAuxPtr_Null(void) {
   upb_TaggedAuxPtr ptr;
   ptr.ptr = 0;
@@ -183,28 +169,12 @@ UPB_INLINE upb_TaggedAuxPtr upb_TaggedAuxPtr_Null(void) {
 }
 
 UPB_INLINE upb_TaggedAuxPtr
-upb_TaggedAuxPtr_MakeExtension(const upb_AuxField* e, upb_TaggedAuxType type) {
+upb_TaggedAuxPtr_MakeAuxField(const upb_AuxField* e, upb_TaggedAuxType type) {
   UPB_ASSERT(((uintptr_t)e & 7) == 0);
   UPB_ASSERT(type == kUpb_TaggedAuxType_CanonicalExtension ||
-             type == kUpb_TaggedAuxType_NonCanonicalExtension);
+             type == kUpb_TaggedAuxType_UnknownAuxField);
   upb_TaggedAuxPtr ptr;
   ptr.ptr = (uintptr_t)e | type;
-  return ptr;
-}
-
-UPB_INLINE upb_TaggedAuxPtr
-upb_TaggedAuxPtr_MakeCanonicalExtension(const upb_AuxField* e) {
-  UPB_ASSERT(((uintptr_t)e & 7) == 0);
-  upb_TaggedAuxPtr ptr;
-  ptr.ptr = (uintptr_t)e | 3;
-  return ptr;
-}
-
-UPB_INLINE upb_TaggedAuxPtr
-upb_TaggedAuxPtr_MakeNonCanonicalExtension(const upb_AuxField* e) {
-  UPB_ASSERT(((uintptr_t)e & 7) == 0);
-  upb_TaggedAuxPtr ptr;
-  ptr.ptr = (uintptr_t)e | 1;
   return ptr;
 }
 

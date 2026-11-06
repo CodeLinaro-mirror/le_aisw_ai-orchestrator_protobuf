@@ -26,7 +26,7 @@ extern "C" {
 
 typedef enum {
   kUpb_MessageUnknownType_StringView,
-  kUpb_MessageUnknownType_NonCanonicalExtension,
+  kUpb_MessageUnknownType_AuxField,
 } upb_MessageUnknownType;
 
 // Represents an unknown field in a message, whether it's in a serialized
@@ -35,7 +35,7 @@ typedef struct upb_MessageUnknown {
   uint8_t type;
   union {
     upb_StringView bytes;
-    const upb_AuxField* extension;
+    const upb_AuxField* aux_field;
   } value;
 } upb_MessageUnknown;
 
@@ -54,10 +54,9 @@ UPB_INLINE bool upb_Message_NextUnknown2(const struct upb_Message* msg,
         data->value.bytes = *upb_TaggedPtrAux_StringViewRepr(tagged_ptr);
         *iter = i;
         return true;
-      } else if (upb_TaggedAuxPtr_IsNonCanonicalExtension(tagged_ptr)) {
-        data->type = kUpb_MessageUnknownType_NonCanonicalExtension;
-        data->value.extension =
-            upb_TaggedAuxPtr_NonCanonicalExtension(tagged_ptr);
+      } else if (upb_TaggedAuxPtr_IsUnknownAuxField(tagged_ptr)) {
+        data->type = kUpb_MessageUnknownType_AuxField;
+        data->value.aux_field = upb_TaggedAuxPtr_UnknownAuxField(tagged_ptr);
         *iter = i;
         return true;
       }
