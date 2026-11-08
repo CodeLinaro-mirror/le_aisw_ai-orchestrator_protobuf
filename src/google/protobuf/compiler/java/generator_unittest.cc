@@ -338,6 +338,49 @@ TEST_F(JavaGeneratorTest, LargeOpenEnumAllowedEdition2024) {
   ExpectNoErrors();
 }
 
+TEST_F(JavaGeneratorTest, LargeEnumAliasesEmittedInSameShardAsCanonical) {
+  std::string schema = R"schema(
+    edition = "2024";
+    package proto2_unittest;
+    import "third_party/java/protobuf/java_features.proto";
+    enum BigAliasedEnum {
+      option allow_alias = true;
+      option features.(pb.java).large_enum = true;
+  )schema";
+  for (int i = 0; i <= 1005; ++i) {
+    absl::StrAppend(&schema, "  VAL", i, " = ", i, ";\n");
+  }
+  absl::StrAppend(&schema, "  VAL1_ALIAS = 1;\n  VAL998_ALIAS = 998;\n}\n");
+  CreateTempFile("big_aliased.proto", schema);
+
+  RunProtoc(
+      "protocol_compiler --proto_path=$tmpdir --java_out=$tmpdir "
+      "big_aliased.proto --experimental_editions");
+
+  ExpectNoErrors();
+  EXPECT_TRUE(
+      FileGenerated(PACKAGE_PREFIX "proto2_unittest/BigAliasedEnum.java"));
+  // VAL1_ALIAS and VAL998_ALIAS must be emitted in the same shard as their
+  // canonical values using direct same-interface references rather than
+  // cross-interface references, even when a canonical + alias group straddles
+  // the 1000-constant shard boundary.
+  EXPECT_TRUE(FileContainsSubstring(
+      PACKAGE_PREFIX "proto2_unittest/BigAliasedEnum.java",
+      "public static final BigAliasedEnum VAL1_ALIAS = VAL1;"));
+  EXPECT_TRUE(FileContainsSubstring(
+      PACKAGE_PREFIX "proto2_unittest/BigAliasedEnum.java",
+      "public static final BigAliasedEnum VAL998_ALIAS = VAL998;"));
+  EXPECT_FALSE(FileContainsSubstring(PACKAGE_PREFIX
+                                     "proto2_unittest/BigAliasedEnum.java",
+                                     "BigAliasedEnum0.VAL1"));
+  EXPECT_FALSE(FileContainsSubstring(PACKAGE_PREFIX
+                                     "proto2_unittest/BigAliasedEnum.java",
+                                     "BigAliasedEnum0.VAL998"));
+  EXPECT_FALSE(FileContainsSubstring(PACKAGE_PREFIX
+                                     "proto2_unittest/BigAliasedEnum.java",
+                                     "BigAliasedEnum1.VAL998"));
+}
+
 struct OpenEnumUnrecognizedTestCase {
   absl::string_view test_name;
   bool lite;

@@ -20,6 +20,16 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class LargeEnumLiteTest {
   @Test
+  public void testAliasesDeclaredInSameShardAsCanonical() throws Exception {
+    assertThat(LargeOpenAliasingEnum.LARGE_ENUM1_ALIAS)
+        .isSameInstanceAs(LargeOpenAliasingEnum.LARGE_ENUM1);
+    assertThat(LargeOpenAliasingEnum.class.getField("LARGE_ENUM1_ALIAS").getDeclaringClass())
+        .isEqualTo(LargeOpenAliasingEnum.class.getField("LARGE_ENUM1").getDeclaringClass());
+    assertThat(LargeOpenAliasingEnum.class.getField("LARGE_ENUM1_ALIAS_VALUE").getDeclaringClass())
+        .isEqualTo(LargeOpenAliasingEnum.class.getField("LARGE_ENUM1_VALUE").getDeclaringClass());
+  }
+
+  @Test
   public void testLargeEnumRoundTrip() throws Exception {
     LargeOpenAliasingEnumParent msg =
         LargeOpenAliasingEnumParent.newBuilder()
