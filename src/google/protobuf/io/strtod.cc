@@ -10,8 +10,6 @@
 #include <float.h>  // FLT_DIG and DBL_DIG
 
 #include <cmath>
-#include <cstdio>
-#include <cstdlib>
 #include <cstring>
 #include <limits>
 #include <string>
@@ -155,13 +153,6 @@ void DelocalizeRadix(char *buffer) {
   }
 }
 
-bool safe_strtof(const char *str, float *value) {
-  char *endptr;
-  errno = 0;  // errno only gets set on errors
-  *value = strtof(str, &endptr);
-  return *str != 0 && *endptr == 0 && errno == 0;
-}
-
 char *FloatToBuffer(float value, char *buffer) {
   // FLT_DIG is 6 for IEEE-754 floats, which are used on almost all
   // platforms these days.  Just in case some system exists where FLT_DIG
@@ -169,10 +160,10 @@ char *FloatToBuffer(float value, char *buffer) {
   // this assert.
   static_assert(FLT_DIG < 10, "FLT_DIG_is_too_big");
 
-  if (value == std::numeric_limits<double>::infinity()) {
+  if (value == std::numeric_limits<float>::infinity()) {
     absl::SNPrintF(buffer, kFloatToBufferSize, "inf");
     return buffer;
-  } else if (value == -std::numeric_limits<double>::infinity()) {
+  } else if (value == -std::numeric_limits<float>::infinity()) {
     absl::SNPrintF(buffer, kFloatToBufferSize, "-inf");
     return buffer;
   } else if (std::isnan(value)) {
@@ -180,23 +171,21 @@ char *FloatToBuffer(float value, char *buffer) {
     return buffer;
   }
 
-  int snprintf_result =
-      absl::SNPrintF(buffer, kFloatToBufferSize, "%.*g", FLT_DIG, value);
+  for (int prec = FLT_DIG; prec <= FLT_DIG + 3; ++prec) {
+    int snprintf_result =
+        absl::SNPrintF(buffer, kFloatToBufferSize, "%.*g", prec, value);
 
-  // The snprintf should never overflow because the buffer is significantly
-  // larger than the precision we asked for.
-  ABSL_DCHECK(snprintf_result > 0 && snprintf_result < kFloatToBufferSize);
-
-  float parsed_value;
-  if (!safe_strtof(buffer, &parsed_value) || parsed_value != value) {
-    snprintf_result =
-        absl::SNPrintF(buffer, kFloatToBufferSize, "%.*g", FLT_DIG + 3, value);
-
-    // Should never overflow; see above.
+    // The snprintf should never overflow because the buffer is significantly
+    // larger than the precision we asked for.
     ABSL_DCHECK(snprintf_result > 0 && snprintf_result < kFloatToBufferSize);
+
+    float parsed_value;
+    if (prec == FLT_DIG + 3 ||
+        (absl::SimpleAtof(buffer, &parsed_value) && parsed_value == value)) {
+      break;
+    }
   }
 
-  DelocalizeRadix(buffer);
   return buffer;
 }
 
