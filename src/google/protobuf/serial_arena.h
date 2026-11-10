@@ -128,11 +128,7 @@ class PROTOBUF_EXPORT SerialArena {
       }
     }
 
-    void* ptr;
-    if (ABSL_PREDICT_TRUE(MaybeAllocateAligned(n, &ptr))) {
-      return ptr;
-    }
-    return AllocateAlignedFallback(n);
+    return AllocateImpl<AllocationMode::kDefault>(n);
   }
 
  private:
@@ -204,47 +200,76 @@ class PROTOBUF_EXPORT SerialArena {
     internal::PoisonMemoryRegion(p, size);
   }
 
-  // Allocate space if the current region provides enough space.
-  bool MaybeAllocateAligned(size_t n, void** out) {
-    ABSL_DCHECK(internal::ArenaAlignDefault{}.IsAligned(n));
+  enum class AllocationMode {
+    // Attempt to allocate in the current block. If there is not enough space,
+    // call the out-of-line fallback allocator to allocate a new block. Always
+    // succeeds.
+    kDefault,
+    // Attempt to allocate in the current block. If there is not enough space,
+    // return `nullptr`.
+    kNoFallback,
+    // Allocate in the current block assuming there is enough space. Callers are
+    // responsible for ensuring there is enough space.
+    kUnchecked,
+  };
+
+  struct NoCleanup {
+    void AddCleanup(SerialArena& arena, void* elem) {}
+  };
+
+  struct WithCleanup {
+    void (*destructor)(void*);
+
+    void AddCleanup(SerialArena& arena, void* elem) {
+      arena.AddCleanup(elem, destructor);
+    }
+  };
+
+  // Core arena allocation function. Configurable based on overflow handling,
+  // alignment, and cleanup registration.
+  template <AllocationMode mode, typename Align = ArenaAlignDefault,
+            typename Cleanup = NoCleanup>
+  PROTOBUF_ALWAYS_INLINE void* AllocateImpl(size_t n, Align align = {},
+                                            Cleanup cleanup = {}) {
+    static_assert(std::is_same_v<Align, ArenaAlignDefault> ||
+                  std::is_same_v<Align, MemoryAlign>);
+    static_assert(std::is_same_v<Cleanup, NoCleanup> ||
+                  std::is_same_v<Cleanup, WithCleanup>);
+
     ABSL_DCHECK_GE(limit_, ptr());
     char* ret = ptr();
-    if (ABSL_PREDICT_FALSE(static_cast<size_t>(limit_ - ret) < n)) {
-      return false;
-    }
-    internal::UnpoisonMemoryRegion(ret, n);
-    *out = ret;
-    char* next = ret + n;
-    set_ptr(next);
-    MaybePrefetchData(next);
-    return true;
-  }
 
-  // If there is enough space in the current block, allocate space for one
-  // std::string object and register for destruction. The object has not been
-  // constructed and the memory returned is uninitialized.
-  PROTOBUF_ALWAYS_INLINE void* MaybeAllocateStringWithCleanup() {
-    void* p;
-    return MaybeAllocateString(p) ? p : nullptr;
-  }
+    ret = align.CeilDefaultAligned(ret);
+    n = align.CeilDefaultAligned(n);
 
-  PROTOBUF_ALWAYS_INLINE
-  void* AllocateAlignedWithCleanup(size_t n, size_t align,
-                                   void (*destructor)(void*)) {
-    auto align_as = ArenaAlignAs(std::max(align, ArenaAlignDefault::align));
-    n = align_as.Ceil(n);
-    char* ret = align_as.CeilDefaultAligned(ptr());
-    // See the comment in MaybeAllocateAligned re uintptr_t.
-    if (ABSL_PREDICT_FALSE(reinterpret_cast<uintptr_t>(ret) + n >
-                           reinterpret_cast<uintptr_t>(limit_))) {
-      return AllocateAlignedWithCleanupFallback(n, align, destructor);
+    // We need `remaining_bytes` to be signed in case aligning `ret` push it
+    // past `limit_`. We are careful to do the subtraction in unsigned space to
+    // avoid UB, as overflow/underflow in signed space is UB.
+    const ptrdiff_t remaining_bytes = static_cast<ptrdiff_t>(
+        reinterpret_cast<uintptr_t>(limit_) - reinterpret_cast<uintptr_t>(ret));
+    const bool enough_space = static_cast<ptrdiff_t>(n) <= remaining_bytes;
+    switch (mode) {
+      case AllocationMode::kDefault:
+        if (ABSL_PREDICT_FALSE(!enough_space)) {
+          PROTOBUF_MUSTTAIL return AllocateFallbackImpl(n, align, cleanup);
+        }
+        break;
+      case AllocationMode::kNoFallback:
+        if (ABSL_PREDICT_FALSE(!enough_space)) {
+          return nullptr;
+        }
+        break;
+      case AllocationMode::kUnchecked:
+        ABSL_DCHECK(enough_space);
+        break;
     }
+
     internal::UnpoisonMemoryRegion(ret, n);
     char* next = ret + n;
     set_ptr(next);
-    AddCleanup(ret, destructor);
-    ABSL_DCHECK_GE(limit_, ptr());
+    cleanup.AddCleanup(*this, ret);
     MaybePrefetchData(next);
+    PROTOBUF_ASSUME(ret != nullptr);
     return ret;
   }
 
@@ -321,7 +346,7 @@ class PROTOBUF_EXPORT SerialArena {
   inline SerialArena(FirstSerialArena, SizedPtr mem,
                      const AllocationPolicy& policy, ThreadSafeArena& parent);
 
-  bool MaybeAllocateString(void*& p);
+  void* MaybeAllocateString();
   ABSL_ATTRIBUTE_RETURNS_NONNULL void* AllocateFromStringBlockFallback();
 
   // Prefetch the next prefetch_degree bytes after `prefetch_ptr` and
@@ -408,10 +433,8 @@ class PROTOBUF_EXPORT SerialArena {
     limit_ = limit;
   }
 
-  void* AllocateAlignedFallback(size_t n);
-  void* AllocateAlignedWithCleanupFallback(size_t n, size_t align,
-                                           void (*destructor)(void*));
-  void AddCleanupFallback(void* elem, void (*destructor)(void*));
+  template <typename Align, typename Cleanup>
+  void* AllocateFallbackImpl(size_t n, Align align, Cleanup cleanup);
   inline void AllocateNewBlock(size_t n);
   inline void Init(ArenaBlock* b, size_t offset);
 
@@ -472,22 +495,26 @@ class PROTOBUF_EXPORT SerialArena {
   std::atomic<size_t> space_used_{0};  // Necessary for metrics.
 };
 
-PROTOBUF_ALWAYS_INLINE bool SerialArena::MaybeAllocateString(void*& p) {
+PROTOBUF_ALWAYS_INLINE void* SerialArena::MaybeAllocateString() {
   // Check how many unused instances are in the current block.
   size_t unused_bytes = string_block_unused_.load(std::memory_order_relaxed);
-  if (ABSL_PREDICT_TRUE(unused_bytes != 0)) {
-    unused_bytes -= sizeof(std::string);
-    string_block_unused_.store(unused_bytes, std::memory_order_relaxed);
-    p = string_block_.load(std::memory_order_relaxed)->AtOffset(unused_bytes);
-    return true;
+  if (ABSL_PREDICT_FALSE(unused_bytes == 0)) {
+    return nullptr;
   }
-  return false;
+
+  unused_bytes -= sizeof(std::string);
+  string_block_unused_.store(unused_bytes, std::memory_order_relaxed);
+  void* p =
+      string_block_.load(std::memory_order_relaxed)->AtOffset(unused_bytes);
+  PROTOBUF_ASSUME(p != nullptr);
+  return p;
 }
 
 ABSL_ATTRIBUTE_RETURNS_NONNULL PROTOBUF_ALWAYS_INLINE void*
 SerialArena::AllocateFromStringBlock() {
-  void* p;
-  if (ABSL_PREDICT_TRUE(MaybeAllocateString(p))) return p;
+  if (void* p = MaybeAllocateString(); ABSL_PREDICT_TRUE(p != nullptr)) {
+    return p;
+  }
   return AllocateFromStringBlockFallback();
 }
 
@@ -495,6 +522,17 @@ inline Arena* ParentArena(SerialArena* arena) {
   if (arena == nullptr) return nullptr;
   return arena->parent();
 }
+
+extern template void* SerialArena::AllocateFallbackImpl(size_t,
+                                                        ArenaAlignDefault,
+                                                        NoCleanup);
+extern template void* SerialArena::AllocateFallbackImpl<MemoryAlign>(
+    size_t, MemoryAlign, NoCleanup);
+extern template void*
+SerialArena::AllocateFallbackImpl<ArenaAlignDefault, SerialArena::WithCleanup>(
+    size_t, ArenaAlignDefault, WithCleanup);
+extern template void* SerialArena::AllocateFallbackImpl<
+    MemoryAlign, SerialArena::WithCleanup>(size_t, MemoryAlign, WithCleanup);
 
 }  // namespace internal
 }  // namespace protobuf
