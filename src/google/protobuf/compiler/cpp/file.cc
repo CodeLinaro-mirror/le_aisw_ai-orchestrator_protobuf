@@ -1446,17 +1446,6 @@ class FileGenerator::ForwardDeclarations {
   absl::btree_map<std::string, const Descriptor*> splits_;
 };
 
-static void PublicImportDFS(
-    const FileDescriptor* fd,
-    absl::flat_hash_set<const FileDescriptor*>& fd_set) {
-  for (int i = 0; i < fd->public_dependency_count(); ++i) {
-    const FileDescriptor* dep = fd->public_dependency(i);
-    if (fd_set.insert(dep).second) {
-      PublicImportDFS(dep, fd_set);
-    }
-  }
-}
-
 void FileGenerator::GenerateForwardDeclarations(io::Printer* p) {
   std::vector<const Descriptor*> classes;
   FlattenMessagesInFile(file_, &classes);  // All messages need forward decls.
@@ -1482,7 +1471,11 @@ void FileGenerator::GenerateForwardDeclarations(io::Printer* p) {
   // Calculate the set of files whose definitions we get through include.
   // No need to forward declare types that are defined in these.
   absl::flat_hash_set<const FileDescriptor*> public_set;
-  PublicImportDFS(file_, public_set);
+  for (const FileDescriptor* dep : file_->GetPublicImportClosure()) {
+    if (dep != file_) {
+      public_set.insert(dep);
+    }
+  }
 
   absl::btree_map<std::string, ForwardDeclarations> decls;
   for (const auto* d : classes) {
