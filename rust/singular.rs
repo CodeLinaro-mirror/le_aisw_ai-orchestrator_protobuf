@@ -23,6 +23,7 @@ use crate::{
 ///
 /// # Safety
 /// - It must be sound to call `*_unchecked*(x)` with an `index` less than `repeated_len(x)`.
+#[doc(hidden)]
 pub unsafe trait Singular: Proxied + SealedInternal {
     /// Constructs a new owned `Repeated` field.
     #[doc(hidden)]

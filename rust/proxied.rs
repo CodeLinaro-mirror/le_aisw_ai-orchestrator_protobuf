@@ -77,6 +77,7 @@ use crate::__internal::{Private, SealedInternal};
 ///
 /// `ProtoObject` is primarily a foundational plumbing trait connecting owned types with their
 /// associated proxy representations for the Protobuf runtime and code generator.
+#[doc(hidden)]
 pub trait ProtoObject: SealedInternal + AsView<Proxied = Self> + Sized + 'static {
     /// The proxy type that provides shared access to a `T`, like a `&'msg T`.
     ///
@@ -85,6 +86,7 @@ pub trait ProtoObject: SealedInternal + AsView<Proxied = Self> + Sized + 'static
 }
 
 /// Deprecated alias for [`ProtoObject`].
+#[doc(hidden)]
 #[deprecated(note = "Use `ProtoObject` instead.")]
 pub use self::ProtoObject as Proxied;
 
@@ -97,6 +99,7 @@ pub use self::ProtoObject as Proxied;
 /// and immutably via `ProtoObject::View`.
 ///
 /// `MutProtoObject` is implemented by message, map and repeated field types.
+#[doc(hidden)]
 pub trait MutProtoObject:
     SealedInternal + ProtoObject + AsMut<MutProxied = Self> + 'static
 {
@@ -108,6 +111,7 @@ pub trait MutProtoObject:
 }
 
 /// Deprecated alias for [`MutProtoObject`].
+#[doc(hidden)]
 #[deprecated(note = "Use `MutProtoObject` instead.")]
 pub use self::MutProtoObject as MutProxied;
 
