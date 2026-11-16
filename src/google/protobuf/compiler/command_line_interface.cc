@@ -71,6 +71,7 @@
 #include "absl/types/optional.h"
 #include "absl/types/span.h"
 #include "google/protobuf/compiler/code_generator.h"
+#include "google/protobuf/compiler/file_path_validation.h"
 #include "google/protobuf/compiler/importer.h"
 #include "google/protobuf/compiler/plugin.pb.h"
 #include "google/protobuf/compiler/retention.h"
@@ -1656,6 +1657,19 @@ int CommandLineInterface::Run(int argc, const char* const argv[]) {
   if (!ParseInputFiles(descriptor_pool.get(), disk_source_tree.get(),
                        &parsed_files)) {
     return 1;
+  }
+
+  // File names end up in generated code, output paths, and dependency
+  // manifests, and descriptors from --descriptor_set_in bypass the checks in
+  // the parser and DiskSourceTree, so validate them once here for every
+  // generator.
+  {
+    std::string error;
+    if (!::google::protobuf::internal::ValidateFilePathsForCodeGeneration(parsed_files,
+                                                                &error)) {
+      std::cerr << error << std::endl;
+      return 1;
+    }
   }
 
   bool validation_error = false;  // Defer exiting so we log more warnings.

@@ -19,6 +19,7 @@ google/protobuf/compiler/cpp/helpers.h
 google/protobuf/compiler/cpp/names.h
 google/protobuf/compiler/cpp/options.h
 google/protobuf/compiler/csharp/names.h
+google/protobuf/compiler/file_path_validation.h
 google/protobuf/compiler/importer.h
 google/protobuf/compiler/java/doc_comment.h
 google/protobuf/compiler/java/generator.h

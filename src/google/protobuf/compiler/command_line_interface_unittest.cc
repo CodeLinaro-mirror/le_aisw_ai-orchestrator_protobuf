@@ -1431,6 +1431,121 @@ TEST_F(CommandLineInterfaceTest, AllowDotDotInFilenameWithFlag) {
   ExpectNoErrors();
 }
 
+TEST_F(CommandLineInterfaceTest, RejectInvalidImportPath) {
+  CreateTempDir("google");
+  CreateTempFile("google/protobuf';puts 'INJECTED';#.proto",
+                 "syntax = \"proto3\";\n"
+                 "message Dep {}\n");
+  CreateTempFile("main.proto",
+                 "syntax = \"proto3\";\n"
+                 "import \"google/protobuf';puts 'INJECTED';#.proto\";\n"
+                 "message Main {}\n");
+
+  RunProtoc(
+      "protocol_compiler --test_out=$tmpdir "
+      "--proto_path=$tmpdir main.proto");
+
+  ExpectErrorSubstring("Invalid character \"'\" in file path.");
+}
+
+TEST_F(CommandLineInterfaceTest, RejectInvalidInputFilePath) {
+  CreateTempFile("bad'name.proto",
+                 "syntax = \"proto3\";\n"
+                 "message Bad {}\n");
+
+  RunProtoc(
+      "protocol_compiler --test_out=$tmpdir "
+      "--proto_path=$tmpdir $tmpdir/bad'name.proto");
+
+  ExpectErrorSubstring("Invalid character \"'\" in file path.");
+}
+
+TEST_F(CommandLineInterfaceTest, DescriptorSetInRejectsInvalidFilePaths) {
+  // Descriptors from --descriptor_set_in bypass the parser and
+  // DiskSourceTree, so file names must be validated before any generator runs.
+  FileDescriptorSet file_descriptor_set;
+  FileDescriptorProto* dep = file_descriptor_set.add_file();
+  dep->set_name("../../evil.proto");
+  FileDescriptorProto* main_file = file_descriptor_set.add_file();
+  main_file->set_name("main.proto");
+  main_file->add_dependency(dep->name());
+  WriteDescriptorSet("main.bin", &file_descriptor_set);
+
+  Run("protocol_compiler --test_out=$tmpdir "
+      "--descriptor_set_in=$tmpdir/main.bin main.proto");
+
+  ExpectErrorSubstring(
+      "main.proto: Import \"../../evil.proto\": File path must not contain "
+      "\"..\" path segments.");
+}
+
+TEST_F(CommandLineInterfaceTest, RejectsInvalidImportOfOptionImport) {
+  // Option imports of the files being compiled, and their transitive imports,
+  // are emitted into plugin requests, dependency manifests, and descriptor
+  // sets, so their names must be validated too.
+  CreateTempFile("google/protobuf/descriptor.proto",
+                 google::protobuf::DescriptorProto::descriptor()->file()->DebugString());
+  CreateTempFile("evil;x.proto", R"schema(
+      syntax = "proto2";
+      package evil;
+      message E { optional int32 a = 1; }
+  )schema");
+  CreateTempFile("options.proto", R"schema(
+      syntax = "proto2";
+      package test;
+      import "google/protobuf/descriptor.proto";
+      import "evil;x.proto";
+      extend google.protobuf.FileOptions { optional evil.E opt = 99990; }
+  )schema");
+  CreateTempFile("foo.proto", R"schema(
+      edition = "2024";
+      import option "options.proto";
+      option (test.opt).a = 1;
+  )schema");
+
+  Run("protocol_compiler --proto_path=$tmpdir --test_out=$tmpdir "
+      "--dependency_out=$tmpdir/manifest foo.proto --experimental_editions");
+
+  ExpectErrorSubstring(
+      "options.proto: Import \"evil;x.proto\": Invalid character ';' in file "
+      "path.");
+}
+
+TEST_F(CommandLineInterfaceTest,
+       DescriptorSetInRejectsInvalidImportOfOptionImport) {
+  FileDescriptorSet file_descriptor_set;
+  FileDescriptorProto::descriptor()->file()->CopyTo(
+      file_descriptor_set.add_file());
+  FileDescriptorProto* evil = file_descriptor_set.add_file();
+  evil->set_name("../../evil.proto");
+  FileDescriptorProto* file = file_descriptor_set.add_file();
+  file->set_name("foo.proto");
+  file->add_dependency(file_descriptor_set.file(0).name());
+  file->add_dependency(evil->name());
+  DescriptorProto* message = file->add_message_type();
+  message->set_name("Foo");
+  FieldDescriptorProto* field = message->add_extension();
+  field->set_type(FieldDescriptorProto::TYPE_STRING);
+  field->set_label(FieldDescriptorProto::LABEL_OPTIONAL);
+  field->set_name("ext");
+  field->set_number(1234567);
+  field->set_extendee(".google.protobuf.FileOptions");
+  WriteDescriptorSet("foo.bin", &file_descriptor_set);
+
+  CreateTempFile("bar.proto", R"schema(
+      edition = "2024";
+      import option "foo.proto";
+      option (Foo.ext) = "hello";
+  )schema");
+
+  Run("protocol_compiler --test_out=$tmpdir --proto_path=$tmpdir "
+      "--descriptor_set_in=$tmpdir/foo.bin bar.proto");
+
+  ExpectErrorSubstring(
+      "foo.proto: Import \"../../evil.proto\": File path must not contain "
+      "\"..\" path segments.");
+}
+
 TEST_F(CommandLineInterfaceTest, GeneratorParameters) {
   // Test that generator parameters are correctly parsed from the command line.
 

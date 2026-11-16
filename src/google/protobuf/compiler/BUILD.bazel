@@ -200,6 +200,7 @@ cc_library(
     deps = [
         ":code_generator",
         ":code_generator_lite",
+        ":file_path_validation",
         ":importer",
         ":retention",
         ":versions",
@@ -567,6 +568,37 @@ cc_test(
         "@abseil-cpp//absl/container:flat_hash_map",
         "@abseil-cpp//absl/log:absl_check",
         "@abseil-cpp//absl/memory",
+        "@abseil-cpp//absl/strings",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "file_path_validation",
+    srcs = ["file_path_validation.cc"],
+    hdrs = ["file_path_validation.h"],
+    copts = COPTS,
+    strip_include_prefix = "/src",
+    visibility = ["//src/google/protobuf:__subpackages__"],
+    deps = [
+        "//src/google/protobuf",
+        "//src/google/protobuf:port",
+        "@abseil-cpp//absl/container:flat_hash_set",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/strings:charset",
+    ],
+)
+
+cc_test(
+    name = "file_path_validation_unittest",
+    srcs = ["file_path_validation_unittest.cc"],
+    copts = COPTS,
+    deps = [
+        ":file_path_validation",
+        "//src/google/protobuf",
+        "//src/google/protobuf:port",
+        "@abseil-cpp//absl/log:absl_check",
         "@abseil-cpp//absl/strings",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
