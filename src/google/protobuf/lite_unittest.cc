@@ -25,6 +25,7 @@
 #include "absl/strings/match.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
+#include "google/protobuf/descriptor_lite.h"
 #include "google/protobuf/generated_enum_util.h"
 #include "google/protobuf/io/coded_stream.h"
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
@@ -1553,6 +1554,68 @@ TEST(LiteTest, FileWithOnlyAnEnumGeneratesProperValidationHooks) {
   EXPECT_TRUE(internal::ValidateEnum(0, data));
   EXPECT_TRUE(internal::ValidateEnum(10, data));
   EXPECT_FALSE(internal::ValidateEnum(6, data));
+}
+
+// Encodes a single MessageSet::Item with an arbitrary (possibly invalid)
+// type_id, written either before or after the message.
+std::string EncodeMessageSetItem(uint64_t type_id, absl::string_view payload,
+                                 bool type_id_first) {
+  using internal::WireFormatLite;
+  std::string out;
+  {
+    io::StringOutputStream raw(&out);
+    io::CodedOutputStream os(&raw);
+    os.WriteTag(WireFormatLite::kMessageSetItemStartTag);
+    auto write_type_id = [&] {
+      os.WriteTag(WireFormatLite::kMessageSetTypeIdTag);
+      os.WriteVarint64(type_id);
+    };
+    if (type_id_first) write_type_id();
+    os.WriteTag(WireFormatLite::kMessageSetMessageTag);
+    os.WriteVarint32(static_cast<uint32_t>(payload.size()));
+    os.WriteString(payload);
+    if (!type_id_first) write_type_id();
+    os.WriteTag(WireFormatLite::kMessageSetItemEndTag);
+  }
+  return out;
+}
+
+TEST(LiteTest, MessageSetUnknownItemWithTypeIdAboveMaxFieldNumberRoundTrips) {
+  // MessageSet type_ids may exceed the maximum field number. Lite stores
+  // unknown fields as raw bytes, so these items must be kept as MessageSet
+  // items rather than re-encoded with a (truncated) field tag.
+  const std::string payload = "\x08\x2a";
+  for (uint32_t type_id :
+       {internal::FieldDescriptorLite::kMaxNumber + 1, uint32_t{1952731290},
+        uint32_t{0x7FFFFFFF}, uint32_t{0x80000000}, uint32_t{0xFFFFFFFF}}) {
+    for (bool type_id_first : {true, false}) {
+      SCOPED_TRACE(
+          absl::StrCat("type_id=", type_id, " type_id_first=", type_id_first));
+      proto2_unittest::TestMessageSetLite message;
+      ASSERT_TRUE(message.ParseFromString(
+          EncodeMessageSetItem(type_id, payload, type_id_first)));
+      EXPECT_EQ(message.SerializeAsString(),
+                EncodeMessageSetItem(type_id, payload, /*type_id_first=*/true));
+    }
+  }
+}
+
+TEST(LiteTest, MessageSetUnknownItemTypeIdIsTruncatedTo32Bits) {
+  // type_ids that do not fit in 32 bits are accepted and taken modulo 2^32.
+  const std::string payload = "\x08\x2a";
+  for (uint64_t type_id :
+       {(uint64_t{1} << 32) + 1952731290, (uint64_t{1} << 33) + 0xFFFFFFFF}) {
+    for (bool type_id_first : {true, false}) {
+      SCOPED_TRACE(
+          absl::StrCat("type_id=", type_id, " type_id_first=", type_id_first));
+      proto2_unittest::TestMessageSetLite message;
+      ASSERT_TRUE(message.ParseFromString(
+          EncodeMessageSetItem(type_id, payload, type_id_first)));
+      EXPECT_EQ(message.SerializeAsString(),
+                EncodeMessageSetItem(static_cast<uint32_t>(type_id), payload,
+                                     /*type_id_first=*/true));
+    }
+  }
 }
 
 }  // namespace

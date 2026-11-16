@@ -10,9 +10,12 @@
 
 #include <cstdint>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "absl/base/optimization.h"
+#include "absl/strings/string_view.h"
+#include "google/protobuf/descriptor_lite.h"
 #include "google/protobuf/extension_set.h"
 #include "google/protobuf/message_lite.h"
 #include "google/protobuf/message_traits.h"
@@ -206,6 +209,55 @@ const char* ExtensionSet::ParseMessageSetItemTmpl(MessageLite& parent,
   enum class State { kNoTag, kHasType, kHasPayload, kDone };
   State state = State::kNoTag;
 
+  // Lite unknown fields are stored as raw wire bytes. Unknown items are
+  // normally stored as a regular length-delimited field numbered type_id, which
+  // MessageSet parsers accept as an extension. A regular field tag cannot
+  // encode a field number above FieldDescriptorLite::kMaxNumber, so unknown
+  // items with such a type_id are stored as MessageSet items instead. Smaller
+  // type_ids keep the regular field encoding so that the serialized output of
+  // existing messages does not change.
+  constexpr bool kRawUnknownFields = std::is_same_v<T, std::string>;
+  auto needs_item_encoding = [](uint32_t id) {
+    return kRawUnknownFields && id > FieldDescriptorLite::kMaxNumber;
+  };
+
+  // Parses `item_payload` as the message for `item_type_id`, or stores it as an
+  // unknown field. Returns false on a parse error.
+  auto parse_payload = [&](uint32_t item_type_id,
+                           absl::string_view item_payload) -> bool {
+    ExtensionInfo extension;
+    bool was_packed_on_wire;
+    if (!FindExtension(2, item_type_id, extendee, ctx, &extension,
+                       &was_packed_on_wire)) {
+      auto* unknown = PrivateAccess::GetInternalMetadata(parent)
+                          .mutable_unknown_fields<T>();
+      if constexpr (kRawUnknownFields) {
+        if (needs_item_encoding(item_type_id)) {
+          WriteMessageSetItem(item_type_id, item_payload, unknown);
+          return true;
+        }
+      }
+      WriteLengthDelimited(item_type_id, item_payload, unknown);
+      return true;
+    }
+    MessageLite* value =
+        extension.is_repeated
+            ? AddMessage(parent, item_type_id, WireFormatLite::TYPE_MESSAGE,
+                         extension.message_info.class_data,
+                         extension.descriptor)
+            : MutableMessageByClassData(
+                  parent, item_type_id, WireFormatLite::TYPE_MESSAGE,
+                  extension.message_info.class_data, extension.descriptor);
+
+    const char* p;
+    // Use Spawn to transfer all attributes for recursion.
+    // However, use Spawn<1> to decrease depth an extra time to take into
+    // account that `payload` came from a subfield.
+    ParseContext tmp_ctx(ParseContext::Spawn<1>{}, *ctx, &p, item_payload);
+    if (p == nullptr) return false;
+    return value->_InternalParse(p, &tmp_ctx) && tmp_ctx.EndedAtLimit();
+  };
+
   while (!ctx->Done(&ptr)) {
     uint32_t tag = static_cast<uint8_t>(*ptr++);
     if (tag == WireFormatLite::kMessageSetTypeIdTag) {
@@ -219,37 +271,11 @@ const char* ExtensionSet::ParseMessageSetItemTmpl(MessageLite& parent,
         state = State::kHasType;
       } else if (state == State::kHasPayload) {
         type_id = static_cast<uint32_t>(tmp);
-        ExtensionInfo extension;
-        bool was_packed_on_wire;
-        if (!FindExtension(2, type_id, extendee, ctx, &extension,
-                           &was_packed_on_wire)) {
-          WriteLengthDelimited(type_id, payload,
-                               PrivateAccess::GetInternalMetadata(parent)
-                                   .mutable_unknown_fields<T>());
-        } else {
-          MessageLite* value =
-              extension.is_repeated
-                  ? AddMessage(parent, type_id, WireFormatLite::TYPE_MESSAGE,
-                               extension.message_info.class_data,
-                               extension.descriptor)
-                  : MutableMessageByClassData(parent, type_id,
-                                              WireFormatLite::TYPE_MESSAGE,
-                                              extension.message_info.class_data,
-                                              extension.descriptor);
-
-          const char* p;
-          // Use Spawn to transfer all attributes for recursion.
-          // However, use Spawn<1> to decrease depth an extra time to take into
-          // account that `payload` came from a subfield.
-          ParseContext tmp_ctx(ParseContext::Spawn<1>{}, *ctx, &p, payload);
-          GOOGLE_PROTOBUF_PARSER_ASSERT(p);
-          GOOGLE_PROTOBUF_PARSER_ASSERT(value->_InternalParse(p, &tmp_ctx) &&
-                                         tmp_ctx.EndedAtLimit());
-        }
+        GOOGLE_PROTOBUF_PARSER_ASSERT(parse_payload(type_id, payload));
         state = State::kDone;
       }
     } else if (tag == WireFormatLite::kMessageSetMessageTag) {
-      if (state == State::kHasType) {
+      if (state == State::kHasType && !needs_item_encoding(type_id)) {
         ptr = ParseFieldMaybeLazily(
             parent, static_cast<uint64_t>(type_id) * 8 + 2, ptr, extendee, ctx);
         GOOGLE_PROTOBUF_PARSER_ASSERT(ptr != nullptr);
@@ -263,6 +289,10 @@ const char* ExtensionSet::ParseMessageSetItemTmpl(MessageLite& parent,
         if (state == State::kNoTag) {
           payload = std::move(tmp);
           state = State::kHasPayload;
+        } else if (state == State::kHasType) {
+          // Lite with a type_id above kMaxNumber; see needs_item_encoding.
+          GOOGLE_PROTOBUF_PARSER_ASSERT(parse_payload(type_id, tmp));
+          state = State::kDone;
         }
       }
     } else {
