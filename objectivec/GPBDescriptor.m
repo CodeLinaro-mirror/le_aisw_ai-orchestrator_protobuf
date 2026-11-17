@@ -643,36 +643,41 @@ uint32_t GPBFieldAlternateTag(GPBFieldDescriptor *self) {
 }
 
 - (GPBDataType)mapKeyDataType {
-  switch (description_->flags & GPBFieldMapKeyMask) {
-    case GPBFieldMapKeyInt32:
-      return GPBDataTypeInt32;
-    case GPBFieldMapKeyInt64:
-      return GPBDataTypeInt64;
-    case GPBFieldMapKeyUInt32:
-      return GPBDataTypeUInt32;
-    case GPBFieldMapKeyUInt64:
-      return GPBDataTypeUInt64;
-    case GPBFieldMapKeySInt32:
-      return GPBDataTypeSInt32;
-    case GPBFieldMapKeySInt64:
-      return GPBDataTypeSInt64;
-    case GPBFieldMapKeyFixed32:
-      return GPBDataTypeFixed32;
-    case GPBFieldMapKeyFixed64:
-      return GPBDataTypeFixed64;
-    case GPBFieldMapKeySFixed32:
-      return GPBDataTypeSFixed32;
-    case GPBFieldMapKeySFixed64:
-      return GPBDataTypeSFixed64;
-    case GPBFieldMapKeyBool:
-      return GPBDataTypeBool;
-    case GPBFieldMapKeyString:
-      return GPBDataTypeString;
-
-    default:
-      NSAssert(0, @"Not a map type");
-      return GPBDataTypeInt32;  // For lack of anything better.
-  }
+  // GPBFieldMapKeyMask is 0xF << 8, with GPBFieldMapKey* occupying slots 1..12.
+  GPBInternalCompileAssert(GPBFieldMapKeyMask == (0xF << 8), map_key_mask_changed);
+  GPBInternalCompileAssert((GPBFieldMapKeyInt32 >> 8) == 1, map_key_int32_changed);
+  GPBInternalCompileAssert((GPBFieldMapKeyInt64 >> 8) == 2, map_key_int64_changed);
+  GPBInternalCompileAssert((GPBFieldMapKeyUInt32 >> 8) == 3, map_key_uint32_changed);
+  GPBInternalCompileAssert((GPBFieldMapKeyUInt64 >> 8) == 4, map_key_uint64_changed);
+  GPBInternalCompileAssert((GPBFieldMapKeySInt32 >> 8) == 5, map_key_sint32_changed);
+  GPBInternalCompileAssert((GPBFieldMapKeySInt64 >> 8) == 6, map_key_sint64_changed);
+  GPBInternalCompileAssert((GPBFieldMapKeyFixed32 >> 8) == 7, map_key_fixed32_changed);
+  GPBInternalCompileAssert((GPBFieldMapKeyFixed64 >> 8) == 8, map_key_fixed64_changed);
+  GPBInternalCompileAssert((GPBFieldMapKeySFixed32 >> 8) == 9, map_key_sfixed32_changed);
+  GPBInternalCompileAssert((GPBFieldMapKeySFixed64 >> 8) == 10, map_key_sfixed64_changed);
+  GPBInternalCompileAssert((GPBFieldMapKeyBool >> 8) == 11, map_key_bool_changed);
+  GPBInternalCompileAssert((GPBFieldMapKeyString >> 8) == 12, map_key_string_changed);
+  static const GPBDataType kMapKeyTypes[16] = {
+      GPBDataTypeInt32,     // 0: not a map (fallback after NSAssert)
+      GPBDataTypeInt32,     // 1: GPBFieldMapKeyInt32
+      GPBDataTypeInt64,     // 2: GPBFieldMapKeyInt64
+      GPBDataTypeUInt32,    // 3: GPBFieldMapKeyUInt32
+      GPBDataTypeUInt64,    // 4: GPBFieldMapKeyUInt64
+      GPBDataTypeSInt32,    // 5: GPBFieldMapKeySInt32
+      GPBDataTypeSInt64,    // 6: GPBFieldMapKeySInt64
+      GPBDataTypeFixed32,   // 7: GPBFieldMapKeyFixed32
+      GPBDataTypeFixed64,   // 8: GPBFieldMapKeyFixed64
+      GPBDataTypeSFixed32,  // 9: GPBFieldMapKeySFixed32
+      GPBDataTypeSFixed64,  // 10: GPBFieldMapKeySFixed64
+      GPBDataTypeBool,      // 11: GPBFieldMapKeyBool
+      GPBDataTypeString,    // 12: GPBFieldMapKeyString
+      GPBDataTypeInt32,     // 13: unused
+      GPBDataTypeInt32,     // 14: unused
+      GPBDataTypeInt32,     // 15: unused
+  };
+  uint32_t idx = (uint32_t)(description_->flags & GPBFieldMapKeyMask) >> 8;
+  NSAssert(idx >= 1 && idx <= 12, @"Not a map type");
+  return kMapKeyTypes[idx];
 }
 
 - (BOOL)isPackable {
