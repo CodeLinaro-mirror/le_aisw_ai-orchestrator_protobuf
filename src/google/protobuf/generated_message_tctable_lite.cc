@@ -2942,6 +2942,13 @@ const char* ReadFixed(void* obj, const char* ptr) {
   return ptr;
 }
 
+
+PROTOBUF_ALWAYS_INLINE static const char* ReadMapString(
+    const char* ptr, int size, std::string* str, ParseContext* ctx,
+    [[maybe_unused]] Arena* key_arena) {
+  return ctx->ReadString(ptr, size, str);
+}
+
 const char* TcParser::ParseOneMapEntry(
     NodeBase* node, const char* ptr, ParseContext* ctx,
     const TcParseTableBase::FieldAux* aux, const TcParseTableBase* table,
@@ -3021,7 +3028,8 @@ const char* TcParser::ParseOneMapEntry(
           const int size = ReadSize(&ptr);
           if (ABSL_PREDICT_FALSE(ptr == nullptr)) return nullptr;
           std::string* str = reinterpret_cast<std::string*>(obj);
-          ptr = ctx->ReadString(ptr, size, str);
+          ptr = ReadMapString(ptr, size, str, ctx,
+                              inner_tag == key_tag ? map.arena() : nullptr);
           if (ABSL_PREDICT_FALSE(ptr == nullptr)) return nullptr;
           bool do_utf8_check = map_info.fail_on_utf8_failure;
           if (type_card.is_utf8() && do_utf8_check &&
