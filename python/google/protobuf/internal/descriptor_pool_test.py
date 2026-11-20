@@ -1433,6 +1433,40 @@ class AddDescriptorTest(unittest.TestCase):
     self.assertEqual('TopEnum', pool.FindEnumTypeByName('TopEnum').name)
     self.assertEqual('TopService', pool.FindServiceByName('TopService').name)
 
+  @unittest.skipIf(
+      api_implementation.Type() != 'python',
+      'Pure-Python package name limit checks',
+  )
+  def testPackageNameLimits(self):
+    valid_packages = ('a' * 511, '.'.join(['a'] * 65))
+    for i, pkg in enumerate(valid_packages):
+      file_proto = descriptor_pb2.FileDescriptorProto(
+          name=f'valid_{i}.proto', package=pkg
+      )
+      pool = descriptor_pool.DescriptorPool()
+      pool.Add(file_proto)
+      self.assertEqual(pkg, pool.FindFileByName(file_proto.name).package)
+      pool2 = descriptor_pool.DescriptorPool()
+      self.assertEqual(
+          pkg, pool2.AddSerializedFile(file_proto.SerializeToString()).package
+      )
+
+    invalid_packages = ('a' * 512, '.'.join(['a'] * 66))
+    for i, pkg in enumerate(invalid_packages):
+      file_proto = descriptor_pb2.FileDescriptorProto(
+          name=f'invalid_{i}.proto', package=pkg
+      )
+      pool = descriptor_pool.DescriptorPool()
+      with self.assertRaises(TypeError):
+        pool.Add(file_proto)
+      with self.assertRaises(TypeError):
+        pool.AddSerializedFile(file_proto.SerializeToString())
+      db = descriptor_database.DescriptorDatabase()
+      db.Add(file_proto)
+      db_pool = descriptor_pool.DescriptorPool(db)
+      with self.assertRaises(TypeError):
+        db_pool.FindFileByName(file_proto.name)
+
   def testFileDescriptorOptionsWithCustomDescriptorPool(self):
     # Create a descriptor pool, and add a new FileDescriptorProto to it.
     pool = descriptor_pool.DescriptorPool()
