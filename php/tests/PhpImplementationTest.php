@@ -8,6 +8,9 @@ use Foo\TestMessage;
 use Foo\TestMessage\Sub;
 use Foo\TestPackedMessage;
 use Google\Protobuf\Internal\CodedInputStream;
+use Google\Protobuf\Internal\DescriptorPool;
+use Google\Protobuf\Internal\FileDescriptor;
+use Google\Protobuf\Internal\FileDescriptorProto;
 use Google\Protobuf\Internal\FileDescriptorSet;
 use Google\Protobuf\Internal\GPBLabel;
 use Google\Protobuf\Internal\GPBType;
@@ -369,6 +372,45 @@ class PhpImplementationTest extends TestBase
         $this->assertSame(1, $field->getNumber());
         $this->assertSame(GPBLabel::OPTIONAL, $field->getLabel());
         $this->assertSame(GPBType::INT32, $field->getType());
+    }
+
+    public function testPackageNameLimits()
+    {
+        $valid_packages = [
+            str_repeat('a', 511),
+            implode('.', array_fill(0, 65, 'a')),
+        ];
+        foreach ($valid_packages as $i => $pkg) {
+            $file_proto = new FileDescriptorProto();
+            $file_proto->setName("valid_{$i}.proto");
+            $file_proto->setPackage($pkg);
+            $file_desc = FileDescriptor::buildFromProto($file_proto);
+            $this->assertSame($pkg, $file_desc->getPackage());
+
+            $file_desc_set = new FileDescriptorSet();
+            $file_desc_set->setFile([$file_proto]);
+            $pool = new DescriptorPool();
+            $pool->internalAddGeneratedFile($file_desc_set->serializeToString());
+        }
+
+        $invalid_packages = [
+            [str_repeat('a', 512), '511'],
+            [implode('.', array_fill(0, 66, 'a')), '64'],
+        ];
+        foreach ($invalid_packages as $i => [$pkg, $expected_msg]) {
+            $file_proto = new FileDescriptorProto();
+            $file_proto->setName("invalid_{$i}.proto");
+            $file_proto->setPackage($pkg);
+            $file_desc_set = new FileDescriptorSet();
+            $file_desc_set->setFile([$file_proto]);
+            $pool = new DescriptorPool();
+            try {
+                $pool->internalAddGeneratedFile($file_desc_set->serializeToString());
+                $this->fail("Expected exception for invalid package {$i}");
+            } catch (\Exception $e) {
+                $this->assertStringContainsString($expected_msg, $e->getMessage());
+            }
+        }
     }
 
     public function testReadVarint64()
